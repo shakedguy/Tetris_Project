@@ -1,18 +1,16 @@
 ﻿/***************************************
- 
-	Guy Shaked - 205717952 
-	your name
-	Main file - Tetris game
-	
+	Header file for class "Game".
 ***************************************/
-#include <windows.h>
+#ifndef _GAME_H_
+#define _GAME_H_
+
 #include <iostream>
 using namespace std;
 
+class Game
+{
+public:
+	
+};
 
-int main() {
-
-
-
-
-}
+#endif
