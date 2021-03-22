@@ -139,16 +139,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Board.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="io_utils.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Point.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Board.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="Colors.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="io_utils.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Public const and structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
