@@ -12,11 +12,34 @@ using namespace std;
 class Brick
 {
 	
-	Point shape[4];
-	Point pos{ 0, 0 };
+	Point type[4];
 	int shapeNum;
+	int color;
+	char shape;
+private:
+	void drawBrick0(Point pos);
+	void drawBrick1(Point pos);
+	void drawBrick2(Point pos);
+	void drawBrick3(Point pos);
+	void drawBrick4(Point pos);
+	void drawBrick5(Point pos);
+	void drawBrick6(Point pos);
+
 public:
-	Brick(Point& _pos) : pos(_pos), shapeNum(rand() % 7)
+	Brick(): color(0),shape(SHAPE)
+	{
+		srand(time(0));
+		shapeNum = rand() % 7;
+	}
+	void drawBrick(Point pos);
+
+};
+
+#endif
+
+
+
+/*	Brick(Point& _pos) : pos(_pos), shapeNum(rand() % 7)
 	{
 		switch (shapeNum)
 		{
@@ -46,9 +69,4 @@ public:
 		}
 		
 	}
-	
-};
-
-#endif
-
-
+	*/

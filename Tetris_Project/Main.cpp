@@ -7,6 +7,7 @@
 ***************************************/
 #include <windows.h>
 #include <iostream>
+#include <time.h>
 #include "Game.h"
 #include "Point.h"
 using namespace std;

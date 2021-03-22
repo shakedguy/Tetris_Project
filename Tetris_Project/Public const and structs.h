@@ -18,6 +18,7 @@ using namespace std;
 #define RIGHT_BOARD_X 60
 #define LEFT_BOX_X 0
 #define RIGHT_BOX_X 105
+#define SHAPE 219
 
 
 

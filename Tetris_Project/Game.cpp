@@ -3,6 +3,7 @@
 ***************************************/
 #include "Game.h"
 
+#include "Brick.h"
 
 
 void Game::init()
@@ -16,6 +17,8 @@ void Game::init()
 	boards[1].drawBox(Point(RIGHT_BOX_X, BOXES_Y));
 	players[0].printScore();
 	players[1].printScore();
+	Brick b;
+	b.drawBrick(Point(0, 0));
 }
 void run()
 {

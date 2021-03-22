@@ -4,8 +4,9 @@
 void Player::setName(int playerNum)
 {
 	num = playerNum;
-	cout << "Please enter player " << playerNum << " name: ";
-	cin >> name;
+	name = "Guy";
+	//cout << "Please enter player " << playerNum << " name: ";
+	//cin >> name;
 }
 void Player::printScore()
 {
