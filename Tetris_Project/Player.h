@@ -14,10 +14,17 @@ using namespace std;
 class Player
 {
 	string name;
-	int num;
-	int score = 0;
+	int playerNum;
+	int score;
 public:
-	void setName(int playerNum);
+	Player(int _playerNum) : playerNum(_playerNum), score(0)
+	{
+		//cout << "Please enter player " << (playerNum + 1) << " name: ";
+		//cin >> name;
+		//clear_screen();
+		name = "guy";
+	}
+	void setName();
 	void printScore();
 };
 

@@ -15,9 +15,12 @@ using namespace std;
 
 int main() {
 
+	srand((int)time(0));
 	Game game;
 	game.init();
 	////game.run();
-	gotoxy(25, 25);
+	gotoxy(23, 23);
 	cout << endl << endl;
+
+	
 }

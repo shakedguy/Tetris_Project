@@ -4,43 +4,43 @@
 #include "Brick.h"
 
 
-void Brick::drawBrick(Point pos)
+void Brick::drawBrick()
 {
 	switch (shapeNum)
 	{
 	case 0:
-		drawBrick0(pos);
+		drawBrick0();
 		break;
 	case 1:
-		drawBrick1(pos);
+		drawBrick1();
 		break;
 	case 2:
-		drawBrick2(pos);
+		drawBrick2();
 		break;
 	case 3:
-		drawBrick3(pos);
+		drawBrick3();
 		break;
 	case 4:
-		drawBrick4(pos);
+		drawBrick4();
 		break;
 	case 5:
-		drawBrick5(pos);
+		drawBrick5();
 		break;
 	case 6:
-		drawBrick6(pos);
+		drawBrick6();
 		break;
 	}
-	
+	gotoxy(pos.getX(), pos.getY());
 	for (Point i:type)
 		i.draw(shape);
 }
 
-void Brick::drawBrick0(Point pos)
+void Brick::drawBrick0()
 {
 	for (int i = 0; i < 4; i++)
 		type[i].setPos(pos.getX() + i, pos.getY());
 }
-void Brick::drawBrick1(Point pos)
+void Brick::drawBrick1()
 {
 	int count = 0;
 	for (int i = 0; i < 3; i++)
@@ -53,7 +53,7 @@ void Brick::drawBrick1(Point pos)
 	}
 }
 		
-void Brick::drawBrick2(Point pos)
+void Brick::drawBrick2()
 {
 	int count = 0;
 	for (int i = 0; i < 3; i++)
@@ -65,7 +65,7 @@ void Brick::drawBrick2(Point pos)
 		}
 	}
 }
-void Brick::drawBrick3(Point pos)
+void Brick::drawBrick3()
 {
 	int count = 0;
 	for (int i = 0; i < 2; i++)
@@ -74,7 +74,7 @@ void Brick::drawBrick3(Point pos)
 			type[count++].setPos(pos.getX() + i, pos.getY() + j);
 	}
 }
-void Brick::drawBrick4(Point pos)
+void Brick::drawBrick4()
 {
 	int count = 0;
 	for (int i = 0; i < 3; i++)
@@ -86,7 +86,7 @@ void Brick::drawBrick4(Point pos)
 		}
 	}
 }
-void Brick::drawBrick5(Point pos)
+void Brick::drawBrick5()
 {
 	int count = 0;
 	for (int i = 0; i < 3; i++)
@@ -98,7 +98,7 @@ void Brick::drawBrick5(Point pos)
 		}
 	}
 }
-void Brick::drawBrick6(Point pos)
+void Brick::drawBrick6()
 {
 	int count = 0;
 	for (int i = 0; i < 3; i++)
@@ -109,4 +109,11 @@ void Brick::drawBrick6(Point pos)
 				type[count++].setPos(pos.getX() + i, pos.getY() + j);
 		}
 	}
+}
+
+void Brick::setShape()
+{
+	srand(time(0));
+	shapeNum = rand() % 100;
+	shapeNum = shapeNum % 7;
 }

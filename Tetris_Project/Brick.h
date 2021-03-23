@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include "Point.h"
+#include "Public const and structs.h"
 
 using namespace std;
 
@@ -13,25 +14,24 @@ class Brick
 {
 	
 	Point type[4];
+	Point pos;
 	int shapeNum;
 	int color;
 	char shape;
 private:
-	void drawBrick0(Point pos);
-	void drawBrick1(Point pos);
-	void drawBrick2(Point pos);
-	void drawBrick3(Point pos);
-	void drawBrick4(Point pos);
-	void drawBrick5(Point pos);
-	void drawBrick6(Point pos);
+	void drawBrick0();
+	void drawBrick1();
+	void drawBrick2();
+	void drawBrick3();
+	void drawBrick4();
+	void drawBrick5();
+	void drawBrick6();
 
 public:
-	Brick(): color(0),shape(SHAPE)
-	{
-		srand(time(0));
-		shapeNum = rand() % 7;
-	}
-	void drawBrick(Point pos);
+	Brick(Point _pos = { 0,0 }) : pos(_pos), color(0), shape(SHAPE), shapeNum(rand() % 7) {}
+	void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
+	void setShape();
+	void drawBrick();
 
 };
 

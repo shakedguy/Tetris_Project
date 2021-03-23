@@ -1,31 +1,23 @@
 ﻿#include "Player.h"
 
 
-void Player::setName(int playerNum)
+void Player::setName()
 {
-	num = playerNum;
 	name = "Guy";
 	//cout << "Please enter player " << playerNum << " name: ";
 	//cin >> name;
 }
 void Player::printScore()
 {
-	if (num == 1)
-	{
-		gotoxy(LEFT_BOX_X, SCORES_Y);
-		cout << name << "'s score:";
-		gotoxy(LEFT_BOX_X, SCORES_Y + 1);
-		cout << "                 ";
-		gotoxy(LEFT_BOX_X, SCORES_Y + 1);
-		
-	}
+	Point pos;
+	if (!playerNum)
+		pos.setPos(LEFT_SCORE_POS);
 	else
-	{
-		gotoxy(RIGHT_BOX_X, SCORES_Y);
-		cout << name << "'s score:";
-		gotoxy(RIGHT_BOX_X, SCORES_Y + 1);
-		cout << "                 ";
-		gotoxy(RIGHT_BOX_X, SCORES_Y + 1);
-	}
+		pos.setPos(RIGHT_SCORE_POS);
+	gotoxy(pos.getX(), pos.getY());
+	cout << name << "'s score:";
+	gotoxy(pos.getX(), pos.getY() + 1);
+	cout << "                 ";
+	gotoxy(pos.getX(), pos.getY() + 1);
 	cout << score;
 }

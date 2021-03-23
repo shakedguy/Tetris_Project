@@ -4,17 +4,6 @@
 #include "Point.h"
 #include "io_utils.h"
 
-void Point::setPos(int _x, int _y)
-{
-	x = _x;
-	y = _y;
-}
-void Point::draw(char ch) {
-	
-	gotoxy(x, y);
-	cout << ch << endl;
-}
-
 void Point::move(int dir) {
 
 	switch (dir) {
@@ -43,4 +32,9 @@ void Point::move(int dir) {
 		}
 		break;
 	}
+}
+
+void Point::draw(char ch) {
+	gotoxy(x, y);
+	cout << ch << endl;
 }

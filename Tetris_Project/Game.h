@@ -15,8 +15,10 @@ using namespace std;
 class Game
 {	
 	enum { ESC = 27 };
-	Board boards[2];
-	Player players[2];
+	Board boards[2] = { 0,1 };
+	Player players[2] = { 0,1 };
+private:
+	void drawBoards() { boards[0].drawBoard(); boards[1].drawBoard(); }
 public:
 	void init();
 	void run();
