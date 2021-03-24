@@ -3,6 +3,7 @@
 ***************************************/
 #include "Brick.h"
 #include <ctime>
+// test
 
 void Brick::drawBrick()
 {
