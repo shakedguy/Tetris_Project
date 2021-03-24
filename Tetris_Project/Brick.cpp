@@ -2,7 +2,7 @@
 	cpp file for class "Brick".
 ***************************************/
 #include "Brick.h"
-
+#include <ctime>
 
 void Brick::drawBrick()
 {
