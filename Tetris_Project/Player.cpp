@@ -21,3 +21,11 @@ void Player::printScore()
 	gotoxy(pos.getX(), pos.getY() + 1);
 	cout << score;
 }
+void Player::setPlayerKeys(const char* keys) {
+
+	arrowKeys[0] = keys[0];
+	arrowKeys[1] = keys[1];
+	arrowKeys[2] = keys[2];
+	arrowKeys[3] = keys[3];
+}
+

@@ -28,10 +28,15 @@ private:
 	void drawBrick6();
 
 public:
-	Brick(Point _pos = { 0,0 }) : pos(_pos), color(0), shape(SHAPE), shapeNum(rand() % 7) {}
+	Brick() :Brick({ 0,0 }) {}
+	Brick(Point _pos) : pos(_pos), color(0), shape(SHAPE), shapeNum(rand() % 7) {}
+	void setPos(int x, int y) { pos.setPos(x, y); }
 	void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
-	void setShape();
+	void setShape(char _shape) { shape = _shape; }
 	void drawBrick();
+	void printBrick();
+	char getShape() { return shape; }
+	void move();
 
 };
 

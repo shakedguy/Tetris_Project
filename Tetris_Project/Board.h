@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include "Box.h"
 #include "Point.h"
 #include "Public const and structs.h"
 
@@ -15,18 +14,14 @@ using namespace std;
 class Board
 {
 	Point board[BOARD_WIDTH][BOARD_LENGTH];
-	int boardNum;
 	Point pos;
-	Box box;
 
 public:
-	Board(int _boardNum = 0) :boardNum(_boardNum), pos(LEFT_BOARD_POS), box(boardNum)
-	{
-		if (boardNum)
-			pos.setPos(RIGHT_BOARD_POS);
-	}
+	Board() : Board({ 0,0 }) {}
+	Board(Point _pos);
+
 	void drawBoard();
-	void drawBox() { box.drawBox(); }
+	//void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
 };
 
 #endif
