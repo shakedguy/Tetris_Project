@@ -32,14 +32,18 @@ void Brick::drawBrick()
 		break;
 	}
 	gotoxy(pos.getX(), pos.getY());
-	for (Point i:type)
-		i.draw(shape);
+	for (Point i : type)
+		i.draw();
 }
 
 void Brick::drawBrick0()
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++) {
+
 		type[i].setPos(pos.getX() + i, pos.getY());
+		type[i].setShape(SHAPE);
+	}
+		
 }
 void Brick::drawBrick1()
 {
@@ -48,8 +52,12 @@ void Brick::drawBrick1()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			if ((i == 0) || (j == 1))
-				type[count++].setPos(pos.getX() + i, pos.getY() + j);
+			
+			if ((i == 0) || (j == 1)) {
+
+				type[count].setPos(pos.getX() + i, pos.getY() + j);
+				type[count++].setShape(SHAPE);
+			}
 		}
 	}
 }
@@ -61,8 +69,13 @@ void Brick::drawBrick2()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			if ((i == 2) || (j == 1))
-				type[count++].setPos(pos.getX() + i, pos.getY() + j);
+			
+			if ((i == 2) || (j == 1)) {
+
+				type[count].setPos(pos.getX() + i, pos.getY() + j);
+				type[count++].setShape(SHAPE);
+				count++;
+			}
 		}
 	}
 }
@@ -71,8 +84,11 @@ void Brick::drawBrick3()
 	int count = 0;
 	for (int i = 0; i < 2; i++)
 	{
-		for (int j = 0; j < 2; j++)
-			type[count++].setPos(pos.getX() + i, pos.getY() + j);
+		for (int j = 0; j < 2; j++) {
+
+			type[count].setPos(pos.getX() + i, pos.getY() + j);
+			type[count++].setShape(SHAPE);
+		}
 	}
 }
 void Brick::drawBrick4()
@@ -82,8 +98,12 @@ void Brick::drawBrick4()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			if ((j == 0 && i > 0) || (j == 1 && i < 2))
-				type[count++].setPos(pos.getX() + i, pos.getY() + j);
+			
+			if ((j == 0 && i > 0) || (j == 1 && i < 2)) {
+
+				type[count].setPos(pos.getX() + i, pos.getY() + j);
+				type[count++].setShape(SHAPE);
+			}
 		}
 	}
 }
@@ -94,8 +114,13 @@ void Brick::drawBrick5()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			if ((i == 1) || (j == 1))
-				type[count++].setPos(pos.getX() + i, pos.getY() + j);
+			
+			if ((i == 1) || (j == 1)) {
+
+				type[count].setPos(pos.getX() + i, pos.getY() + j);
+				type[count++].setShape(SHAPE);
+			}
+				
 		}
 	}
 }
@@ -106,15 +131,38 @@ void Brick::drawBrick6()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			if ((j == 0 && i < 2) || (j == 1 && i > 0))
-				type[count++].setPos(pos.getX() + i, pos.getY() + j);
+			
+			if ((j == 0 && i < 2) || (j == 1 && i > 0)) {
+
+				type[count].setPos(pos.getX() + i, pos.getY() + j);
+				type[count++].setShape(SHAPE);
+			}
+				
 		}
 	}
 }
 
-void Brick::setShape()
+//void Brick::setShape()
+//{
+//	srand(time(0));
+//	shapeNum = rand() % 100;
+//	shapeNum = shapeNum % 7;
+//}
+
+void Brick::move()
 {
-	srand(time(0));
-	shapeNum = rand() % 100;
-	shapeNum = shapeNum % 7;
+	for (int i = 0; i < 4; i++) {
+
+		type[i].setPos( type[i].getX(), type[i].getY() + 1 );
+		gotoxy(type[i].getX(), type[i].getY() - 1);
+		cout << ' ';
+	}
+	printBrick();
+}
+
+void Brick::printBrick() {
+
+	for (int i = 0; i < 4; i++)
+		type[i].draw();
+	gotoxy(0, 0);
 }

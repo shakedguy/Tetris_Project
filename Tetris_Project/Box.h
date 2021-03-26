@@ -14,25 +14,17 @@ using namespace std;
 
 class Box
 {
-	Point box[BOX_WIDTH][BOX_LENGTH];
-	int boxNum;
 	Point pos;
+	Point box[BOX_WIDTH][BOX_LENGTH];
 	Brick bricks[3];
 
 private:
 	void drawWalls(int x, int y);
+	void setBricks();
 public:
-	Box(int _boxNum = 0) : boxNum(_boxNum), pos(LEFT_BOX_POS)
-	{
-		if (boxNum)
-			pos.setPos(RIGHT_BOX_POS);
-		int y = 2;
-		for (int i = 0; i < 3; i++)
-		{
-			bricks[i].setPos(Point(pos.getX() + 4, pos.getY() + y));
-			y += 3;
-		}	
-	}
+	Box() : Box({ 0,0 }) {}
+	Box(Point _pos);
+
 	void drawBox();
 	
 	
