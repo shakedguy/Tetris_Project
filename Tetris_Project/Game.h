@@ -22,7 +22,7 @@ private:
 	void drawBoards() { players[0].drawBoard(); players[1].drawBoard(); }
 	void printScores() { players[0].printScore(); players[1].printScore(); }
 public:
-	Game(): players{{0,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{1,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
+	Game(): players{{1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
 	void init();
 	void run();
 	void move() { players[0].move(); players[1].move(); }
