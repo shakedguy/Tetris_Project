@@ -11,6 +11,7 @@ Box::Box(Point _pos) : pos(_pos) {
 		}
 	}
 	setBricks();
+	drawBox();	
 }
 
 void Box::setBricks() {
@@ -18,7 +19,8 @@ void Box::setBricks() {
 	int y = 2;
 	for (int i = 0; i < 3; i++) {
 
-		bricks[i].setPos({ (pos.getX() + 4), (pos.getY() + y) });
+		blocks[i].setPos({ (pos.getX() + 4), (pos.getY() + y) });
+		blocks[i].set_Brick();
 		y += 3;
 	}
 }
@@ -51,7 +53,6 @@ void Box::drawBox()
 		}
 	}
 	for (int i = 0; i < 3; i++)
-		bricks[i].drawBrick();
-		
+		blocks[i].printBrick();
 }
 

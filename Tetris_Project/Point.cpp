@@ -4,32 +4,32 @@
 #include "Point.h"
 #include "io_utils.h"
 
-void Point::move(int dir) {
+Point& Point::operator=(const Point& p)
+{
+	if(&p!=this)
+	{
+		x = p.x;
+		y = p.y;
+		shape = p.shape;
+	}
+	return *this;
+}
 
-	switch (dir) {
+
+void Point::move(int direction) {
+
+	switch (direction) {
 	case UP: // UP
 		--y;
-		if (y < 1) {
-			y = 24;
-		}
 		break;
 	case DOWN: // DOWN
 		++y;
-		if (y > 24) {
-			y = 1;
-		}
 		break;
 	case LEFT: // LEFT
 		--x;
-		if (x < 1) {
-			x = 79;
-		}
 		break;
 	case RIGHT: // RIGHT
 		++x;
-		if (x > 79) {
-			x = 1;
-		}
 		break;
 	}
 }
