@@ -139,9 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Box.cpp" />
-    <ClCompile Include="Brick.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="io_utils.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -149,9 +149,9 @@
     <ClCompile Include="Point.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Box.h" />
-    <ClInclude Include="Brick.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Game.h" />

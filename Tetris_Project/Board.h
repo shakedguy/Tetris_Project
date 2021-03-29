@@ -6,12 +6,14 @@
 
 #include <iostream>
 
+
+#include "Block.h"
 #include "Point.h"
 #include "Public const and structs.h"
 
 using namespace std;
 
-class Board
+struct Board
 {
 	Point board[BOARD_WIDTH][BOARD_LENGTH];
 	Point pos;
@@ -19,9 +21,9 @@ class Board
 public:
 	Board() : Board({ 0,0 }) {}
 	Board(Point _pos);
-
 	void drawBoard();
-	//void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
+	void freezeBlock(const Block& block);
+	bool checkLocation(const Block& block, int direction);
 };
 
 #endif

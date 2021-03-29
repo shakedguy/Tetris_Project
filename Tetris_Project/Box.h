@@ -6,17 +6,17 @@
 
 #include <iostream>
 
-#include "Brick.h"
+#include "Block.h"
 #include "Point.h"
 #include "Public const and structs.h"
 
 using namespace std;
 
-class Box
+struct Box
 {
 	Point pos;
 	Point box[BOX_WIDTH][BOX_LENGTH];
-	Brick bricks[3];
+	Block blocks[3];
 
 private:
 	void drawWalls(int x, int y);
@@ -26,8 +26,7 @@ public:
 	Box(Point _pos);
 
 	void drawBox();
-	
-	
 };
+
 #endif
 
