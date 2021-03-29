@@ -12,7 +12,6 @@ using namespace std;
 
 class Point
 {
-	enum { UP, DOWN, LEFT, RIGHT };
 	int x, y;
 	char shape;
 
@@ -21,14 +20,16 @@ public:
 	Point(int _x, int _y) : Point(_x, _y, EMPTY_CELL) {}
 	Point(int _x, int _y, char _shape) : x(_x), y(_y), shape(_shape) {}
 	Point(const Point& _point) : x(_point.x), y(_point.y), shape(_point.shape) {}
+	Point& operator=(const Point& p);
 	void draw() { gotoxy(x, y); cout << shape << endl; }
 	void draw(char ch);
 	void move(int direction);
 	void setPos(int _x, int _y) { x = _x; y = _y; }
+	void setPos(Point& _p) { x = _p.getX(); y = _p.getY(); }
 	void setShape(char _shape) { shape = _shape; }
 	char getShape() { return shape; }
-	int getX() { return x; }
-	int getY() { return y; }
+	const int& getX() { return x; }
+	const int& getY() { return y; }
 };
 
 #endif
