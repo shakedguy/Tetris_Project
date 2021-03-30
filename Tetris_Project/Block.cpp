@@ -1,12 +1,20 @@
 ﻿#include "Block.h"
 
+Block::Block(Point _pos) : pos(_pos), color(0), shape(SHAPE)
+{
+	random_device rnd;
+	const uniform_int_distribution<> range(1, 7);
+	shapeNum = (range(rnd));
+	setFigure();
+}
 
 Block& Block::operator=(const Block& b)
 {
 	if(&b!=this)
 	{
 		for (int i = 0; i < BLOCK_SIZE; i++)
-			type[i] = b.type[i];
+			for (int j = 0; j < BLOCK_SIZE; j++)
+				figure[i][j] = figure[i][j];
 
 		pos = b.pos;
 		shape = b.shape;
@@ -23,33 +31,30 @@ Block& Block::createBlock(const Point& pos)
 }
 
 
-
-
-
-void Block::set_Brick()
+void Block::setFigure()
 {
 	switch (shapeNum)
 	{
-	case 0:
-		set_Block0();
-		break;
 	case 1:
-		set_Block1();
+		set_Figure1();
 		break;
 	case 2:
-		set_Block2();
+		set_Figure2();
 		break;
 	case 3:
-		set_Block3();
+		set_Figure3();
 		break;
 	case 4:
-		set_Block4();
+		set_Figure4();
 		break;
 	case 5:
-		set_Block5();
+		set_Figure5();
 		break;
 	case 6:
-		set_Block6();
+		set_Figure6();
+		break;
+	case 7:
+		set_Figure7();
 		break;
 
 	default:
@@ -57,169 +62,112 @@ void Block::set_Brick()
 	}
 }
 
-void Block::set_Block0()
+void Block::set_Figure1()
 {
 	for (int i = 0; i < 4; i++) {
-
-		type[i].setPos(pos.getX() + i, pos.getY());
-		type[i].setShape(SHAPE);
+		figure[i][2]++;
 	}
 
 }
-void Block::set_Block1()
+void Block::set_Figure2()
 {
-	int count = 0;
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 2; j++)
 		{
-
-			if ((i == 0) || (j == 1)) {
-
-				type[count].setPos(pos.getX() + i, pos.getY() + j);
-				type[count++].setShape(SHAPE);
-			}
+			if (!(i + j))
+				figure[i][j]++;
+			else if (j)
+				figure[i][j]++;
 		}
 	}
 }
 
-void Block::set_Block2()
+void Block::set_Figure3()
 {
-	int count = 0;
-	for (int i = 0; i < 3; i++)
-	{
+	for (int i = 1; i < 4; i++)
 		for (int j = 0; j < 2; j++)
-		{
-
-			if ((i == 2) || (j == 1)) {
-
-				type[count].setPos(pos.getX() + i, pos.getY() + j);
-				type[count++].setShape(SHAPE);
-			}
-		}
-	}
+			if ((!j && i > 2) || j)
+				figure[i][j]++;
 }
-void Block::set_Block3()
+void Block::set_Figure4()
 {
-	int count = 0;
-	for (int i = 0; i < 2; i++)
-	{
-		for (int j = 0; j < 2; j++) {
-
-			type[count].setPos(pos.getX() + i, pos.getY() + j);
-			type[count++].setShape(SHAPE);
-		}
-	}
+	for (int i = 1; i < 3; i++)
+		for (int j = 1; j < 3; j++)
+			figure[i][j]++;
 }
-void Block::set_Block4()
+void Block::set_Figure5()
 {
-	int count = 0;
 	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-
-			if ((j == 0 && i > 0) || (j == 1 && i < 2)) {
-
-				type[count].setPos(pos.getX() + i, pos.getY() + j);
-				type[count++].setShape(SHAPE);
-			}
-		}
-	}
+		for (int j = 2; j < 4; j++)
+			if ((j < 3 && i) || (j > 2 && i < 2))
+				figure[i][j]++;
 }
-void Block::set_Block5()
+void Block::set_Figure6()
 {
-	int count = 0;
 	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-
-			if ((i == 1) || (j == 1)) {
-
-				type[count].setPos(pos.getX() + i, pos.getY() + j);
-				type[count++].setShape(SHAPE);
-			}
-
-		}
-	}
+		for (int j = 2; j < 4; j++)
+			if ((j < 3 && i == 1) || j > 2)
+				figure[i][j]++;
 }
-void Block::set_Block6()
+void Block::set_Figure7()
 {
-	int count = 0;
 	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-
-			if ((j == 0 && i < 2) || (j == 1 && i > 0)) {
-
-				type[count].setPos(pos.getX() + i, pos.getY() + j);
-				type[count++].setShape(SHAPE);
-			}
-
-		}
-	}
+		for (int j = 2; j < 4; j++)
+			if ((j < 3 && i < 2) || (j > 2 && i))
+				figure[i][j]++;
 }
 
 void Block::move(int dir)
 {
+	cleanPrint();
 	switch (dir)
 	{
 	case LEFT:
-		move_Left();
+		pos.move(LEFT);
 		break;
 	case RIGHT:
-		move_Right();
+		pos.move(RIGHT);
 		break;
 	case DOWN:
-		move_Down();
+		pos.move(DOWN);
 	default:
 		break;
 	}
-	printBrick();
+	drawBlock();
 }
 
-void Block::move_Left()
-{
-	for (int i = 0; i < 4; i++) {
+void Block::drawBlock() {
 
-		gotoxy(type[i].getX(), type[i].getY());
-		cout << ' ';
-		type[i].move(LEFT);
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			if (figure[i][j])
+			{
+				gotoxy(pos.getX() + i, pos.getY() + j);
+				cout << shape;
+			}	
+		}
 	}
-}
-
-void Block::move_Right()
-{
-	for (int i = 0; i < 4; i++) {
-
-		gotoxy(type[i].getX(), type[i].getY());
-		cout << ' ';
-		type[i].move(RIGHT);
-	}
-}
-
-void Block::move_Down()
-{
-	for (int i = 0; i < 4; i++) {
-
-		gotoxy(type[i].getX(), type[i].getY());
-		cout << ' ';
-		type[i].move(DOWN);
-	}
-}
-
-void Block::printBrick() {
-
-	for (auto& i : type)
-		i.draw();
 	gotoxy(0, 0);
 }
 
 void Block::cleanBlock()
 {
 	for (int i = 0; i < 4; i++)
-		type[i].setShape(' ');
-	printBrick();
+		for (int j = 0; j < 4; j++)
+			figure[i][j] = 0;
+}
+
+void Block::cleanPrint()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			gotoxy(pos.getX() + i, pos.getY() + j);
+			cout << EMPTY_CELL;
+		}	
+	}
 }

@@ -15,8 +15,8 @@ using namespace std;
 struct Box
 {
 	Point pos;
-	Point box[BOX_WIDTH][BOX_LENGTH];
-	Block blocks[3];
+	char box[BOX_WIDTH][BOX_LENGTH];
+	Block blocks[2];
 
 private:
 	void drawWalls(int x, int y);

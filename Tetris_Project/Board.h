@@ -15,14 +15,14 @@ using namespace std;
 
 struct Board
 {
-	Point board[BOARD_WIDTH][BOARD_LENGTH];
+	char board[BOARD_WIDTH][BOARD_LENGTH];
 	Point pos;
 
 public:
 	Board() : Board({ 0,0 }) {}
 	Board(Point _pos);
 	void drawBoard();
-	void freezeBlock(const Block& block);
+	void freezeBlock(Block& block);
 	bool checkLocation(const Block& block, int direction);
 };
 

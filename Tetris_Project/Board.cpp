@@ -9,7 +9,8 @@ void Board::drawBoard()
 	{
 		for (int j = 0; j < BOARD_LENGTH; j++)
 		{
-			board[i][j].draw();
+			gotoxy(pos.getX() + i, pos.getY() + j);
+			cout << board[i][j];
 		}
 	}
 }
@@ -20,31 +21,36 @@ Board::Board(Point _pos) : pos(_pos)
 	{
 		for (int j = 0; j < BOARD_LENGTH; j++)
 		{
-			board[i][j].setPos(pos.getX() + i, pos.getY() + j);
+
 			if (j == BOARD_LENGTH - 1)
 			{
 				if (i > 0 && i < BOARD_WIDTH - 1)
-					board[i][j].setShape(FLOOR);
+					board[i][j] = FLOOR;
 				else if (i == 0)
-					board[i][j].setShape(DOWN_LEFT);
+					board[i][j] = DOWN_LEFT;
 				else
-					board[i][j].setShape(DOWN_RIGHT);
+					board[i][j] = DOWN_RIGHT;
 			}
 			else if ((i == 0 || i == BOARD_WIDTH - 1) && (j != BOARD_LENGTH - 1))
-				board[i][j].setShape(WALL);
+				board[i][j] = WALL;
 			else
-				board[i][j].setShape(EMPTY_CELL);
+				board[i][j] = EMPTY_CELL;
 		}
 	}
 }
 
-void Board::freezeBlock(const Block& block)
+void Board::freezeBlock(Block& block)
 {
-	for (Point i : block.type)
+	for (int i = 0; i < 4; i++)
 	{
-		board[i.getX() - pos.getX()][i.getY() - pos.getY()].setShape(i.getShape());
-		board[i.getX() - pos.getX()][i.getY() - pos.getY()].draw();
+		for (int j = 0; j < 4; j++)
+		{
+			if (block.figure[i][j])
+				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = block.shape;
+		}
 	}
+	block.cleanBlock();
+	drawBoard();
 }
 
 

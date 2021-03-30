@@ -37,9 +37,8 @@ void Player::move()
 	{
 		board.freezeBlock(block);
 		getNewBlock();
-		board.drawBoard();
+		//board.drawBoard();
 	}
-		
 }
 
 int Player::getDirection(char key)
@@ -54,15 +53,10 @@ int Player::getDirection(char key)
 
 void Player::getNewBlock()
 {
-	block.cleanBlock();
-	block = box.blocks[0];
 	if (playerNum == 1)
 		block.setPos(LEFT_CURRENT_BLOCK );
 	else
 		block.setPos(RIGHT_CURRENT_BLOCK );
-	block.printBrick();
-	box.blocks[0].cleanBlock();
-
 }
 
 bool Player::checkStep()
@@ -88,25 +82,40 @@ bool Player::checkStep()
 
 bool Player::check_Down()
 {
-	for(Point& i:block.type)
-		if (board.board[i.getX() - board.pos.getX()][(i.getY() + 1) - board.pos.getY()].getShape() != EMPTY_CELL)
-			return false;			
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (block.figure[i][j] && (board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' '))
+				return false;
+		}
+	}		
 	return true;
 }
 
 bool Player::check_Left()
 {
-	for (Point& i : block.type)
-		if (board.board[(i.getX() - 1) - board.pos.getX()][i.getY() - board.pos.getY()].getShape() != EMPTY_CELL)
-			return false;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (block.figure[i][j] && (board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
+				return false;
+		}
+	}
 	return true;
 }
 
 bool Player::check_Right()
 {
-	for (Point& i : block.type)
-		if (board.board[(i.getX() + 1) - board.pos.getX()][i.getY() - board.pos.getY()].getShape() != EMPTY_CELL)
-			return false;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (block.figure[i][j] && (board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
+				return false;
+		}
+	}
 	return true;
 }
 
