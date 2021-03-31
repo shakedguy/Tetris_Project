@@ -49,7 +49,7 @@ void Board::freezeBlock(Block& block)
 				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = block.shape;
 		}
 	}
-	block.cleanBlock();
+	//block.cleanBlock();
 	drawBoard();
 }
 

@@ -40,7 +40,7 @@ public:
 	Block() : Block({0, 0}){}
 	Block(Point _pos);
 	Block& operator=(const Block& b);
-	Block& createBlock(const Point& pos);
+	void createNewBlock();
 	void setPos(int x, int y) { pos.setPos(x, y); }
 	void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
 	void setShape(char _shape) { shape = _shape; }
@@ -50,6 +50,7 @@ public:
 	void cleanBlock();
 	void setFigure();
 	void cleanPrint();
+	void copyFigure(const Block& b);
 };
 
 #endif

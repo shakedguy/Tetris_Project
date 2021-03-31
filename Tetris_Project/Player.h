@@ -39,7 +39,7 @@ public:
 			block.setPos({ LEFT_CURRENT_BLOCK });
 		else
 			block.setPos({ RIGHT_CURRENT_BLOCK });
-		block.setFigure();
+		//block.setFigure();
 		score = 0;
 		Sleep(100);
 	}

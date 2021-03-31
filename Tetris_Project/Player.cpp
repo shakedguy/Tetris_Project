@@ -37,7 +37,8 @@ void Player::move()
 	{
 		board.freezeBlock(block);
 		getNewBlock();
-		//board.drawBoard();
+		box.drawBox();
+		block.drawBlock();
 	}
 }
 
@@ -53,10 +54,13 @@ int Player::getDirection(char key)
 
 void Player::getNewBlock()
 {
+	block.copyFigure(box.blocks[0]);
 	if (playerNum == 1)
 		block.setPos(LEFT_CURRENT_BLOCK );
 	else
 		block.setPos(RIGHT_CURRENT_BLOCK );
+	box.blocks[0].copyFigure(box.blocks[1]);
+	box.blocks[1].createNewBlock();
 }
 
 bool Player::checkStep()

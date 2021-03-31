@@ -11,11 +11,10 @@ Box::Box(Point _pos) : pos(_pos)
 
 void Box::setBricks()
 {
-	int y = 1;
+	int y = 2;
 	for (int i = 0; i < 2; i++)
 	{
 		blocks[i].setPos({(pos.getX() + 4), (pos.getY() + y)});
-		blocks[i].setFigure();
 		y += 5;
 	}
 }

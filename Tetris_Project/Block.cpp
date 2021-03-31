@@ -10,8 +10,8 @@ Block::Block(Point _pos) : pos(_pos), color(0), shape(SHAPE)
 
 Block& Block::operator=(const Block& b)
 {
-	if(&b!=this)
-	{
+	//if(&b!=this)
+	//{
 		for (int i = 0; i < BLOCK_MATRIX; i++)
 			for (int j = 0; j < BLOCK_MATRIX; j++)
 				figure[i][j] = figure[i][j];
@@ -20,14 +20,17 @@ Block& Block::operator=(const Block& b)
 		shape = b.shape;
 		shapeNum = b.shapeNum;
 		color = b.color;
-	}
+	//}
 	return *this;
 }
 
-Block& Block::createBlock(const Point& pos)
+void Block::createNewBlock()
 {
-	Block b(pos);
-	return b;
+	cleanBlock();
+	random_device rnd;
+	const uniform_int_distribution<> range(1, 7);
+	shapeNum = (range(rnd));
+	setFigure();
 }
 
 
@@ -184,6 +187,18 @@ void Block::rotate()
 	transpose_Matrix();
 	reverse_Matrix();
 }
+
+void Block::copyFigure(const Block& b)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			figure[i][j] = b.figure[i][j];
+		}
+	}
+}
+
 
 void Block::transpose_Matrix()
 {
