@@ -24,7 +24,7 @@ using namespace std;
 #define EMPTY_CELL ' '
 #define PLAYER_ONE_KEYS "wzad"
 #define PLAYER_TOW_KEYS "imjl"
-#define BLOCK_SIZE 4
+#define BLOCK_MATRIX 4
 
 enum { WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200, DOWN_RIGHT = 188 };
 enum { UP, DOWN, LEFT, RIGHT };

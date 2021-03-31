@@ -12,8 +12,8 @@ Block& Block::operator=(const Block& b)
 {
 	if(&b!=this)
 	{
-		for (int i = 0; i < BLOCK_SIZE; i++)
-			for (int j = 0; j < BLOCK_SIZE; j++)
+		for (int i = 0; i < BLOCK_MATRIX; i++)
+			for (int j = 0; j < BLOCK_MATRIX; j++)
 				figure[i][j] = figure[i][j];
 
 		pos = b.pos;
@@ -99,8 +99,8 @@ void Block::set_Figure4()
 void Block::set_Figure5()
 {
 	for (int i = 0; i < 3; i++)
-		for (int j = 2; j < 4; j++)
-			if ((j < 3 && i) || (j > 2 && i < 2))
+		for (int j = 0; j < 2; j++)
+			if ((j < 1 && i) || (j > 0 && i < 2))
 				figure[i][j]++;
 }
 void Block::set_Figure6()
@@ -131,8 +131,14 @@ void Block::move(int dir)
 		break;
 	case DOWN:
 		pos.move(DOWN);
-	default:
 		break;
+	case UP:
+		rotate();
+		break;
+		
+		default:
+			pos.move(DOWN);
+			break;
 	}
 	drawBlock();
 }
@@ -147,6 +153,7 @@ void Block::drawBlock() {
 			{
 				gotoxy(pos.getX() + i, pos.getY() + j);
 				cout << shape;
+				//cout << figure[i][j];
 			}	
 		}
 	}
@@ -171,3 +178,35 @@ void Block::cleanPrint()
 		}	
 	}
 }
+
+void Block::rotate()
+{
+	transpose_Matrix();
+	reverse_Matrix();
+}
+
+void Block::transpose_Matrix()
+{
+	for (int i = 0; i < BLOCK_MATRIX; i++)
+		for (int j = i + 1; j < BLOCK_MATRIX; j++)
+			swap(figure[i][j], figure[j][i]);
+}
+
+void Block::reverse_Matrix()
+{
+	for (int i = 0; i < BLOCK_MATRIX; i++) {
+
+		int start = 0;
+		int end = BLOCK_MATRIX - 1;
+
+
+		while (start < end) {
+			swap(figure[i][start], figure[i][end]);
+			start++;
+			end--;
+		}
+	}
+}
+
+
+

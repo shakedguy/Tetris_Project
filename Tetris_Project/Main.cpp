@@ -20,6 +20,4 @@ int main() {
 	game.run();
 	gotoxy(23, 23);
 	cout << endl << endl;
-	/////*  guy shaked */
-
 }

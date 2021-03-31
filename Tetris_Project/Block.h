@@ -34,6 +34,8 @@ private:
 	void move_Right();
 	void move_Down();
 	void rotate();
+	void transpose_Matrix();
+	void reverse_Matrix();
 public:
 	Block() : Block({0, 0}){}
 	Block(Point _pos);
