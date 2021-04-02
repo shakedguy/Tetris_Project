@@ -155,14 +155,14 @@ void Block::move(int dir)
 	cleanPrint();
 	switch (dir)
 	{
+	case DROP:
+		pos.move(DOWN);
+		break;
 	case LEFT:
 		pos.move(LEFT);
 		break;
 	case RIGHT:
 		pos.move(RIGHT);
-		break;
-	case DOWN:
-		pos.move(DOWN);
 		break;
 	case CLOCKWISE:
 		clockwiseRotate();
@@ -178,6 +178,7 @@ void Block::move(int dir)
 	drawBlock();
 }
 
+
 void Block::drawBlock() {
 
 	for (int i = 0; i < 4; ++i)
@@ -192,7 +193,7 @@ void Block::drawBlock() {
 			}
 		}
 	}
-	gotoxy(0, 0);
+	//gotoxy(0, 0);
 }
 
 void Block::cleanBlock()
@@ -231,6 +232,7 @@ void Block::counterClockwiseRotate()
 
 void Block::copyFigure(const Block& b)
 {
+	shapeNum = b.shapeNum;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)

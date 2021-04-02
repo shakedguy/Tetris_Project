@@ -12,6 +12,7 @@ void Game::menuPage()
 	switch (m.getOption())
 	{
 	case 1:
+		clearGame();
 		init();
 		break;
 	case 2:
@@ -29,7 +30,6 @@ void Game::menuPage()
 void Game::init()
 {
 	drawBoards();
-	printScores();
 	players[0].setPlayerKeys(PLAYER_ONE_KEYS);
 	players[1].setPlayerKeys(PLAYER_TOW_KEYS);
 	run();
@@ -48,14 +48,33 @@ void Game::run()
 			else if ((dir = players[1].getDirection(key)) != -1)
 				players[1].setDirection(dir);
 		}
-		
 		move();
+		printScores();
 		Sleep(200);
-		players[0].setDirection(DOWN);
-		players[1].setDirection(DOWN);
+		returnDown();
 	} while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
-	system("cls");
+	if (winningMassage())
+		system("cls");
 	menuPage();
 	setTextColor(Color::WHITE);
 	clear_screen();
+}
+
+bool Game::winningMassage()
+{
+	system("cls");
+	gotoxy(WINNING_MASSAGE);
+	if (players[0].isLost())
+	{
+		cout << "Congratulations " << players[1].getName() << ", you won !" << endl;
+		Sleep(3000);
+		return true;
+	}
+	else if (players[1].isLost())
+	{
+		cout << "Congratulations " << players[0].getName() << ", you won !" << endl;
+		Sleep(3000);
+		return true;
+	}
+	return false;
 }

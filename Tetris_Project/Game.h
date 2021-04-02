@@ -19,8 +19,11 @@ class Game
 	Player players[2];
 
 private:
+	void returnDown() { players[0].setDirection(DOWN); players[1].setDirection(DOWN); }
 	void drawBoards() { players[0].drawBoard(); players[1].drawBoard(); }
 	void printScores() { players[0].printScore(); players[1].printScore(); }
+	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
+	bool winningMassage();
 public:
 	Game(): players{{1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
 	~Game() = default;

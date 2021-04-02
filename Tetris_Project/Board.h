@@ -20,6 +20,10 @@ struct Board
 	unsigned int length, width;
 	vector<vector<char>> board;
 
+private:
+	bool isFullRow(const int& row);
+	void dropRows(const int& row);
+	
 public:
 	Board() : Board({ 0,0 }, 0, 0) {}
 	Board(Point _pos) : Board({ _pos }, BOARD_LENGTH, BOARD_WIDTH) {}
@@ -38,7 +42,8 @@ public:
 	void allocateSize();
 	void initialEmptyCells();
 	void resizeBoundaries(const unsigned int& x, const unsigned int& y);
-	bool checkLocation(const Block& block, int direction);
+	int checkBoard();
+	void cleanBoard();
 };
 
 #endif

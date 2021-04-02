@@ -28,16 +28,13 @@ class Player
 
 private:
 	void setGameBoundaries();
+	void drop();
 
 public:
 	Player() : Player(0, { 0,0 }, { 0,0 }) {}
 	Player(int _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum), boardPos(_boardPos), boxPos(_boxPos),
 		board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(1)
 	{
-		//cout << "Please enter player " << (playerNum + 1) << " name: ";
-		//cin >> name;
-		//clear_screen();
-		name = "guy";
 		if (playerNum == 1)
 			block.setPos({ LEFT_CURRENT_BLOCK });
 		else
@@ -60,6 +57,8 @@ public:
 	bool check_Down();
 	bool isLost();
 	void changeBlockPos(const Point& pos);
+	void clearGame();
+	string getName()const { return name; }
 };
 
 #endif

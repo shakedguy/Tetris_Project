@@ -3,15 +3,30 @@
 
 void Player::setName()
 {
-	name = "Guy";
-	//cout << "Please enter player " << playerNum << " name: ";
-	//cin >> name;
+	gotoxy(WINNING_MASSAGE);
+	cout << "Please enter player " << playerNum << " name: ";
+	cin >> name;
+	system("cls");
 }
 
 void Player::changeBlockPos(const Point& pos)
 {
 	block.pos = { pos };
 }
+
+void Player::clearGame()
+{
+	board.cleanBoard();
+	box.clearBox();
+	block.createNewBlock();
+	if (playerNum == 1)
+		block.pos = { LEFT_CURRENT_BLOCK };
+	else
+		block.pos = { RIGHT_CURRENT_BLOCK };
+	setName();
+}
+
+
 
 
 void Player::setGameBoundaries()
@@ -21,7 +36,7 @@ void Player::setGameBoundaries()
 	board.setRightBoundary();
 	board.board[0][BOARD_LENGTH - 1] = DOWN_LEFT;
 	board.board[BOARD_WIDTH - 1][BOARD_LENGTH - 1] = DOWN_RIGHT;
-	for(int i=0;i<3;i++)
+	for (int i = 0; i < 3; i++)
 	{
 		board.board[0][i] = EMPTY_CELL;
 		board.board[board.width - 1][i] = EMPTY_CELL;
@@ -39,17 +54,11 @@ bool Player::isLost()
 
 void Player::printScore()
 {
-	Point pos;
-	if (!playerNum)
-		pos.setPos(LEFT_SCORE_POS);
+	if (playerNum == 1)
+		gotoxy(LEFT_SCORE_POS);
 	else
-		pos.setPos(RIGHT_SCORE_POS);
-	gotoxy(pos.getX(), pos.getY());
-	cout << name << "'s score:";
-	gotoxy(pos.getX(), pos.getY() + 1);
-	cout << "                 ";
-	gotoxy(pos.getX(), pos.getY() + 1);
-	cout << score;
+		gotoxy(RIGHT_SCORE_POS);
+	cout << name << "'s score: " << score;
 }
 void Player::setPlayerKeys(const char* keys) {
 
@@ -62,7 +71,9 @@ void Player::setPlayerKeys(const char* keys) {
 
 void Player::move()
 {
-	if (checkStep())
+	if (direction == DROP)
+		drop();
+	else if (checkStep())
 		block.move(direction);
 	else if (direction == DOWN)
 	{
@@ -71,6 +82,14 @@ void Player::move()
 		box.drawBox();
 		block.drawBlock();
 	}
+	int num = board.checkBoard();
+	score += (num * num * POINTS_FOR_FULL_ROW);
+}
+
+void Player::drop()
+{
+	while (checkStep())
+		block.move(direction);
 }
 
 int Player::getDirection(char key)
@@ -78,7 +97,12 @@ int Player::getDirection(char key)
 	for (int i = 0; i < 5; i++)
 	{
 		if (key == arrowKeys[i])
-			return i;
+		{
+			if (i == 1)
+				return DROP;
+			else
+				return i;
+		}
 	}
 	return -1;
 }
@@ -98,6 +122,10 @@ bool Player::checkStep()
 {
 	switch (direction)
 	{
+	case DROP:
+		if (check_Down())
+			return true;
+		return false;
 	case LEFT:
 		if (check_Left())
 			return true;

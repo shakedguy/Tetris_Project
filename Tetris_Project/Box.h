@@ -29,6 +29,7 @@ public:
 	void setPos(int x, int y) { setPos({ x,y }); }
 	void setPos(Point _pos) { pos = _pos; }
 	void drawBox();
+	void clearBox();
 };
 
 #endif

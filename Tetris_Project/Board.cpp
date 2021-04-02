@@ -21,12 +21,21 @@ Board::Board(Point _pos, unsigned int _len, unsigned int _width) : pos(_pos), le
 	initialEmptyCells();
 }
 
+void Board::cleanBoard()
+{
+	for(int i=1;i<width-1;i++)
+		for (int j = 0; j < length - 1; j++)
+			board[i][j] = EMPTY_CELL;
+}
+
+
 void Board::allocateSize()
 {
 	board.resize(width);
 	for (int i = 0; i < width; i++)
 		board[i].resize(length);
 }
+
 void Board::initialEmptyCells()
 {
 	for (int i = 0; i < width; i++)
@@ -43,27 +52,30 @@ void Board::initialEmptyCells()
 }
 
 
-
 void Board::setBottomBoundary()
 {
 	for (int i = 0; i < width; i++)
 		board[i][length - 1] = FLOOR;
 }
+
 void Board::setTopBoundary()
 {
 	for (int i = 0; i < width; i++)
 		board[i][0] = FLOOR;
 }
+
 void Board::setLeftBoundary()
 {
 	for (int i = 0; i < length; i++)
 		board[0][i] = WALL;
 }
+
 void Board::setRightBoundary()
 {
 	for (int i = 0; i < length; i++)
 		board[width - 1][i] = WALL;
 }
+
 void Board::setAllBoundaries()
 {
 	setTopBoundary();
@@ -107,16 +119,33 @@ void Board::resizeBoundaries(const unsigned& x, const unsigned& y)
 				board[i][j] = EMPTY_CELL;
 }
 
-
-
-bool Board::checkLocation(const Block& block, int direction)
+int Board::checkBoard()
 {
-	//Brick b;
-	//
-	//for(int i=0;i<4;i++)
-	//{
+	int count = 0;
+	for (int i = 3; i < length - 1; i++)
+	{
+		if (isFullRow(i))
+		{
+			dropRows(i);
+			drawBoard();
+			count++;
+		}
+	}
+	
+	return count;
+}
 
-	//	
-	//}
+bool Board::isFullRow(const int& row)
+{
+	for (int i = 1; i < width - 1; i++)
+		if (board[i][row] == ' ')
+			return false;
 	return true;
+}
+
+void Board::dropRows(const int& row)
+{
+	for (int i = 1; i < BOARD_WIDTH - 1; i++)
+		for (int j = row; j > 4; j--)
+			board[i][j] = board[i][j - 1];
 }

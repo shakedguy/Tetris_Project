@@ -22,3 +22,10 @@ void Box::drawBox()
 	for (Block& i : blocks)
 		i.drawBlock();
 }
+
+void Box::clearBox()
+{
+	for (Block& i : blocks)
+		i.createNewBlock();
+}
+
