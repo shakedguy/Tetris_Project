@@ -5,9 +5,9 @@
 
 void Board::drawBoard()
 {
-	for (int i = 0; i < BOARD_WIDTH; i++)
+	for (int i = 0; i < width; i++)
 	{
-		for (int j = 0; j < BOARD_LENGTH; j++)
+		for (int j = 0; j < length; j++)
 		{
 			gotoxy(pos.getX() + i, pos.getY() + j);
 			cout << board[i][j];
@@ -15,29 +15,67 @@ void Board::drawBoard()
 	}
 }
 
-Board::Board(Point _pos) : pos(_pos)
+Board::Board(Point _pos, unsigned int _len, unsigned int _width) : pos(_pos), length(_len), width(_width)
 {
-	for (int i = 0; i < BOARD_WIDTH; i++)
-	{
-		for (int j = 0; j < BOARD_LENGTH; j++)
-		{
+	allocateSize();
+	initialEmptyCells();
+}
 
-			if (j == BOARD_LENGTH - 1)
-			{
-				if (i > 0 && i < BOARD_WIDTH - 1)
-					board[i][j] = FLOOR;
-				else if (i == 0)
-					board[i][j] = DOWN_LEFT;
-				else
-					board[i][j] = DOWN_RIGHT;
-			}
-			else if ((i == 0 || i == BOARD_WIDTH - 1) && (j != BOARD_LENGTH - 1))
-				board[i][j] = WALL;
-			else
-				board[i][j] = EMPTY_CELL;
+void Board::allocateSize()
+{
+	board.resize(width);
+	for (int i = 0; i < width; i++)
+		board[i].resize(length);
+}
+void Board::initialEmptyCells()
+{
+	for (int i = 0; i < width; i++)
+		for (int j = 0; j < length; j++)
+			board[i][j] = EMPTY_CELL;
+	for (int i = 0; i < width; i++)
+	{
+		for (int j = 1; j <= 3; j++)
+		{
+			gotoxy(pos.getX() + i, pos.getY() - j);
+			cout << EMPTY_CELL;
 		}
 	}
 }
+
+
+
+void Board::setBottomBoundary()
+{
+	for (int i = 0; i < width; i++)
+		board[i][length - 1] = FLOOR;
+}
+void Board::setTopBoundary()
+{
+	for (int i = 0; i < width; i++)
+		board[i][0] = FLOOR;
+}
+void Board::setLeftBoundary()
+{
+	for (int i = 0; i < length; i++)
+		board[0][i] = WALL;
+}
+void Board::setRightBoundary()
+{
+	for (int i = 0; i < length; i++)
+		board[width - 1][i] = WALL;
+}
+void Board::setAllBoundaries()
+{
+	setTopBoundary();
+	setRightBoundary();
+	setLeftBoundary();
+	setBottomBoundary();
+	board[0][0] = UP_LEFT;
+	board[width - 1][0] = UP_RIGHT;
+	board[0][length - 1] = DOWN_LEFT;
+	board[width - 1][length - 1] = DOWN_RIGHT;
+}
+
 
 void Board::freezeBlock(Block& block)
 {
@@ -51,6 +89,22 @@ void Board::freezeBlock(Block& block)
 	}
 	//block.cleanBlock();
 	drawBoard();
+}
+
+void Board::resizeBoundaries(const unsigned& x, const unsigned& y)
+{
+	int tempW = width, tempL = length;
+	width = x;
+	length = y;
+	allocateSize();
+	if (width > tempW)
+		for (int i = tempW; i < width; i++)
+			for (int j = 0; j < length; j++)
+				board[i][j] = EMPTY_CELL;
+	if (length > tempL)
+		for (int i = 0; i < width; i++)
+			for (int j = tempL; j < length; j++)
+				board[i][j] = EMPTY_CELL;
 }
 
 

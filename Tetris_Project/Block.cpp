@@ -10,8 +10,8 @@ Block::Block(Point _pos) : pos(_pos), color(0), shape(SHAPE)
 
 Block& Block::operator=(const Block& b)
 {
-	//if(&b!=this)
-	//{
+	if(&b!=this)
+	{
 		for (int i = 0; i < BLOCK_MATRIX; i++)
 			for (int j = 0; j < BLOCK_MATRIX; j++)
 				figure[i][j] = figure[i][j];
@@ -20,7 +20,7 @@ Block& Block::operator=(const Block& b)
 		shape = b.shape;
 		shapeNum = b.shapeNum;
 		color = b.color;
-	//}
+	}
 	return *this;
 }
 
@@ -67,20 +67,18 @@ void Block::setFigure()
 
 void Block::set_Figure1()
 {
-	for (int i = 0; i < 4; i++) {
-		figure[i][2]++;
-	}
-
+	for (int i = 0; i < 4; i++)
+		figure[i][BLOCK_MATRIX - 1]++;
 }
 void Block::set_Figure2()
 {
 	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j < 2; j++)
+		for (int j = 2; j < 4; j++)
 		{
-			if (!(i + j))
+			if ((i + j) < 3)
 				figure[i][j]++;
-			else if (j)
+			else if (j > 2)
 				figure[i][j]++;
 		}
 	}
@@ -88,22 +86,22 @@ void Block::set_Figure2()
 
 void Block::set_Figure3()
 {
-	for (int i = 1; i < 4; i++)
-		for (int j = 0; j < 2; j++)
-			if ((!j && i > 2) || j)
+	for (int i = 0; i < 3; i++)
+		for (int j = 2; j < 4; j++)
+			if ((j == 2 && i > 1) || j != 2)
 				figure[i][j]++;
 }
 void Block::set_Figure4()
 {
-	for (int i = 1; i < 3; i++)
-		for (int j = 1; j < 3; j++)
+	for (int i = 0; i < 2; i++)
+		for (int j = 2; j < 4; j++)
 			figure[i][j]++;
 }
 void Block::set_Figure5()
 {
 	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 2; j++)
-			if ((j < 1 && i) || (j > 0 && i < 2))
+		for (int j = 2; j < 4; j++)
+			if ((j == 2 && i) || (j != 2 && i < 2))
 				figure[i][j]++;
 }
 void Block::set_Figure6()
@@ -121,6 +119,37 @@ void Block::set_Figure7()
 				figure[i][j]++;
 }
 
+void Block::arrangeMatrix()
+{
+	if (isEmptyRow(BLOCK_MATRIX-1))
+	{
+		moveFifureInMatrix();
+		arrangeMatrix();
+	}
+	
+}
+
+void Block::moveFifureInMatrix()
+{
+	for (int i = 0; i < BLOCK_MATRIX; i++)
+		for (int j = BLOCK_MATRIX - 1; j > 0; j--)
+			swap(figure[i][j], figure[i][j - 1]);
+
+	for (int i = 0; i < BLOCK_MATRIX; i++)
+		figure[i][0] = 0;
+}
+
+
+bool Block::isEmptyRow(const unsigned& row)
+{
+	for (int i = 0; i < BLOCK_MATRIX; i++)
+		if (figure[i][row])
+			return false;
+	return true;
+}
+
+
+
 void Block::move(int dir)
 {
 	cleanPrint();
@@ -135,8 +164,11 @@ void Block::move(int dir)
 	case DOWN:
 		pos.move(DOWN);
 		break;
-	case UP:
-		rotate();
+	case CLOCKWISE:
+		clockwiseRotate();
+		break;
+	case COUNTER_CLOCKWISE:
+		counterClockwiseRotate();
 		break;
 		
 		default:
@@ -157,7 +189,7 @@ void Block::drawBlock() {
 				gotoxy(pos.getX() + i, pos.getY() + j);
 				cout << shape;
 				//cout << figure[i][j];
-			}	
+			}
 		}
 	}
 	gotoxy(0, 0);
@@ -182,11 +214,20 @@ void Block::cleanPrint()
 	}
 }
 
-void Block::rotate()
+void Block::clockwiseRotate()
 {
 	transpose_Matrix();
-	reverse_Matrix();
+	reverseColumns();
+	arrangeMatrix();
 }
+
+void Block::counterClockwiseRotate()
+{
+	transpose_Matrix();
+	reverseRows();
+	arrangeMatrix();
+}
+
 
 void Block::copyFigure(const Block& b)
 {
@@ -207,7 +248,7 @@ void Block::transpose_Matrix()
 			swap(figure[i][j], figure[j][i]);
 }
 
-void Block::reverse_Matrix()
+void Block::reverseColumns()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++) {
 
@@ -217,6 +258,21 @@ void Block::reverse_Matrix()
 
 		while (start < end) {
 			swap(figure[i][start], figure[i][end]);
+			start++;
+			end--;
+		}
+	}
+}
+void Block::reverseRows()
+{
+	for (int i = 0; i < BLOCK_MATRIX; i++) {
+
+		int start = 0;
+		int end = BLOCK_MATRIX - 1;
+
+
+		while (start < end) {
+			swap(figure[start][i], figure[end][i]);
 			start++;
 			end--;
 		}

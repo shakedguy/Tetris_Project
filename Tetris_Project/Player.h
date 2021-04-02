@@ -18,7 +18,7 @@ class Player
 	string name;
 	int playerNum;
 	int direction;
-	char arrowKeys[4];
+	char arrowKeys[5];
 	Point boardPos;
 	Point boxPos;
 	Board board;
@@ -26,10 +26,13 @@ class Player
 	Block block;
 	int score;
 
+private:
+	void setGameBoundaries();
+
 public:
 	Player() : Player(0, { 0,0 }, { 0,0 }) {}
 	Player(int _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum), boardPos(_boardPos), boxPos(_boxPos),
-		board(boardPos), box(boxPos), direction(1)
+		board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(1)
 	{
 		//cout << "Please enter player " << (playerNum + 1) << " name: ";
 		//cin >> name;
@@ -39,10 +42,10 @@ public:
 			block.setPos({ LEFT_CURRENT_BLOCK });
 		else
 			block.setPos({ RIGHT_CURRENT_BLOCK });
-		//block.setFigure();
 		score = 0;
-		Sleep(100);
+		setGameBoundaries();
 	}
+	~Player() = default;
 	void setName();
 	void printScore();
 	void drawBoard() { board.drawBoard(); box.drawBox(); }
@@ -55,6 +58,8 @@ public:
 	bool check_Left();
 	bool check_Right();
 	bool check_Down();
+	bool isLost();
+	void changeBlockPos(const Point& pos);
 };
 
 #endif

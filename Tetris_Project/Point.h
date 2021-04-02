@@ -21,15 +21,16 @@ public:
 	Point(int _x, int _y, char _shape) : x(_x), y(_y), shape(_shape) {}
 	Point(const Point& _point) : x(_point.x), y(_point.y), shape(_point.shape) {}
 	Point& operator=(const Point& p);
-	void draw() { gotoxy(x, y); cout << shape << endl; }
+	~Point() = default;
+	void draw() const { gotoxy(x, y); cout << shape << endl; }
 	void draw(char ch);
 	void move(int direction);
 	void setPos(int _x, int _y) { x = _x; y = _y; }
 	void setPos(Point& _p) { x = _p.getX(); y = _p.getY(); }
 	void setShape(char _shape) { shape = _shape; }
-	char getShape() { return shape; }
-	const int& getX() { return x; }
-	const int& getY() { return y; }
+	char getShape()	const { return shape; }
+	const int& getX() const { return x; }
+	const int& getY() const { return y; }
 };
 
 #endif

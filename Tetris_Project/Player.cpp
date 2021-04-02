@@ -7,6 +7,36 @@ void Player::setName()
 	//cout << "Please enter player " << playerNum << " name: ";
 	//cin >> name;
 }
+
+void Player::changeBlockPos(const Point& pos)
+{
+	block.pos = { pos };
+}
+
+
+void Player::setGameBoundaries()
+{
+	board.setBottomBoundary();
+	board.setLeftBoundary();
+	board.setRightBoundary();
+	board.board[0][BOARD_LENGTH - 1] = DOWN_LEFT;
+	board.board[BOARD_WIDTH - 1][BOARD_LENGTH - 1] = DOWN_RIGHT;
+	for(int i=0;i<3;i++)
+	{
+		board.board[0][i] = EMPTY_CELL;
+		board.board[board.width - 1][i] = EMPTY_CELL;
+	}
+}
+
+bool Player::isLost()
+{
+	for (int i = 0; i < board.width; i++)
+		if (board.board[i][2] != ' ')
+			return true;
+	return false;
+}
+
+
 void Player::printScore()
 {
 	Point pos;
@@ -27,6 +57,7 @@ void Player::setPlayerKeys(const char* keys) {
 	arrowKeys[1] = keys[1];
 	arrowKeys[2] = keys[2];
 	arrowKeys[3] = keys[3];
+	arrowKeys[4] = keys[4];
 }
 
 void Player::move()
@@ -44,7 +75,7 @@ void Player::move()
 
 int Player::getDirection(char key)
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if (key == arrowKeys[i])
 			return i;

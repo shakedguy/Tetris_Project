@@ -9,15 +9,19 @@
 #include <iostream>
 #include "Game.h"
 
+#include "Menu.h"
+
 
 using namespace std;
+
 
 
 int main() {
 
 	Game game;
-	game.init();
-	game.run();
-	gotoxy(23, 23);
-	cout << endl << endl;
+	game.menuPage();
+	gotoxy(15, 5);
+	cout << "Hope you enjoyed :), see you next time!" << endl << endl;
 }
+
+

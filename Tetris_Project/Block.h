@@ -33,13 +33,19 @@ private:
 	void move_Left();
 	void move_Right();
 	void move_Down();
-	void rotate();
+	void clockwiseRotate();
+	void counterClockwiseRotate();
 	void transpose_Matrix();
-	void reverse_Matrix();
+	void reverseColumns();
+	void reverseRows();
+	bool isEmptyRow(const unsigned int& row);
+	void moveFifureInMatrix();
+
 public:
 	Block() : Block({0, 0}){}
 	Block(Point _pos);
 	Block& operator=(const Block& b);
+	~Block() = default;
 	void createNewBlock();
 	void setPos(int x, int y) { pos.setPos(x, y); }
 	void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
@@ -51,6 +57,8 @@ public:
 	void setFigure();
 	void cleanPrint();
 	void copyFigure(const Block& b);
+	void arrangeMatrix();
+	
 };
 
 #endif
