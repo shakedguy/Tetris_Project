@@ -13,6 +13,7 @@ class Menu
 
 private:
 	void printMenuOptions();
+	void printMenuColor(const unsigned short int& k);
 public:
 	Menu() :Menu({ 0,0 }) {}
 	Menu(Point _pos);

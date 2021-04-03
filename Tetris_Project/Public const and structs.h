@@ -24,7 +24,8 @@ using namespace std;
 #define BOARD_WIDTH 40
 #define BOX_LENGTH 12
 #define BOX_WIDTH 11
-#define SHAPE 219
+#define SHAPE 178
+#define SHAPE_AFTER_FREEZE 219
 #define EMPTY_CELL ' '
 #define PLAYER_ONE_KEYS "wzads"
 #define PLAYER_TOW_KEYS "imjlk"

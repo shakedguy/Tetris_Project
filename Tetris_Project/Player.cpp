@@ -51,11 +51,13 @@ bool Player::isLost()
 
 void Player::printScore()
 {
+	setTextColor(LIGHTCYAN);
 	if (playerNum == 1)
 		gotoxy(LEFT_SCORE_POS);
 	else
 		gotoxy(RIGHT_SCORE_POS);
 	cout << name << "'s score: " << score;
+	setTextColor(WHITE);
 }
 void Player::setPlayerKeys(const char* keys) {
 

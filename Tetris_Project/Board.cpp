@@ -123,6 +123,7 @@ void Board::freezeBlock(Block& block)
 				board[x = block.pos.getX() + i - pos.getX()][y = block.pos.getY() + j - pos.getY()] = block.shape;		
 		}
 	}
+	block.shape = SHAPE_AFTER_FREEZE;
 	blocks.push_back(block);
 	drawBlocksInBoard();
 }
