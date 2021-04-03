@@ -13,8 +13,31 @@ void Board::drawBoard()
 			cout << board[i][j];
 		}
 	}
+	//if (blocks.size())
+	//	drawBlocksInBoard();
 }
 
+void Board::drawBlocksInBoard()
+{
+	for (int i = 0; i < blocks.size(); i++)
+		blocks[i].drawBlock();
+}
+
+
+void Board::drawBoundaries()
+{
+	for (int i = 0; i < width; i++)
+	{
+		for (int j = 0; j < length; j++)
+		{
+			if (!i || i == width - 1 || j == length - 1)
+			{
+				gotoxy(pos.getX() + i, pos.getY() + j);
+				cout << board[i][j];
+			}
+		}
+	}
+}
 Board::Board(Point _pos, unsigned int _len, unsigned int _width) : pos(_pos), length(_len), width(_width)
 {
 	allocateSize();
@@ -91,16 +114,17 @@ void Board::setAllBoundaries()
 
 void Board::freezeBlock(Block& block)
 {
+	int x, y;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
 			if (block.figure[i][j])
-				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = block.shape;
+				board[x = block.pos.getX() + i - pos.getX()][y = block.pos.getY() + j - pos.getY()] = block.shape;		
 		}
 	}
-	//block.cleanBlock();
-	drawBoard();
+	blocks.push_back(block);
+	drawBlocksInBoard();
 }
 
 void Board::resizeBoundaries(const unsigned& x, const unsigned& y)

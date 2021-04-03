@@ -17,6 +17,7 @@ class Game
 {	
 	enum { ESC = 27 };
 	Player players[2];
+	unsigned short int gameNumber = 0;
 
 private:
 	void returnDown() { players[0].setDirection(DOWN); players[1].setDirection(DOWN); }
@@ -24,6 +25,7 @@ private:
 	void printScores() { players[0].printScore(); players[1].printScore(); }
 	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
 	bool winningMassage();
+	bool resumeGame();
 public:
 	Game(): players{{1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
 	~Game() = default;

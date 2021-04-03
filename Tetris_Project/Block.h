@@ -7,6 +7,7 @@
 #include <iostream>
 #include <random>
 #include "Point.h"
+#include <array>
 #include "Public const and structs.h"
 
 using namespace std;
@@ -14,14 +15,11 @@ using namespace std;
 
 struct Block
 {
-	short int figure[4][4] = { {0,0,0,0},
-								{0,0,0,0},
-								{0,0,0,0},
-								{0,0,0,0} };
+	array<array<unsigned short int, BLOCK_MATRIX>, BLOCK_MATRIX> figure;
 	Point pos;
 	char shape;
 	int shapeNum;
-	int color;
+	Color color;
 private:
 	void set_Figure1();
 	void set_Figure2();

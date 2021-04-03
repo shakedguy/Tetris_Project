@@ -11,7 +11,7 @@ Menu::Menu(Point _pos) : pos(_pos)
 }
 void Menu::drawMenu()
 {
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < menu.size(); i++)
 		menu[i].drawBoard();
 	printMenuOptions();
 }

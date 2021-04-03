@@ -9,7 +9,7 @@
 class Menu
 {
 	Point pos;
-	Board menu[3];
+	array<Board, BOXES_IN_MENU> menu;
 
 private:
 	void printMenuOptions();

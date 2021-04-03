@@ -16,19 +16,46 @@ void Game::menuPage()
 		init();
 		break;
 	case 2:
-		players[0].changeBlockPos({ LEFT_CURRENT_BLOCK });
-		players[1].changeBlockPos({ RIGHT_CURRENT_BLOCK });
-		drawBoards();
-		run();
+		if (resumeGame())
+		{
+			players[0].changeBlockPos({ LEFT_CURRENT_BLOCK });
+			players[1].changeBlockPos({ RIGHT_CURRENT_BLOCK });
+			drawBoards();
+			run();
+		}
+		else
+			menuPage();
 		break;
 	case 3:
 		system("cls");
 		break;
 	}
 }
+bool Game::resumeGame()
+{
+	if (players[0].isLost() || players[1].isLost())
+	{
+		system("cls");
+		gotoxy(WINNING_MASSAGE);
+		cout << "The game ended, please try again" << endl;
+		Sleep(1500);
+		return false;
+	}
+	if(!gameNumber)
+	{
+		system("cls");
+		gotoxy(WINNING_MASSAGE);
+		cout << "There is no open game" << endl;
+		Sleep(1500);
+		return false;
+	}
+	return true;
+}
+
 
 void Game::init()
 {
+	gameNumber++;
 	drawBoards();
 	players[0].setPlayerKeys(PLAYER_ONE_KEYS);
 	players[1].setPlayerKeys(PLAYER_TOW_KEYS);
@@ -55,6 +82,7 @@ void Game::run()
 	} while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
 	if (winningMassage())
 		system("cls");
+	gotoxy(WINNING_MASSAGE);
 	menuPage();
 	setTextColor(Color::WHITE);
 	clear_screen();

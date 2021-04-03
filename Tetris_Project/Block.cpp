@@ -1,10 +1,12 @@
 ﻿#include "Block.h"
 
-Block::Block(Point _pos) : pos(_pos), color(0), shape(SHAPE)
+Block::Block(Point _pos) : pos(_pos), shape(SHAPE)
 {
 	random_device rnd;
-	const uniform_int_distribution<> range(1, 7);
-	shapeNum = (range(rnd));
+	const uniform_int_distribution<> shapeRange(1, 7);
+	const uniform_int_distribution<> colorRange(1, 14);
+	shapeNum = (shapeRange(rnd));
+	color = (Color)colorRange(rnd);
 	setFigure();
 }
 
@@ -12,24 +14,40 @@ Block& Block::operator=(const Block& b)
 {
 	if(&b!=this)
 	{
-		for (int i = 0; i < BLOCK_MATRIX; i++)
-			for (int j = 0; j < BLOCK_MATRIX; j++)
+		for (int i = 0; i < figure.size(); i++)
+			for (int j = 0; j < figure[i].size(); j++)
 				figure[i][j] = figure[i][j];
 
-		pos = b.pos;
+		//pos = b.pos;
 		shape = b.shape;
+		color = b.color;
 		shapeNum = b.shapeNum;
 		color = b.color;
 	}
 	return *this;
 }
 
+void Block::copyFigure(const Block& b)
+{
+	shapeNum = b.shapeNum;
+	color = b.color;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			figure[i][j] = b.figure[i][j];
+		}
+	}
+}
+
 void Block::createNewBlock()
 {
 	cleanBlock();
 	random_device rnd;
-	const uniform_int_distribution<> range(1, 7);
-	shapeNum = (range(rnd));
+	const uniform_int_distribution<> shapeRange(1, 7);
+	const uniform_int_distribution<> colorRange(1, 14);
+	shapeNum = (shapeRange(rnd));
+	color = (Color)colorRange(rnd);
 	setFigure();
 }
 
@@ -67,14 +85,14 @@ void Block::setFigure()
 
 void Block::set_Figure1()
 {
-	for (int i = 0; i < 4; i++)
-		figure[i][BLOCK_MATRIX - 1]++;
+	for (int i = 0; i < figure.size(); i++)
+		figure[i][figure.size() - 1]++;
 }
 void Block::set_Figure2()
 {
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < figure.size() - 1; i++)
 	{
-		for (int j = 2; j < 4; j++)
+		for (int j = 2; j < figure[i].size(); j++)
 		{
 			if ((i + j) < 3)
 				figure[i][j]++;
@@ -181,6 +199,7 @@ void Block::move(int dir)
 
 void Block::drawBlock() {
 
+	setTextColor(color);
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
@@ -189,11 +208,10 @@ void Block::drawBlock() {
 			{
 				gotoxy(pos.getX() + i, pos.getY() + j);
 				cout << shape;
-				//cout << figure[i][j];
 			}
 		}
 	}
-	//gotoxy(0, 0);
+	setTextColor(WHITE);
 }
 
 void Block::cleanBlock()
@@ -227,19 +245,6 @@ void Block::counterClockwiseRotate()
 	transpose_Matrix();
 	reverseRows();
 	arrangeMatrix();
-}
-
-
-void Block::copyFigure(const Block& b)
-{
-	shapeNum = b.shapeNum;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			figure[i][j] = b.figure[i][j];
-		}
-	}
 }
 
 

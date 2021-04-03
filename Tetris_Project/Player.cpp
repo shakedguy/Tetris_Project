@@ -26,9 +26,6 @@ void Player::clearGame()
 	setName();
 }
 
-
-
-
 void Player::setGameBoundaries()
 {
 	board.setBottomBoundary();
@@ -36,7 +33,7 @@ void Player::setGameBoundaries()
 	board.setRightBoundary();
 	board.board[0][BOARD_LENGTH - 1] = DOWN_LEFT;
 	board.board[BOARD_WIDTH - 1][BOARD_LENGTH - 1] = DOWN_RIGHT;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 7; i++)
 	{
 		board.board[0][i] = EMPTY_CELL;
 		board.board[board.width - 1][i] = EMPTY_CELL;
@@ -46,7 +43,7 @@ void Player::setGameBoundaries()
 bool Player::isLost()
 {
 	for (int i = 0; i < board.width; i++)
-		if (board.board[i][2] != ' ')
+		if (board.board[i][6] != ' ')
 			return true;
 	return false;
 }
@@ -82,6 +79,7 @@ void Player::move()
 		box.drawBox();
 		block.drawBlock();
 	}
+	board.drawBoundaries();
 	int num = board.checkBoard();
 	score += (num * num * POINTS_FOR_FULL_ROW);
 }
@@ -109,12 +107,12 @@ int Player::getDirection(char key)
 
 void Player::getNewBlock()
 {
-	block.copyFigure(box.blocks[0]);
+	block = box.blocks[0];
 	if (playerNum == 1)
 		block.setPos(LEFT_CURRENT_BLOCK );
 	else
 		block.setPos(RIGHT_CURRENT_BLOCK );
-	box.blocks[0].copyFigure(box.blocks[1]);
+	box.blocks[0] = box.blocks[1];
 	box.blocks[1].createNewBlock();
 }
 
