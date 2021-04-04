@@ -13,8 +13,6 @@ void Board::drawBoard()
 			cout << board[i][j];
 		}
 	}
-	//if (blocks.size())
-	//	drawBlocksInBoard();
 }
 
 void Board::drawBlocksInBoard()
@@ -125,7 +123,6 @@ void Board::freezeBlock(Block& block)
 	}
 	block.shape = SHAPE_AFTER_FREEZE;
 	blocks.push_back(block);
-	drawBlocksInBoard();
 }
 
 void Board::resizeBoundaries(const unsigned& x, const unsigned& y)

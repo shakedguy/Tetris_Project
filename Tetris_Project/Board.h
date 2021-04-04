@@ -24,7 +24,7 @@ struct Board
 private:
 	bool isFullRow(const int& row);
 	void dropRows(const int& row);
-	void drawBlocksInBoard();
+	
 	
 public:
 	Board() : Board({ 0,0 }, 0, 0) {}
@@ -47,6 +47,7 @@ public:
 	int checkBoard();
 	void cleanBoard();
 	void drawBoundaries();
+	void drawBlocksInBoard();
 };
 
 #endif

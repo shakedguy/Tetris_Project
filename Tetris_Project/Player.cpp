@@ -81,6 +81,7 @@ void Player::move()
 		box.drawBox();
 		block.drawBlock();
 	}
+	board.drawBlocksInBoard();
 	board.drawBoundaries();
 	int num = board.checkBoard();
 	score += (num * num * POINTS_FOR_FULL_ROW);
@@ -114,7 +115,9 @@ void Player::getNewBlock()
 		block.setPos(LEFT_CURRENT_BLOCK );
 	else
 		block.setPos(RIGHT_CURRENT_BLOCK );
+	Point temp = box.blocks[0].pos;
 	box.blocks[0] = box.blocks[1];
+	box.blocks[0].pos = temp;
 	box.blocks[1].createNewBlock();
 }
 

@@ -8,11 +8,11 @@ Box::Box(Point _pos) : pos(_pos), box({ pos }, BOX_LENGTH,BOX_WIDTH)
 
 void Box::setBricks()
 {
-	int y = 0;
+	int y = 3;
 	for (int i = 0; i < 2; i++)
 	{
 		blocks[i].setPos({(pos.getX() + 4), (pos.getY() + y)});
-		y += 5;
+		y += 4;
 	}
 }
 

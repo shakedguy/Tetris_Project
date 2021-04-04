@@ -16,9 +16,9 @@ Block& Block::operator=(const Block& b)
 	{
 		for (int i = 0; i < figure.size(); i++)
 			for (int j = 0; j < figure[i].size(); j++)
-				figure[i][j] = figure[i][j];
+				figure[i][j] = b.figure[i][j];
 
-		//pos = b.pos;
+		pos = b.pos;
 		shape = b.shape;
 		color = b.color;
 		shapeNum = b.shapeNum;
@@ -31,13 +31,9 @@ void Block::copyFigure(const Block& b)
 {
 	shapeNum = b.shapeNum;
 	color = b.color;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
+	for (int i = 0; i < figure.size(); i++)
+		for (int j = 0; j < figure[i].size(); j++)
 			figure[i][j] = b.figure[i][j];
-		}
-	}
 }
 
 void Block::createNewBlock()
@@ -86,17 +82,17 @@ void Block::setFigure()
 void Block::set_Figure1()
 {
 	for (int i = 0; i < figure.size(); i++)
-		figure[i][figure.size() - 1]++;
+		figure[i][0]++;
 }
 void Block::set_Figure2()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
 	{
-		for (int j = 2; j < figure[i].size(); j++)
+		for (int j = 0; j < figure[i].size() - 2; j++)
 		{
-			if ((i + j) < 3)
+			if (!(i + j))
 				figure[i][j]++;
-			else if (j > 2)
+			else if (j)
 				figure[i][j]++;
 		}
 	}
@@ -104,36 +100,36 @@ void Block::set_Figure2()
 
 void Block::set_Figure3()
 {
-	for (int i = 0; i < 3; i++)
-		for (int j = 2; j < 4; j++)
-			if ((j == 2 && i > 1) || j != 2)
+	for (int i = 0; i < figure.size() - 1; i++)
+		for (int j = 0; j < figure[i].size() - 2; j++)
+			if ((!j && i > 1) || j)
 				figure[i][j]++;
 }
 void Block::set_Figure4()
 {
-	for (int i = 0; i < 2; i++)
-		for (int j = 2; j < 4; j++)
+	for (int i = 0; i < figure.size() - 2; i++)
+		for (int j = 0; j < figure[i].size() - 2; j++)
 			figure[i][j]++;
 }
 void Block::set_Figure5()
 {
-	for (int i = 0; i < 3; i++)
-		for (int j = 2; j < 4; j++)
-			if ((j == 2 && i) || (j != 2 && i < 2))
+	for (int i = 0; i < figure.size() - 1; i++)
+		for (int j = 0; j < figure[i].size() - 2; j++)
+			if ((!j && i) || (j && i < 2))
 				figure[i][j]++;
 }
 void Block::set_Figure6()
 {
-	for (int i = 0; i < 3; i++)
-		for (int j = 2; j < 4; j++)
-			if ((j < 3 && i == 1) || j > 2)
+	for (int i = 0; i < figure.size() - 1; i++)
+		for (int j = 0; j < figure[i].size() - 2; j++)
+			if ((!j && i == 1) || j)
 				figure[i][j]++;
 }
 void Block::set_Figure7()
 {
-	for (int i = 0; i < 3; i++)
-		for (int j = 2; j < 4; j++)
-			if ((j < 3 && i < 2) || (j > 2 && i))
+	for (int i = 0; i < figure.size() - 1; i++)
+		for (int j = 0; j < figure[i].size() - 2; j++)
+			if ((!j && i < 2) || (j && i))
 				figure[i][j]++;
 }
 
@@ -208,6 +204,7 @@ void Block::drawBlock() {
 			{
 				gotoxy(pos.getX() + i, pos.getY() + j);
 				cout << shape;
+				//cout << figure[i][j];
 			}
 		}
 	}
