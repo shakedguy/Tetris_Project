@@ -4,6 +4,10 @@
 #ifndef _CONSTS_STRUCTS_H_
 #define _CONSTS_STRUCTS_H_
 
+
+#define ___COLORS___
+
+
 #include <iostream>
 
 using namespace std;
@@ -13,7 +17,7 @@ using namespace std;
 #define LEFT_SCORE_POS 0,3 //(x,y) location of player 1 score
 #define RIGHT_BOARD_POS 60,0 //(x,y) location of player 2 board
 #define RIGHT_BOX_POS 105,13 //(x,y) location of player 2 box
-#define RIGHT_SCORE_POS 105,3 //(x,y) location of player 2 score
+#define RIGHT_SCORE_POS 103,3 //(x,y) location of player 2 score
 #define LEFT_CURRENT_BLOCK 35,2
 #define RIGHT_CURRENT_BLOCK 80,2
 #define MENU_BOARD_POS 35,1
@@ -24,8 +28,6 @@ using namespace std;
 #define BOARD_WIDTH 40
 #define BOX_LENGTH 12
 #define BOX_WIDTH 11
-#define SHAPE 178
-#define SHAPE_AFTER_FREEZE 219
 #define EMPTY_CELL ' '
 #define PLAYER_ONE_KEYS "wzads"
 #define PLAYER_TOW_KEYS "imjlk"
@@ -36,9 +38,13 @@ using namespace std;
 #define EXIT_GAME_INPUT 4
 #define POINTS_FOR_FULL_ROW 100
 #define BOXES_IN_MENU 4
+#define BLOCKS_IN_BOX 2
+#define BLOCKS_IN_MENU 12
 
-enum { WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200, DOWN_RIGHT = 188 };
-enum one { UP, DOWN, LEFT, RIGHT, COUNTER_CLOCKWISE, DROP, CLOCKWISE = 0 };
+enum Boundaries{ WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200, DOWN_RIGHT = 188 };
+enum Moves { UP, DOWN, LEFT, RIGHT };
+enum Buttons { CLOCKWISE, COUNTER_CLOCKWISE = 4, DROP = 5, ESC = 27 };
+enum Shapes { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
 
 
 

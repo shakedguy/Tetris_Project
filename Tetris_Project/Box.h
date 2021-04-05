@@ -17,7 +17,7 @@ struct Box
 {
 	Point pos;
 	Board box;
-	Block blocks[2];
+	array<Block,BLOCKS_IN_BOX> blocks;
 
 private:
 	void drawWalls(int x, int y);

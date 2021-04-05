@@ -32,16 +32,7 @@ private:
 
 public:
 	Player() : Player(0, { 0,0 }, { 0,0 }) {}
-	Player(int _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum), boardPos(_boardPos), boxPos(_boxPos),
-		board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(1)
-	{
-		if (playerNum == 1)
-			block.setPos({ LEFT_CURRENT_BLOCK });
-		else
-			block.setPos({ RIGHT_CURRENT_BLOCK });
-		score = 0;
-		setGameBoundaries();
-	}
+	Player(int _playerNum, Point _boardPos, Point _boxPos);
 	~Player() = default;
 	void setName();
 	void printScore();
@@ -60,7 +51,8 @@ public:
 	void clearGame();
 	string getName()const { return name; }
 	bool isDown(const char& key);
-	void getDownKey(char& key);
+	char getKey(const int& dir);
+	unsigned int getScore()const { return score; }
 };
 
 #endif

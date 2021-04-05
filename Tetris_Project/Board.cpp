@@ -2,6 +2,13 @@
 
 #include "io_utils.h"
 
+Board::~Board()
+{
+	for (int i = 0; i < board.size(); i++)
+		board[i].clear();
+	board.clear();
+	blocks.clear();
+}
 
 void Board::drawBoard()
 {
@@ -47,12 +54,7 @@ void Board::cleanBoard()
 	for(int i=1;i<width-1;i++)
 		for (int j = 0; j < length - 1; j++)
 			board[i][j] = EMPTY_CELL;
-	if(blocks.size())
-	{
-		for (int i = 0; i < blocks.size(); i++)
-			blocks[i].cleanBlock();
-		blocks.erase(blocks.begin());
-	}
+	blocks.clear();
 }
 
 

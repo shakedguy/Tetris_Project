@@ -31,7 +31,7 @@ public:
 	Board(Point _pos) : Board({ _pos }, BOARD_LENGTH, BOARD_WIDTH) {}
 	Board(unsigned int _len, unsigned int _width) :Board({ 0,0 }, _len, _width) {}
 	Board(Point _pos, unsigned int _len, unsigned int _width);
-	~Board() = default;
+	~Board();
 	void setPos(int x, int y) { setPos({ x,y }); }
 	void setPos(Point _pos) { pos = _pos; }
 	void setTopBoundary();

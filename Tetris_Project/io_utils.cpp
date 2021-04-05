@@ -24,7 +24,7 @@ void gotoxy(int x, int y)
 }
 
 void setTextColor(Color colorToSet) {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (int)colorToSet);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), static_cast<int>(colorToSet));
 }
 
 void hideCursor()

@@ -38,6 +38,7 @@ private:
 	void reverseRows();
 	bool isEmptyRow(const unsigned int& row);
 	void moveFifureInMatrix();
+	void arrangeMatrix();
 
 public:
 	Block() : Block({0, 0}){}
@@ -45,17 +46,16 @@ public:
 	Block& operator=(const Block& b);
 	~Block() = default;
 	void createNewBlock();
-	void setPos(int x, int y) { pos.setPos(x, y); }
-	void setPos(Point _pos) { pos.setPos(_pos.getX(), _pos.getY()); }
+	void setPos(const int& x, const int& y) { pos.setPos(x, y); }
+	void setPos(const Point& _pos);
 	void setShape(char _shape) { shape = _shape; }
 	void drawBlock();
-	char getShape() { return shape; }
+	char getShape()const { return shape; }
 	void move(int dir);
 	void cleanBlock();
 	void setFigure();
 	void cleanPrint();
-	void copyFigure(const Block& b);
-	void arrangeMatrix();
+	
 	
 };
 

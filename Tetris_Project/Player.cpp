@@ -1,12 +1,26 @@
-﻿#include "Player.h"
+﻿
+#include "Player.h"
 
+#include "Game.h"
+
+Player::Player(int _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum),
+boardPos(_boardPos), boxPos(_boxPos), board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(1)
+{
+	if (playerNum == 1)
+		block.pos = { LEFT_CURRENT_BLOCK };
+	else
+		block.pos = { RIGHT_CURRENT_BLOCK };
+	score = 0;
+	setGameBoundaries();
+	
+}
 
 void Player::setName()
 {
 	gotoxy(WINNING_MASSAGE);
 	cout << "Please enter player " << playerNum << " name: ";
 	cin >> name;
-	system("cls");
+	clear_screen();
 }
 
 void Player::changeBlockPos(const Point& pos)
@@ -51,13 +65,24 @@ bool Player::isLost()
 
 void Player::printScore()
 {
+#ifdef ___COLORS___
 	setTextColor(LIGHTCYAN);
+#endif
+	
+	Point pos;
 	if (playerNum == 1)
-		gotoxy(LEFT_SCORE_POS);
+		pos = { LEFT_SCORE_POS };
 	else
-		gotoxy(RIGHT_SCORE_POS);
-	cout << name << "'s score: " << score;
+		pos = { RIGHT_SCORE_POS };
+	gotoxy(pos.getX(), pos.getY());
+	cout << name << "'s score: ";
+	gotoxy(pos.getX() + 5, pos.getY() + 1);
+	cout << score;
+	
+#ifdef ___COLORS___
 	setTextColor(WHITE);
+#endif
+
 }
 void Player::setPlayerKeys(const char* keys) {
 
@@ -98,12 +123,10 @@ int Player::getDirection(char key)
 	for (int i = 0; i < 5; i++)
 	{
 		if (key == arrowKeys[i] || key == (arrowKeys[i] - 32))
-		{
 			if (i == 1)
 				return DROP;
 			else
 				return i;
-		}
 	}
 	return -1;
 }
@@ -115,9 +138,13 @@ bool Player::isDown(const char& key)
 	return false;
 }
 
-void Player::getDownKey(char& key)
+char Player::getKey(const int& dir)
 {
-	key = 0;
+	if (dir == DROP)
+		return arrowKeys[DOWN];
+	else if (dir == DOWN)
+		return 0;
+	return arrowKeys[dir];
 }
 
 
@@ -126,9 +153,9 @@ void Player::getNewBlock()
 {
 	block = box.blocks[0];
 	if (playerNum == 1)
-		block.setPos(LEFT_CURRENT_BLOCK );
+		block.pos = { LEFT_CURRENT_BLOCK };
 	else
-		block.setPos(RIGHT_CURRENT_BLOCK );
+		block.pos = { RIGHT_CURRENT_BLOCK };
 	Point temp = box.blocks[0].pos;
 	box.blocks[0] = box.blocks[1];
 	box.blocks[0].pos = temp;

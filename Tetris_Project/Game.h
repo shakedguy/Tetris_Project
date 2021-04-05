@@ -15,7 +15,6 @@ using namespace std;
 
 class Game
 {	
-	enum { ESC = 27 };
 	Player players[2];
 	unsigned short int gameNumber = 0;
 

@@ -3,9 +3,6 @@
 ***************************************/
 #include "Game.h"
 
-#include <list>
-
-
 #include "Menu.h"
 
 void Game::menuPage()
@@ -111,22 +108,23 @@ void Game::run()
 	}
 	while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
 	if (winningMassage())
-		system("cls");
-	gotoxy(WINNING_MASSAGE);
+		clear_screen();
 	menuPage();
+	
+#ifndef  ___COLOR___
+#define ___COLOR___
 	setTextColor(WHITE);
+#endif
 	clear_screen();
 }
 
 char Game::avoidMultipleHits()
 {
 	char key = 0;
-	if (_kbhit())
-		key = _getch();
 	if(_kbhit())
 	{
 		key = _getch();
-		for (int i = 0; i < 20 && key != ESC; i++)
+		for (int i = 0; i < 10 && key != ESC; i++)
 			if (_kbhit())
 				key = _getch();
 	}
@@ -141,25 +139,27 @@ void Game::avoidMultipleMoves(char& key, const char& temp, const char& temp2)
 			players[0].setDirection(DOWN);
 		else if (players[1].getDirection(key) != -1 && !players[1].isDown(key))
 			players[1].setDirection(DOWN);
-		players[0].getDownKey(key);
+		key = players[0].getKey(DOWN);
 	}
 }
 
 
 bool Game::winningMassage()
 {
-	system("cls");
+	clear_screen();
 	gotoxy(WINNING_MASSAGE);
 	if (players[0].isLost())
 	{
-		cout << "Congratulations " << players[1].getName() << ", you won !" << endl;
-		Sleep(3000);
+		cout << "Congratulations " << players[1].getName() << ", you won with "
+		<< players[1].getScore() << " points !" << endl;
+		Sleep(1500);
 		return true;
 	}
 	if (players[1].isLost())
 	{
-		cout << "Congratulations " << players[0].getName() << ", you won !" << endl;
-		Sleep(3000);
+		cout << "Congratulations " << players[0].getName() << ", you won with"
+		<< players[0].getScore() << " points !" << endl;
+		Sleep(1500);
 		return true;
 	}
 	return false;
