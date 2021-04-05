@@ -26,6 +26,8 @@ private:
 	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
 	bool winningMassage();
 	bool resumeGame();
+	void avoidMultipleMoves(char& key, const char& temp1, const char& temp2);
+	char avoidMultipleHits();
 public:
 	Game(): players{{1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
 	~Game() = default;

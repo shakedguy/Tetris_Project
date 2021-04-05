@@ -108,6 +108,20 @@ int Player::getDirection(char key)
 	return -1;
 }
 
+bool Player::isDown(const char& key)
+{
+	if (arrowKeys[DOWN] == key)
+		return true;
+	return false;
+}
+
+void Player::getDownKey(char& key)
+{
+	key = 0;
+}
+
+
+
 void Player::getNewBlock()
 {
 	block = box.blocks[0];
@@ -152,7 +166,8 @@ bool Player::check_Down()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			if (block.figure[i][j] && (board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' '))
+			if (block.figure[i][j] &&
+				(board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' '))
 				return false;
 		}
 	}		
@@ -165,7 +180,8 @@ bool Player::check_Left()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			if (block.figure[i][j] && (board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
+			if (block.figure[i][j] &&
+				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
 				return false;
 		}
 	}
@@ -178,7 +194,8 @@ bool Player::check_Right()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			if (block.figure[i][j] && (board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
+			if (block.figure[i][j] &&
+				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
 				return false;
 		}
 	}

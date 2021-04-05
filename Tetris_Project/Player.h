@@ -18,7 +18,7 @@ class Player
 	string name;
 	int playerNum;
 	int direction;
-	char arrowKeys[5];
+	array<char, 5> arrowKeys;
 	Point boardPos;
 	Point boxPos;
 	Board board;
@@ -49,7 +49,7 @@ public:
 	void setPlayerKeys(const char* keys);
 	void move();
 	int getDirection(char key);
-	void setDirection(int key) { direction = key; }
+	void setDirection(const int& dir) { direction = dir; }
 	bool checkStep();
 	void getNewBlock();
 	bool check_Left();
@@ -59,6 +59,8 @@ public:
 	void changeBlockPos(const Point& pos);
 	void clearGame();
 	string getName()const { return name; }
+	bool isDown(const char& key);
+	void getDownKey(char& key);
 };
 
 #endif

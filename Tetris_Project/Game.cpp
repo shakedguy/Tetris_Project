@@ -3,11 +3,14 @@
 ***************************************/
 #include "Game.h"
 
+#include <list>
+
+
 #include "Menu.h"
 
 void Game::menuPage()
 {
-	Menu m({ MENU_BOARD_POS });
+	Menu m({MENU_BOARD_POS});
 	m.drawMenu();
 	switch (m.getOption())
 	{
@@ -18,8 +21,8 @@ void Game::menuPage()
 	case 2:
 		if (resumeGame())
 		{
-			players[0].changeBlockPos({ LEFT_CURRENT_BLOCK });
-			players[1].changeBlockPos({ RIGHT_CURRENT_BLOCK });
+			players[0].changeBlockPos({LEFT_CURRENT_BLOCK});
+			players[1].changeBlockPos({RIGHT_CURRENT_BLOCK});
 			drawBoards();
 			run();
 		}
@@ -31,6 +34,7 @@ void Game::menuPage()
 		break;
 	}
 }
+
 bool Game::resumeGame()
 {
 	if (players[0].isLost() || players[1].isLost())
@@ -41,7 +45,7 @@ bool Game::resumeGame()
 		Sleep(1500);
 		return false;
 	}
-	if(!gameNumber)
+	if (!gameNumber)
 	{
 		system("cls");
 		gotoxy(WINNING_MASSAGE);
@@ -64,29 +68,61 @@ void Game::init()
 
 void Game::run()
 {
-	char key = 0;
+	char key = 0, temp = 1, temp2 = 2;
 	int dir = 1;
-	do {
-		if (_kbhit())
-		{
-			key = _getch();
-			if ((dir = players[0].getDirection(key)) != -1)
-				players[0].setDirection(dir);
-			else if ((dir = players[1].getDirection(key)) != -1)
-				players[1].setDirection(dir);
-		}
+	do
+	{
+		key = avoidMultipleHits();
+		if ((dir = players[0].getDirection(key)) != -1)
+			players[0].setDirection(dir);
+		else if ((dir = players[1].getDirection(key)) != -1)
+			players[1].setDirection(dir);
+		avoidMultipleMoves(key, temp, temp2);
 		move();
-		printScores();
-		Sleep(200);
 		returnDown();
-	} while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
+		printScores();
+		temp2 = temp;
+		temp = key;
+		Sleep(200);
+	}
+	while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
 	if (winningMassage())
 		system("cls");
 	gotoxy(WINNING_MASSAGE);
 	menuPage();
-	setTextColor(Color::WHITE);
+	setTextColor(WHITE);
 	clear_screen();
 }
+
+char Game::avoidMultipleHits()
+{
+	char key = 0;
+	if (_kbhit())
+		key = _getch();
+	if(_kbhit())
+	{
+		key = _getch();
+		for (int i = 0; i < 20 && key != ESC; i++)
+		{
+			if (_kbhit())
+				key = _getch();
+		}
+	}
+	return key;
+}
+
+void Game::avoidMultipleMoves(char& key, const char& temp, const char& temp2)
+{
+	if (temp == key && temp2 == key)
+	{
+		if (players[0].getDirection(key) != -1 && !players[0].isDown(key))
+			players[0].setDirection(DOWN);
+		else if (players[1].getDirection(key) != -1 && !players[1].isDown(key))
+			players[1].setDirection(DOWN);
+		players[0].getDownKey(key);
+	}
+}
+
 
 bool Game::winningMassage()
 {
@@ -98,7 +134,7 @@ bool Game::winningMassage()
 		Sleep(3000);
 		return true;
 	}
-	else if (players[1].isLost())
+	if (players[1].isLost())
 	{
 		cout << "Congratulations " << players[0].getName() << ", you won !" << endl;
 		Sleep(3000);
