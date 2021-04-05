@@ -28,6 +28,7 @@ private:
 	bool resumeGame();
 	void avoidMultipleMoves(char& key, const char& temp1, const char& temp2);
 	char avoidMultipleHits();
+	void keyAndInstructions();
 public:
 	Game(): players{{1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
 	~Game() = default;

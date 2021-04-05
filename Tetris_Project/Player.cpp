@@ -97,7 +97,7 @@ int Player::getDirection(char key)
 {
 	for (int i = 0; i < 5; i++)
 	{
-		if (key == arrowKeys[i])
+		if (key == arrowKeys[i] || key == (arrowKeys[i] - 32))
 		{
 			if (i == 1)
 				return DROP;
@@ -110,7 +110,7 @@ int Player::getDirection(char key)
 
 bool Player::isDown(const char& key)
 {
-	if (arrowKeys[DOWN] == key)
+	if (arrowKeys[DOWN] == key || (arrowKeys[DOWN] - 32) == key)
 		return true;
 	return false;
 }

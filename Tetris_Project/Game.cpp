@@ -30,16 +30,40 @@ void Game::menuPage()
 			menuPage();
 		break;
 	case 3:
-		system("cls");
+		clear_screen();
+		keyAndInstructions();
+		if (_kbhit())
+			char c = _getch();
+		break;
+	case 4:
+		clear_screen();
 		break;
 	}
 }
+
+void Game::keyAndInstructions()
+{
+	clear_screen();
+	cout << "\tInstructions" << "\t\t\t\t\t     " << "Left player" << "  |  " << "Right player" << endl;
+	cout << "\t----------------------------------------------------------------------------------" << endl;
+	cout << "\t\t\t\t\t\t\t\t\t  |" << endl;
+	cout << "\tMove the block to the right with the key:" << "\t\t" << "d/D" << "\t  |\t" << "l/L" << endl;
+	cout << "\tMove the block left with the key:" << "\t\t\t" << "a/A" << "\t  |\t" << "j/J" << endl;
+	cout << "\tRotate the block clockwise with the key:" << "\t\t" << "w/W" << "\t  |\t" << "i/I" << endl;
+	cout << "\tRotate the block counterclockwise with the key:" << "\t\t" << "s/S" << "\t  |\t" << "k/K" << endl;
+	cout << "\tDropping the block with the key:" << "\t\t\t" << "z/Z" << "\t  |\t" << "m/M" << endl << endl << endl;
+	cout << "\tEnter any key for back to menu" << endl;
+	char key = _getch();
+	clear_screen();
+	menuPage();
+}
+
 
 bool Game::resumeGame()
 {
 	if (players[0].isLost() || players[1].isLost())
 	{
-		system("cls");
+		clear_screen();
 		gotoxy(WINNING_MASSAGE);
 		cout << "The game ended, please try again" << endl;
 		Sleep(1500);
@@ -47,7 +71,7 @@ bool Game::resumeGame()
 	}
 	if (!gameNumber)
 	{
-		system("cls");
+		clear_screen();
 		gotoxy(WINNING_MASSAGE);
 		cout << "There is no open game" << endl;
 		Sleep(1500);
@@ -103,10 +127,8 @@ char Game::avoidMultipleHits()
 	{
 		key = _getch();
 		for (int i = 0; i < 20 && key != ESC; i++)
-		{
 			if (_kbhit())
 				key = _getch();
-		}
 	}
 	return key;
 }
