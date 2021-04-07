@@ -24,6 +24,8 @@ struct Board
 private:
 	bool isFullRow(const int& row);
 	void dropRows(const int& row);
+	int isFigureInRow(Block& block, const int& row)const;
+	void dropBlocks(const int& row);
 	
 	
 public:

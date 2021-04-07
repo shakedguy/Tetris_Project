@@ -28,7 +28,6 @@ void Board::drawBlocksInBoard()
 		blocks[i].drawBlock();
 }
 
-
 void Board::drawBoundaries()
 {
 	for (int i = 0; i < width; i++)
@@ -43,6 +42,7 @@ void Board::drawBoundaries()
 		}
 	}
 }
+
 Board::Board(Point _pos, unsigned int _len, unsigned int _width) : pos(_pos), length(_len), width(_width)
 {
 	allocateSize();
@@ -57,7 +57,6 @@ void Board::cleanBoard()
 	blocks.clear();
 }
 
-
 void Board::allocateSize()
 {
 	board.resize(width);
@@ -70,16 +69,7 @@ void Board::initialEmptyCells()
 	for (int i = 0; i < width; i++)
 		for (int j = 0; j < length; j++)
 			board[i][j] = EMPTY_CELL;
-	for (int i = 0; i < width; i++)
-	{
-		for (int j = 1; j <= 3; j++)
-		{
-			gotoxy(pos.getX() + i, pos.getY() - j);
-			cout << EMPTY_CELL;
-		}
-	}
 }
-
 
 void Board::setBottomBoundary()
 {
@@ -117,16 +107,14 @@ void Board::setAllBoundaries()
 	board[width - 1][length - 1] = DOWN_RIGHT;
 }
 
-
 void Board::freezeBlock(Block& block)
 {
-	int x, y;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
 			if (block.figure[i][j])
-				board[x = block.pos.getX() + i - pos.getX()][y = block.pos.getY() + j - pos.getY()] = block.shape;		
+				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = block.shape;		
 		}
 	}
 	block.shape = SHAPE_AFTER_FREEZE;
@@ -152,30 +140,62 @@ void Board::resizeBoundaries(const unsigned& x, const unsigned& y)
 int Board::checkBoard()
 {
 	int count = 0;
-	for (int i = 3; i < length - 1; i++)
+	for (int i = 1; i < length - 1; i++)
 	{
 		if (isFullRow(i))
 		{
 			dropRows(i);
-			drawBoard();
+			drawBlocksInBoard();
+			drawBoundaries();
 			count++;
 		}
 	}
-	
 	return count;
 }
 
 bool Board::isFullRow(const int& row)
 {
 	for (int i = 1; i < width - 1; i++)
-		if (board[i][row] == ' ')
+		if (board[i][row] == EMPTY_CELL)
 			return false;
 	return true;
 }
 
 void Board::dropRows(const int& row)
 {
-	for (int i = 1; i < BOARD_WIDTH - 1; i++)
-		for (int j = row; j > 4; j--)
+	dropBlocks(row);
+	for (int i = 1; i < width - 1; i++)
+	{
+		for (int j = row; j > 1; j--)
+		{
 			board[i][j] = board[i][j - 1];
+			gotoxy(pos.getX() + i, pos.getY() + j);
+			cout << board[i][j];
+		}	
+	}
+	drawBlocksInBoard();
+}
+
+void Board::dropBlocks(const int& row)
+{
+	int temp = 0;
+	for (int i = 0; i < blocks.size(); ++i)
+	{
+		if (temp = isFigureInRow(blocks[i], row) >= 0)
+			blocks[i].DropRows(temp);
+		else if (temp == -1)
+			blocks[i].moveDown();
+	}
+}
+
+int Board::isFigureInRow(Block& block, const int& row)const 
+{
+	if (block.pos.getY() + block.figure[0].size() < pos.getY() + row)
+		return -1;
+	for (int i = 0; i < block.figure[0].size(); ++i)
+	{
+		if ((block.pos.getY() + i == pos.getY() + row))
+			return i;
+	}
+	return -2;
 }

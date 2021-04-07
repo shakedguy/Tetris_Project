@@ -6,6 +6,7 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE)
 	const uniform_int_distribution<> shapeRange(1, 7);
 	const uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
+	shapeNum = 1;
 	color = static_cast<Color>(colorRange(rnd));
 	cleanBlock();
 	setFigure();
@@ -36,6 +37,7 @@ void Block::createNewBlock()
 	const uniform_int_distribution<> shapeRange(1, 7);
 	const uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
+	shapeNum = 1;
 	color = static_cast<Color>(colorRange(rnd));
 	setFigure();
 }
@@ -158,10 +160,12 @@ bool Block::isColumnZeroEmpty()
 
 void Block::DropRows(const uint& row)
 {
-	for (int i = 0; i < figure.size(); i++)
-		for (int j = row; j > 0; j--)
-			swap(figure[i][j], figure[i][j - 1]);
-
+	if (row)
+	{
+		for (int i = 0; i < figure.size(); i++)
+			for (int j = row; j > 0; j--)
+				swap(figure[i][j], figure[i][j - 1]);
+	}
 	for (int i = 0; i < figure.size(); i++)
 		figure[i][0] = 0;
 }
@@ -335,5 +339,6 @@ void Block::moveRight()
 	pos.move(RIGHT);
 	drawBlock();
 }
+
 
 
