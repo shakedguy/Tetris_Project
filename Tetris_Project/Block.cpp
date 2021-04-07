@@ -72,11 +72,15 @@ void Block::setFigure()
 		break;
 	}
 }
+
+//This fucntion sets the figure of the 1st block
 void Block::set_Figure1()
 {
 	for (int i = 0; i < figure.size(); i++)
 		figure[i][0]++;
 }
+
+//This fucntion sets the figure of the 2nd block
 void Block::set_Figure2()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -90,6 +94,8 @@ void Block::set_Figure2()
 		}
 	}
 }
+
+//This fucntion sets the figure of the 3rd block
 void Block::set_Figure3()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -97,12 +103,16 @@ void Block::set_Figure3()
 			if ((!j && i > 1) || j)
 				figure[i][j]++;
 }
+
+//This fucntion sets the figure of the 4th block
 void Block::set_Figure4()
 {
 	for (int i = 0; i < figure.size() - 2; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			figure[i][j]++;
 }
+
+//This fucntion sets the figure of the 5th block
 void Block::set_Figure5()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -110,6 +120,8 @@ void Block::set_Figure5()
 			if ((!j && i) || (j && i < 2))
 				figure[i][j]++;
 }
+
+//This fucntion sets the figure of the 6th block.
 void Block::set_Figure6()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -117,6 +129,8 @@ void Block::set_Figure6()
 			if ((!j && i == 1) || j)
 				figure[i][j]++;
 }
+
+//This fucntion sets the figure of the 7th block
 void Block::set_Figure7()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -140,6 +154,7 @@ void Block::arrangeMatrix()
 	}
 }
 
+//This function checks if the first row is empty
 bool Block::isRowZeroEmpty()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++)
@@ -148,6 +163,7 @@ bool Block::isRowZeroEmpty()
 	return true;
 }
 
+//This function checks if the first collumn is empty
 bool Block::isColumnZeroEmpty()
 {
 	for (int i = 0; i < figure[0].size(); i++)
@@ -155,6 +171,7 @@ bool Block::isColumnZeroEmpty()
 			return false;
 	return true;
 }
+
 
 void Block::DropRows(const uint& row)
 {
@@ -181,7 +198,7 @@ void Block::pullFigureLeft()
 		for (int j = 0; j < figure[i].size(); j++)
 			swap(figure[i][j], figure[i + 1][j]);
 }
-
+//This function recieves as input a certain direction and moves the block in that direction
 void Block::move(int dir)
 {
 	cleanPrint();
@@ -210,6 +227,7 @@ void Block::move(int dir)
 	drawBlock();
 }
 
+// This function cleans the block (by reseting the matrix that holds the block's figure)
 void Block::cleanBlock()
 {
 	for (int i = 0; i < 4; i++)
@@ -229,6 +247,7 @@ void Block::cleanPrint() const
 	}
 }
 
+// This function rotates the block clockwise
 void Block::clockwiseRotate()
 {
 	transpose_Matrix();
@@ -236,6 +255,7 @@ void Block::clockwiseRotate()
 	arrangeMatrix();
 }
 
+// this function rotates the block counter clockwise
 void Block::counterClockwiseRotate()
 {
 	transpose_Matrix();
@@ -243,6 +263,7 @@ void Block::counterClockwiseRotate()
 	arrangeMatrix();
 }
 
+// This fucntion tranpose the matrix (swaps the collumn and the rows)
 void Block::transpose_Matrix()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++)
@@ -250,6 +271,7 @@ void Block::transpose_Matrix()
 			swap(figure[i][j], figure[j][i]);
 }
 
+// This function 
 void Block::reverseColumns()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++) {
