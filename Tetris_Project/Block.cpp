@@ -121,7 +121,7 @@ void Block::set_Figure5()
 				figure[i][j]++;
 }
 
-//This fucntion sets the figure of the 6th block
+//This fucntion sets the figure of the 6th block.
 void Block::set_Figure6()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
