@@ -34,7 +34,7 @@ void Point::move(int direction) {
 	}
 }
 
-void Point::draw(char ch) {
+void Point::draw(uchar ch) {
 	gotoxy(x, y);
 	cout << ch << endl;
 }

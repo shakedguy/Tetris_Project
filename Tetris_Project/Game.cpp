@@ -3,13 +3,11 @@
 ***************************************/
 #include "Game.h"
 
-#include "Menu.h"
 
 void Game::menuPage()
 {
-	Menu m({MENU_BOARD_POS});
-	m.drawMenu();
-	switch (m.getOption())
+	menu.drawMenu();
+	switch (menu.getOption())
 	{
 	case NEW_GAME_INPUT:
 		clear_screen();
@@ -34,12 +32,23 @@ void Game::menuPage()
 		clear_screen();
 		keyAndInstructions();
 		if (_kbhit())
-			char c = _getch();
+			uchar c = _getch();
 		break;
 	case EXIT_GAME_INPUT:
 		clear_screen();
 		break;
+		
+		default:
+			inputErrorMassage();
+			break;
 	}
+}
+
+void Game::inputErrorMassage()
+{
+	gotoxy(menu.getLastBoxPos().getX() + 2, menu.getLastBoxPos().getY() + 6);
+	cout << "Not in the options, please try again" << endl;
+	menuPage();
 }
 
 void Game::keyAndInstructions()
@@ -54,7 +63,7 @@ void Game::keyAndInstructions()
 	cout << "\tRotate the block counterclockwise with the key:" << "\t\t" << "s/S" << "\t  |\t" << "k/K" << endl;
 	cout << "\tDropping the block with the key:" << "\t\t\t" << "z/Z" << "\t  |\t" << "m/M" << endl << endl << endl;
 	cout << "\tEnter any key for back to menu" << endl;
-	char key = _getch();
+	uchar key = _getch();
 	clear_screen();
 	menuPage();
 }
@@ -91,8 +100,8 @@ void Game::init()
 
 void Game::run()
 {
-	char key = DEFAULT, temp = DEFAULT, temp2 = DEFAULT;
-	int dir = DEFAULT;
+	uchar key = DEFAULT, temp = DEFAULT, temp2 = DEFAULT;
+	short dir = DEFAULT;
 	do
 	{
 		key = avoidMultipleHits();
@@ -120,9 +129,9 @@ void Game::run()
 	clear_screen();
 }
 
-char Game::avoidMultipleHits()
+uchar Game::avoidMultipleHits()
 {
-	char key;
+	uchar key;
 	key = DEFAULT;
 	if(_kbhit())
 	{
@@ -134,7 +143,7 @@ char Game::avoidMultipleHits()
 	return key;
 }
 
-void Game::avoidMultipleMoves(char& key, const char& temp, const char& temp2)
+void Game::avoidMultipleMoves(uchar& key, const uchar& temp, const uchar& temp2)
 {
 	if (temp == key && temp2 == key)
 	{

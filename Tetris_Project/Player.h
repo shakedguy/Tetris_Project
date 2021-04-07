@@ -16,15 +16,15 @@ using namespace std;
 class Player
 {
 	string name;
-	int playerNum;
-	int direction;
-	array<char, 5> arrowKeys;
+	ushort playerNum;
+	ushort direction;
+	array<uchar, 5> arrowKeys;
 	Point boardPos;
 	Point boxPos;
 	Board board;
 	Box box;
 	Block block;
-	int score;
+	uint score;
 
 private:
 	void setGameBoundaries();
@@ -32,33 +32,32 @@ private:
 	bool moveLeftAboveBoard();
 	bool moveRightAboveBoard();
 	bool rotateAboveBoard(const Block& temp);
-	
-
-public:
-	Player() : Player(0, { 0,0 }, { 0,0 }) {}
-	Player(int _playerNum, Point _boardPos, Point _boxPos);
-	~Player() = default;
-	void setName();
-	void printScore()const;
-	void drawBoard() { board.drawBoard(); box.drawBox(); }
-	void setPlayerKeys(const char* keys);
-	void move();
-	int getDirection(char key);
-	void setDirection(const int& dir) { direction = dir; }
-	bool makeTheMove();
 	void getNewBlock();
+	bool makeTheMove();
 	bool clockwiseRotate();
 	bool counterClockwiseRotate();
 	bool moveLeft();
 	bool moveRight();
 	bool moveDown();
+
+public:
+	Player() : Player(0, { 0,0 }, { 0,0 }) {}
+	Player(ushort _playerNum, Point _boardPos, Point _boxPos);
+	~Player() = default;
+	void setName();
+	void printScore()const;
+	void drawBoard()const { board.drawBoard(); box.drawBox(); }
+	void setPlayerKeys(const char* keys);
+	void move();
+	sint getDirection(const uchar& key);
+	void setDirection(const ushort& dir) { direction = dir; }
 	bool isLost();
 	void setCurrentBlockPos(const Point& pos) { block.pos = pos; }
 	void clearGame();
 	string getName()const { return name; }
-	bool isDown(const char& key);
-	char getKey(const int& dir);
-	unsigned int getScore()const { return score; }
+	bool isDown(const uchar& key);
+	char getKey(const ushort& dir);
+	uint getScore()const { return score; }
 };
 
 #endif

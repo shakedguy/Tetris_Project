@@ -15,11 +15,12 @@ using namespace std;
 
 struct Block
 {
-	array<array<unsigned short int, BLOCK_MATRIX>, BLOCK_MATRIX> figure;
+	array<array<ushort, BLOCK_MATRIX>, BLOCK_MATRIX> figure;
 	Point pos;
-	char shape;
-	int shapeNum;
+	uchar shape;
+	ushort shapeNum;
 	Color color;
+
 private:
 	void set_Figure1();
 	void set_Figure2();
@@ -29,13 +30,11 @@ private:
 	void set_Figure6();
 	void set_Figure7();
 
-
 	void transpose_Matrix();
 	void reverseColumns();
 	void reverseRows();
 	bool isRowZeroEmpty();
-	bool isColumnZeroEmpty();
-	
+	bool isColumnZeroEmpty();	
 	void pullFigureUp();
 	void pullFigureLeft();
 	void arrangeMatrix();
@@ -46,8 +45,8 @@ public:
 	Block& operator=(const Block& b);
 	~Block() = default;
 	void createNewBlock();
-	void drawBlock();
-	char getShape()const { return shape; }
+	void drawBlock()const;
+	uchar getShape()const { return shape; }
 	void move(int dir);
 	void cleanBlock();
 	void setFigure();

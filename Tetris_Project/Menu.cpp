@@ -37,14 +37,14 @@ void Menu::drawMenu()
 	drawBlocksInMenu();
 
 }
-void Menu::printMenuColor(const unsigned short& blockNum)
+void Menu::printMenuColor(const ushort& blockNum)
 {
 	for (size_t i = 1; i < menu[blockNum].width - 1; ++i)
 	{
 		for (size_t j = 1; j < menu[blockNum].length - 1; ++j)
 		{
 			gotoxy(menu[blockNum].pos.getX() + i, menu[blockNum].pos.getY() + j);
-			cout << static_cast<char>(SHAPE_AFTER_FREEZE);
+			cout << static_cast<uchar>(SHAPE_AFTER_FREEZE);
 		}
 	}
 }
@@ -61,16 +61,16 @@ void Menu::printMenuOptions()
 	cout << "For exit press - " << EXIT_GAME_INPUT << endl;
 }
 
-unsigned int Menu::getOption()
+ushort Menu::getOption()
 {
 	gotoxy(menu[menu.size() - 1].pos.getX() + 20, menu[menu.size() - 1].pos.getY() + 6);
-	const char in = _getch();
+	const uchar in = _getch();
 	return in - '0';
 }
 
 void Menu::drawBlocksInMenu()
 {
-	for (int i = 0; i < BLOCKS_IN_MENU; ++i)
+	for (int i = 0; i < blocks.size(); ++i)
 	{
 		if (i < (BLOCKS_IN_MENU / 3))
 			blocks[i].pos = { menu[0].pos.getX() - 8, menu[0].pos.getY() + ((i + 1) * 5) };

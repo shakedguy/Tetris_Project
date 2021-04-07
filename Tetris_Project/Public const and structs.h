@@ -45,6 +45,7 @@ using namespace std;
 typedef unsigned int uint;
 typedef unsigned short int ushort;
 typedef short int sint;
+typedef unsigned char uchar;
 
 
 enum Boundaries { WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200, DOWN_RIGHT = 188 };

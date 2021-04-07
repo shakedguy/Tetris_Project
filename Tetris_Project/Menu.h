@@ -14,14 +14,15 @@ class Menu
 
 private:
 	void printMenuOptions();
-	void printMenuColor(const unsigned short int& blockNum);
+	void printMenuColor(const ushort& blockNum);
 	void drawBlocksInMenu();
 public:
 	Menu() :Menu({ 0,0 }) {}
 	Menu(Point _pos);
 	~Menu() = default;
 	void drawMenu();
-	unsigned int getOption();
+	ushort getOption();
+	Point getLastBoxPos() { return menu[menu.size() - 1].pos; }
 };
 
 #endif

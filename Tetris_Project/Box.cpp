@@ -1,27 +1,27 @@
 ﻿#include "Box.h"
 
-Box::Box(Point _pos) : pos(_pos), box({ pos }, BOX_LENGTH,BOX_WIDTH)
+Box::Box(const Point& _pos) : pos(_pos), box({ pos }, BOX_LENGTH,BOX_WIDTH)
 {
 	box.setAllBoundaries();
-	setBricks();
+	setBlocks();
 }
 
-void Box::setBricks()
+void Box::setBlocks()
 {
 	int y = 1;
-	for (int i = 0; i < 2; i++)
+	for (Block& block:blocks)
 	{
-		blocks[i].pos = { (pos.getX() + 2), (pos.getY() + y) };
+		block.pos = { (pos.getX() + 2), (pos.getY() + y) };
 		y += 4;
 	}
 }
 
-void Box::drawBox()
+void Box::drawBox()const
 {
 	gotoxy((box.pos.getX()), box.pos.getY() - 1);
 	cout << "Next blocks";
 	box.drawBoard();
-	for (Block& i : blocks)
+	for (const Block& i : blocks)
 		i.drawBlock();
 }
 

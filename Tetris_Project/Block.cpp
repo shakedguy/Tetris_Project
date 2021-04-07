@@ -6,7 +6,6 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE)
 	const uniform_int_distribution<> shapeRange(1, 7);
 	const uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
-	shapeNum = 1;
 	color = static_cast<Color>(colorRange(rnd));
 	cleanBlock();
 	setFigure();
@@ -37,7 +36,6 @@ void Block::createNewBlock()
 	const uniform_int_distribution<> shapeRange(1, 7);
 	const uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
-	shapeNum = 1;
 	color = static_cast<Color>(colorRange(rnd));
 	setFigure();
 }
@@ -284,7 +282,7 @@ void Block::reverseRows()
 	}
 }
 
-void Block::drawBlock() {
+void Block::drawBlock()const {
 
 #ifdef ___COLORS___
 	setTextColor(color);

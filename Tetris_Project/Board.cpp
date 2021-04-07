@@ -2,7 +2,13 @@
 
 #include "io_utils.h"
 
-Board::~Board()
+Board::Board(const Point& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width)
+{
+	allocateSize();
+	initialEmptyCells();
+}
+
+Board::~Board() 
 {
 	for (int i = 0; i < board.size(); i++)
 		board[i].clear();
@@ -10,7 +16,7 @@ Board::~Board()
 	blocks.clear();
 }
 
-void Board::drawBoard()
+void Board::drawBoard()const
 {
 	for (int i = 0; i < width; i++)
 	{
@@ -41,12 +47,6 @@ void Board::drawBoundaries()
 			}
 		}
 	}
-}
-
-Board::Board(Point _pos, unsigned int _len, unsigned int _width) : pos(_pos), length(_len), width(_width)
-{
-	allocateSize();
-	initialEmptyCells();
 }
 
 void Board::cleanBoard()
@@ -121,7 +121,7 @@ void Board::freezeBlock(Block& block)
 	blocks.push_back(block);
 }
 
-void Board::resizeBoundaries(const unsigned& x, const unsigned& y)
+void Board::resizeBoundaries(const uint& x, const uint& y)
 {
 	int tempW = width, tempL = length;
 	width = x;
@@ -137,10 +137,10 @@ void Board::resizeBoundaries(const unsigned& x, const unsigned& y)
 				board[i][j] = EMPTY_CELL;
 }
 
-int Board::checkBoard()
+uint Board::checkBoard()
 {
-	int count = 0;
-	for (int i = 1; i < length - 1; i++)
+	ushort count = 0;
+	for (size_t i = 1; i < length - 1; i++)
 	{
 		if (isFullRow(i))
 		{
@@ -148,12 +148,13 @@ int Board::checkBoard()
 			drawBlocksInBoard();
 			drawBoundaries();
 			count++;
+			return count + checkBoard();
 		}
 	}
 	return count;
 }
 
-bool Board::isFullRow(const int& row)
+bool Board::isFullRow(const uint& row)
 {
 	for (int i = 1; i < width - 1; i++)
 		if (board[i][row] == EMPTY_CELL)
@@ -161,7 +162,7 @@ bool Board::isFullRow(const int& row)
 	return true;
 }
 
-void Board::dropRows(const int& row)
+void Board::dropRows(const uint& row)
 {
 	dropBlocks(row);
 	for (int i = 1; i < width - 1; i++)
@@ -176,7 +177,7 @@ void Board::dropRows(const int& row)
 	drawBlocksInBoard();
 }
 
-void Board::dropBlocks(const int& row)
+void Board::dropBlocks(const uint& row)
 {
 	int temp = 0;
 	for (int i = 0; i < blocks.size(); ++i)
@@ -188,7 +189,7 @@ void Board::dropBlocks(const int& row)
 	}
 }
 
-int Board::isFigureInRow(Block& block, const int& row)const 
+int Board::isFigureInRow(Block& block, const uint& row)const 
 {
 	if (block.pos.getY() + block.figure[0].size() < pos.getY() + row)
 		return -1;

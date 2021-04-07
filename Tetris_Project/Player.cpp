@@ -3,7 +3,7 @@
 
 #include "Game.h"
 
-Player::Player(int _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum),
+Player::Player(ushort _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum),
 boardPos(_boardPos), boxPos(_boxPos), board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(DEFAULT)
 {
 	if (playerNum == 1)
@@ -87,7 +87,7 @@ bool Player::drop()
 	return false;
 }
 
-int Player::getDirection(char key)
+sint Player::getDirection(const uchar& key)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -97,14 +97,14 @@ int Player::getDirection(char key)
 	return -1;
 }
 
-bool Player::isDown(const char& key)
+bool Player::isDown(const uchar& key)
 {
 	if (arrowKeys[DROP] == key || (arrowKeys[DROP] - 32) == key)
 		return true;
 	return false;
 }
 
-char Player::getKey(const int& dir)
+char Player::getKey(const ushort& dir)
 {
 	if (dir < arrowKeys.size())
 		return arrowKeys[dir];
@@ -135,8 +135,7 @@ void Player::move()
 	}
 	board.drawBlocksInBoard();
 	board.drawBoundaries();
-	int num = board.checkBoard();
-	score += (num * num * POINTS_FOR_FULL_ROW);
+	score += ((pow(board.checkBoard(),2)) * POINTS_FOR_FULL_ROW);
 }
 
 bool Player::makeTheMove()
@@ -188,8 +187,12 @@ bool Player::moveLeft()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
-				return false;
+				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()]
+					!= EMPTY_CELL))
+			{
+				direction = DEFAULT;
+				return makeTheMove();
+			}
 		}
 	}
 	block.moveLeft();
@@ -216,8 +219,12 @@ bool Player::moveRight()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
-				return false;
+				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()]
+					!= EMPTY_CELL))
+			{
+				direction = DEFAULT;
+				return makeTheMove();
+			}
 		}
 	}
 	block.moveRight();

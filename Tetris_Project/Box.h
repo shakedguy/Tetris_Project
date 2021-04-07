@@ -20,13 +20,12 @@ struct Box
 	array<Block,BLOCKS_IN_BOX> blocks;
 
 private:
-	void drawWalls(int x, int y);
-	void setBricks();
+	void setBlocks();
 public:
 	Box() : Box({ 0,0 }) {}
-	Box(Point _pos);
+	Box(const Point& _pos);
 	~Box() = default;
-	void drawBox();
+	void drawBox()const;
 	void clearBox();
 };
 

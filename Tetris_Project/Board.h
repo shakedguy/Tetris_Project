@@ -17,34 +17,33 @@ struct Board
 {
 	
 	Point pos;
-	unsigned int length, width;
-	vector<vector<char>> board;
+	uint length, width;
+	vector<vector<uchar>> board;
 	vector<Block> blocks;
 
 private:
-	bool isFullRow(const int& row);
-	void dropRows(const int& row);
-	int isFigureInRow(Block& block, const int& row)const;
-	void dropBlocks(const int& row);
-	
-	
-public:
-	Board() : Board({ 0,0 }, 0, 0) {}
-	Board(Point _pos) : Board({ _pos }, BOARD_LENGTH, BOARD_WIDTH) {}
-	Board(unsigned int _len, unsigned int _width) :Board({ 0,0 }, _len, _width) {}
-	Board(Point _pos, unsigned int _len, unsigned int _width);
-	~Board();
+	bool isFullRow(const uint& row);
+	void dropRows(const uint& row);
+	int isFigureInRow(Block& block, const uint& row)const;
+	void dropBlocks(const uint& row);
 	void setTopBoundary();
 	void setBottomBoundary();
 	void setRightBoundary();
 	void setLeftBoundary();
-	void setAllBoundaries();
-	void drawBoard();
-	void freezeBlock(Block& block);
+	
+public:
+	Board() : Board({ 0,0 }, 0, 0) {}
+	Board(const Point& _pos) : Board({ _pos }, BOARD_LENGTH, BOARD_WIDTH) {}
+	Board(uint _len, uint _width) :Board({ 0,0 }, _len, _width) {}
+	Board(const Point& _pos, uint _len, uint _width);
+	~Board();
 	void allocateSize();
 	void initialEmptyCells();
-	void resizeBoundaries(const unsigned int& x, const unsigned int& y);
-	int checkBoard();
+	void drawBoard()const;
+	void setAllBoundaries();
+	void freezeBlock(Block& block);
+	void resizeBoundaries(const uint& x, const uint& y);
+	uint checkBoard();
 	void cleanBoard();
 	void drawBoundaries();
 	void drawBlocksInBoard();

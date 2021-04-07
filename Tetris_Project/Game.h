@@ -8,15 +8,17 @@
 
 #include "Board.h"
 #include "Box.h"
+#include "Menu.h"
 #include "Player.h"
 #include "Public const and structs.h"
 
 using namespace std;
 
 class Game
-{	
+{
+	Menu menu;
 	Player players[2];
-	unsigned short int gameNumber = 0;
+	ushort gameNumber = 0;
 
 private:
 	void returnDown() { players[0].setDirection(DEFAULT); players[1].setDirection(DEFAULT); }
@@ -25,12 +27,15 @@ private:
 	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
 	bool winningMassage();
 	bool resumeGame();
-	void avoidMultipleMoves(char& key, const char& temp1, const char& temp2);
-	char avoidMultipleHits();
+	void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
+	uchar avoidMultipleHits();
 	void keyAndInstructions();
 	void setNames() { players[0].setName(); players[1].setName(); }
+	void inputErrorMassage();
 public:
-	Game(): players{{1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}}} {}
+	Game() : menu({ MENU_BOARD_POS }),
+		players{ {1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},
+			{2,{RIGHT_BOARD_POS},{RIGHT_BOX_POS}} } {}
 	~Game() = default;
 	void menuPage();
 	void init();
