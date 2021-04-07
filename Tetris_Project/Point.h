@@ -25,9 +25,7 @@ public:
 	void draw() const { gotoxy(x, y); cout << shape << endl; }
 	void draw(char ch);
 	void move(int direction);
-	void setPos(int _x, int _y) { x = _x; y = _y; }
-	void setPos(Point& _p) { x = _p.getX(); y = _p.getY(); }
-	void setShape(char _shape) { shape = _shape; }
+	void setShape(const char& _shape) { shape = _shape; }
 	char getShape()	const { return shape; }
 	const int& getX() const { return x; }
 	const int& getY() const { return y; }

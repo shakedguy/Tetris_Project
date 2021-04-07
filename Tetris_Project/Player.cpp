@@ -33,31 +33,24 @@ void Player::clearGame()
 	board.cleanBoard();
 	box.clearBox();
 	block.createNewBlock();
+	setGameBoundaries();
 	if (playerNum == 1)
 		block.pos = { LEFT_CURRENT_BLOCK };
 	else
 		block.pos = { RIGHT_CURRENT_BLOCK };
-	setName();
 }
 
 void Player::setGameBoundaries()
 {
-	board.setBottomBoundary();
-	board.setLeftBoundary();
-	board.setRightBoundary();
-	board.board[0][BOARD_LENGTH - 1] = DOWN_LEFT;
-	board.board[BOARD_WIDTH - 1][BOARD_LENGTH - 1] = DOWN_RIGHT;
-	for (int i = 0; i < 7; i++)
-	{
-		board.board[0][i] = EMPTY_CELL;
-		board.board[board.width - 1][i] = EMPTY_CELL;
-	}
+	board.setAllBoundaries();
+	for (unsigned short int i = 0; i < board.width; ++i)
+		board.board[i][0] = EMPTY_CELL;
 }
 
 bool Player::isLost()
 {
-	for (int i = 0; i < board.width; i++)
-		if (board.board[i][6] != ' ')
+	for (unsigned int i = 1; i < board.width - 1; ++i)
+		if (board.board[i][1] != EMPTY_CELL)
 			return true;
 	return false;
 }
@@ -189,6 +182,8 @@ bool Player::checkStep()
 
 bool Player::check_Down()
 {
+	if (block.pos.getY() < board.pos.getY())
+		return true;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
@@ -203,6 +198,8 @@ bool Player::check_Down()
 
 bool Player::check_Left()
 {
+	if (block.pos.getY() < board.pos.getY())
+		return false;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
@@ -217,6 +214,8 @@ bool Player::check_Left()
 
 bool Player::check_Right()
 {
+	if (block.pos.getY() < board.pos.getY())
+		return false;
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)

@@ -32,8 +32,6 @@ public:
 	Board(unsigned int _len, unsigned int _width) :Board({ 0,0 }, _len, _width) {}
 	Board(Point _pos, unsigned int _len, unsigned int _width);
 	~Board();
-	void setPos(int x, int y) { setPos({ x,y }); }
-	void setPos(Point _pos) { pos = _pos; }
 	void setTopBoundary();
 	void setBottomBoundary();
 	void setRightBoundary();

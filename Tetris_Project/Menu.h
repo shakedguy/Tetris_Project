@@ -14,7 +14,7 @@ class Menu
 
 private:
 	void printMenuOptions();
-	void printMenuColor(const unsigned short int& k);
+	void printMenuColor(const unsigned short int& blockNum);
 	void drawBlocksInMenu();
 public:
 	Menu() :Menu({ 0,0 }) {}

@@ -26,8 +26,6 @@ public:
 	Box() : Box({ 0,0 }) {}
 	Box(Point _pos);
 	~Box() = default;
-	void setPos(int x, int y) { setPos({ x,y }); }
-	void setPos(Point _pos) { pos = _pos; }
 	void drawBox();
 	void clearBox();
 };

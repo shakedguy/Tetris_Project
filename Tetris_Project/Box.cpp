@@ -8,16 +8,18 @@ Box::Box(Point _pos) : pos(_pos), box({ pos }, BOX_LENGTH,BOX_WIDTH)
 
 void Box::setBricks()
 {
-	int y = 3;
+	int y = 1;
 	for (int i = 0; i < 2; i++)
 	{
-		blocks[i].setPos({(pos.getX() + 4), (pos.getY() + y)});
+		blocks[i].pos = { (pos.getX() + 2), (pos.getY() + y) };
 		y += 4;
 	}
 }
 
 void Box::drawBox()
 {
+	gotoxy((box.pos.getX()), box.pos.getY() - 1);
+	cout << "Next blocks";
 	box.drawBoard();
 	for (Block& i : blocks)
 		i.drawBlock();

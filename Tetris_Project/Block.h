@@ -46,9 +46,6 @@ public:
 	Block& operator=(const Block& b);
 	~Block() = default;
 	void createNewBlock();
-	void setPos(const int& x, const int& y) { pos.setPos(x, y); }
-	void setPos(const Point& _pos);
-	void setShape(char _shape) { shape = _shape; }
 	void drawBlock();
 	char getShape()const { return shape; }
 	void move(int dir);

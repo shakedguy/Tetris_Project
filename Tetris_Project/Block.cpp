@@ -39,12 +39,6 @@ void Block::createNewBlock()
 	setFigure();
 }
 
-void Block::setPos(const Point& _pos)
-{
-	pos.setPos(_pos.getX(), _pos.getY());
-}
-
-
 void Block::setFigure()
 {
 	switch (shapeNum)

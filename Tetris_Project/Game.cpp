@@ -11,11 +11,15 @@ void Game::menuPage()
 	m.drawMenu();
 	switch (m.getOption())
 	{
-	case 1:
-		clearGame();
+	case NEW_GAME_INPUT:
+		clear_screen();
+		if (gameNumber)
+			clearGame();
+		setNames();
 		init();
 		break;
-	case 2:
+	case RESUME_GAME_INPUT:
+		clear_screen();
 		if (resumeGame())
 		{
 			players[0].changeBlockPos({LEFT_CURRENT_BLOCK});
@@ -26,13 +30,13 @@ void Game::menuPage()
 		else
 			menuPage();
 		break;
-	case 3:
+	case INSTRUCTIONS_AND_KEYS:
 		clear_screen();
 		keyAndInstructions();
 		if (_kbhit())
 			char c = _getch();
 		break;
-	case 4:
+	case EXIT_GAME_INPUT:
 		clear_screen();
 		break;
 	}
