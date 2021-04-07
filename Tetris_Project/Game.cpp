@@ -22,8 +22,8 @@ void Game::menuPage()
 		clear_screen();
 		if (resumeGame())
 		{
-			players[0].changeBlockPos({LEFT_CURRENT_BLOCK});
-			players[1].changeBlockPos({RIGHT_CURRENT_BLOCK});
+			players[0].setCurrentBlockPos({LEFT_CURRENT_BLOCK});
+			players[1].setCurrentBlockPos({RIGHT_CURRENT_BLOCK});
 			drawBoards();
 			run();
 		}
@@ -59,7 +59,6 @@ void Game::keyAndInstructions()
 	menuPage();
 }
 
-
 bool Game::resumeGame()
 {
 	if (players[0].isLost() || players[1].isLost())
@@ -81,20 +80,19 @@ bool Game::resumeGame()
 	return true;
 }
 
-
 void Game::init()
 {
 	gameNumber++;
 	drawBoards();
 	players[0].setPlayerKeys(PLAYER_ONE_KEYS);
-	players[1].setPlayerKeys(PLAYER_TOW_KEYS);
+	players[1].setPlayerKeys(PLAYER_TWO_KEYS);
 	run();
 }
 
 void Game::run()
 {
-	char key = 0, temp = 1, temp2 = 2;
-	int dir = 1;
+	char key = DEFAULT, temp = DEFAULT, temp2 = DEFAULT;
+	int dir = DEFAULT;
 	do
 	{
 		key = avoidMultipleHits();
@@ -124,7 +122,8 @@ void Game::run()
 
 char Game::avoidMultipleHits()
 {
-	char key = 0;
+	char key;
+	key = DEFAULT;
 	if(_kbhit())
 	{
 		key = _getch();
@@ -140,13 +139,12 @@ void Game::avoidMultipleMoves(char& key, const char& temp, const char& temp2)
 	if (temp == key && temp2 == key)
 	{
 		if (players[0].getDirection(key) != -1 && !players[0].isDown(key))
-			players[0].setDirection(DOWN);
+			players[0].setDirection(DEFAULT);
 		else if (players[1].getDirection(key) != -1 && !players[1].isDown(key))
-			players[1].setDirection(DOWN);
-		key = players[0].getKey(DOWN);
+			players[1].setDirection(DEFAULT);
+		key = players[0].getKey(DROP);
 	}
 }
-
 
 bool Game::winningMassage()
 {

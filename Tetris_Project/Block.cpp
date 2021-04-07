@@ -15,6 +15,7 @@ Block& Block::operator=(const Block& b)
 {
 	if(&b!=this)
 	{
+		cleanBlock();
 		for (int i = 0; i < figure.size(); i++)
 			for (int j = 0; j < figure[i].size(); j++)
 				figure[i][j] = b.figure[i][j];
@@ -39,6 +40,8 @@ void Block::createNewBlock()
 	setFigure();
 }
 
+
+/********** Set figures ***********/
 void Block::setFigure()
 {
 	switch (shapeNum)
@@ -69,7 +72,6 @@ void Block::setFigure()
 		break;
 	}
 }
-
 void Block::set_Figure1()
 {
 	for (int i = 0; i < figure.size(); i++)
@@ -88,7 +90,6 @@ void Block::set_Figure2()
 		}
 	}
 }
-
 void Block::set_Figure3()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -123,37 +124,61 @@ void Block::set_Figure7()
 			if ((!j && i < 2) || (j && i))
 				figure[i][j]++;
 }
+/********** End set figures ***********/
 
 void Block::arrangeMatrix()
 {
-	if (isEmptyRow(BLOCK_MATRIX-1))
+	if (isRowZeroEmpty())
 	{
-		moveFifureInMatrix();
+		pullFigureUp();
 		arrangeMatrix();
 	}
-	
+	if (isColumnZeroEmpty())
+	{
+		pullFigureLeft();
+		arrangeMatrix();
+	}
 }
 
-void Block::moveFifureInMatrix()
+bool Block::isRowZeroEmpty()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++)
-		for (int j = BLOCK_MATRIX - 1; j > 0; j--)
-			swap(figure[i][j], figure[i][j - 1]);
-
-	for (int i = 0; i < BLOCK_MATRIX; i++)
-		figure[i][0] = 0;
-}
-
-
-bool Block::isEmptyRow(const unsigned& row)
-{
-	for (int i = 0; i < BLOCK_MATRIX; i++)
-		if (figure[i][row])
+		if (figure[i][0])
 			return false;
 	return true;
 }
 
+bool Block::isColumnZeroEmpty()
+{
+	for (int i = 0; i < figure[0].size(); i++)
+		if (figure[0][i])
+			return false;
+	return true;
+}
 
+void Block::DropRows(const uint& row)
+{
+	for (int i = 0; i < figure.size(); i++)
+		for (int j = row; j > 0; j--)
+			swap(figure[i][j], figure[i][j - 1]);
+
+	for (int i = 0; i < figure.size(); i++)
+		figure[i][0] = 0;
+}
+
+void Block::pullFigureUp()
+{
+	for (int i = 0; i < figure.size(); i++)
+		for (int j = 0; j < figure[i].size() - 1; j++)
+			swap(figure[i][j], figure[i][j + 1]);
+}
+
+void Block::pullFigureLeft()
+{
+	for (int i = 0; i < figure.size() - 1; i++)
+		for (int j = 0; j < figure[i].size(); j++)
+			swap(figure[i][j], figure[i + 1][j]);
+}
 
 void Block::move(int dir)
 {
@@ -163,10 +188,10 @@ void Block::move(int dir)
 	case DROP:
 		pos.move(DOWN);
 		break;
-	case LEFT:
+	case MOVE_LEFT:
 		pos.move(LEFT);
 		break;
-	case RIGHT:
+	case MOVE_RIGHT:
 		pos.move(RIGHT);
 		break;
 	case CLOCKWISE:
@@ -183,29 +208,6 @@ void Block::move(int dir)
 	drawBlock();
 }
 
-
-void Block::drawBlock() {
-
-#ifdef ___COLORS___
-	setTextColor(color);
-#endif
-	
-	for (int i = 0; i < 4; ++i)
-	{
-		for (int j = 0; j < 4; ++j)
-		{
-			if (figure[i][j])
-			{
-				gotoxy(pos.getX() + i, pos.getY() + j);
-				cout << shape;
-			}
-		}
-	}
-#ifdef ___COLORS___
-	setTextColor(WHITE);
-#endif
-}
-
 void Block::cleanBlock()
 {
 	for (int i = 0; i < 4; i++)
@@ -213,7 +215,7 @@ void Block::cleanBlock()
 			figure[i][j] = 0;
 }
 
-void Block::cleanPrint()
+void Block::cleanPrint() const
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -239,7 +241,6 @@ void Block::counterClockwiseRotate()
 	arrangeMatrix();
 }
 
-
 void Block::transpose_Matrix()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++)
@@ -262,6 +263,7 @@ void Block::reverseColumns()
 		}
 	}
 }
+
 void Block::reverseRows()
 {
 	for (int i = 0; i < BLOCK_MATRIX; i++) {
@@ -278,5 +280,60 @@ void Block::reverseRows()
 	}
 }
 
+void Block::drawBlock() {
+
+#ifdef ___COLORS___
+	setTextColor(color);
+#endif
+
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			if (figure[i][j])
+			{
+				gotoxy(pos.getX() + i, pos.getY() + j);
+				cout << shape;
+			}
+		}
+	}
+#ifdef ___COLORS___
+	setTextColor(WHITE);
+#endif
+}
+
+void Block::drawMatrix()
+{
+	for (int i = 0; i < figure.size(); ++i)
+		for (int j = 0; j < figure[i].size(); ++j)
+		{
+			gotoxy(pos.getX() + i, pos.getY() + j);
+			if (figure[i][j])
+				setTextColor(RED);
+			cout << figure[i][j];
+			setTextColor(WHITE);
+		}
+}
+
+void Block::moveDown()
+{
+	cleanPrint();
+	pos.move(DOWN);
+	drawBlock();
+}
+
+void Block::moveLeft()
+{
+	cleanPrint();
+	pos.move(LEFT);
+	drawBlock();
+}
+
+void Block::moveRight()
+{
+	cleanPrint();
+	pos.move(RIGHT);
+	drawBlock();
+}
 
 

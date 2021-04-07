@@ -29,8 +29,8 @@ using namespace std;
 #define BOX_LENGTH 8
 #define BOX_WIDTH 8
 #define EMPTY_CELL ' '
-#define PLAYER_ONE_KEYS "sxadw"
-#define PLAYER_TOW_KEYS "kmjli"
+#define PLAYER_ONE_KEYS "wsxad"
+#define PLAYER_TWO_KEYS "ikmjl"
 #define BLOCK_MATRIX 4
 #define NEW_GAME_INPUT 1
 #define RESUME_GAME_INPUT 2
@@ -48,8 +48,8 @@ typedef short int sint;
 
 
 enum Boundaries { WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200, DOWN_RIGHT = 188 };
-enum Moves { UP, DOWN, LEFT, RIGHT };
-enum Buttons { CLOCKWISE, COUNTER_CLOCKWISE = 4, DROP = 5, ESC = 27 };
+enum Moves { UP = 6, DOWN, LEFT, RIGHT };
+enum Keys { COUNTER_CLOCKWISE, CLOCKWISE, DROP, MOVE_LEFT, MOVE_RIGHT, DEFAULT, ESC = 27 };
 enum Shapes { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
 
 

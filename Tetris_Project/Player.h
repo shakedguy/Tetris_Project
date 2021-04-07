@@ -28,26 +28,32 @@ class Player
 
 private:
 	void setGameBoundaries();
-	void drop();
+	bool drop();
+	bool moveLeftAboveBoard();
+	bool moveRightAboveBoard();
+	bool rotateAboveBoard(const Block& temp);
+	
 
 public:
 	Player() : Player(0, { 0,0 }, { 0,0 }) {}
 	Player(int _playerNum, Point _boardPos, Point _boxPos);
 	~Player() = default;
 	void setName();
-	void printScore();
+	void printScore()const;
 	void drawBoard() { board.drawBoard(); box.drawBox(); }
 	void setPlayerKeys(const char* keys);
 	void move();
 	int getDirection(char key);
 	void setDirection(const int& dir) { direction = dir; }
-	bool checkStep();
+	bool makeTheMove();
 	void getNewBlock();
-	bool check_Left();
-	bool check_Right();
-	bool check_Down();
+	bool clockwiseRotate();
+	bool counterClockwiseRotate();
+	bool moveLeft();
+	bool moveRight();
+	bool moveDown();
 	bool isLost();
-	void changeBlockPos(const Point& pos);
+	void setCurrentBlockPos(const Point& pos) { block.pos = pos; }
 	void clearGame();
 	string getName()const { return name; }
 	bool isDown(const char& key);

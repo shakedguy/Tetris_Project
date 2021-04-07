@@ -19,9 +19,9 @@ class Game
 	unsigned short int gameNumber = 0;
 
 private:
-	void returnDown() { players[0].setDirection(DOWN); players[1].setDirection(DOWN); }
+	void returnDown() { players[0].setDirection(DEFAULT); players[1].setDirection(DEFAULT); }
 	void drawBoards() { players[0].drawBoard(); players[1].drawBoard(); }
-	void printScores() { players[0].printScore(); players[1].printScore(); }
+	void printScores()const { players[0].printScore(); players[1].printScore(); }
 	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
 	bool winningMassage();
 	bool resumeGame();

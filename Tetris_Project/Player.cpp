@@ -4,7 +4,7 @@
 #include "Game.h"
 
 Player::Player(int _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum),
-boardPos(_boardPos), boxPos(_boxPos), board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(1)
+boardPos(_boardPos), boxPos(_boxPos), board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(DEFAULT)
 {
 	if (playerNum == 1)
 		block.pos = { LEFT_CURRENT_BLOCK };
@@ -12,7 +12,6 @@ boardPos(_boardPos), boxPos(_boxPos), board(boardPos, BOARD_LENGTH, BOARD_WIDTH)
 		block.pos = { RIGHT_CURRENT_BLOCK };
 	score = 0;
 	setGameBoundaries();
-	
 }
 
 void Player::setName()
@@ -21,11 +20,6 @@ void Player::setName()
 	cout << "Please enter player " << playerNum << " name: ";
 	cin >> name;
 	clear_screen();
-}
-
-void Player::changeBlockPos(const Point& pos)
-{
-	block.pos = { pos };
 }
 
 void Player::clearGame()
@@ -43,7 +37,7 @@ void Player::clearGame()
 void Player::setGameBoundaries()
 {
 	board.setAllBoundaries();
-	for (unsigned short int i = 0; i < board.width; ++i)
+	for (size_t i = 0; i < board.width; ++i)
 		board.board[i][0] = EMPTY_CELL;
 }
 
@@ -55,8 +49,7 @@ bool Player::isLost()
 	return false;
 }
 
-
-void Player::printScore()
+void Player::printScore() const
 {
 #ifdef ___COLORS___
 	setTextColor(LIGHTCYAN);
@@ -77,6 +70,7 @@ void Player::printScore()
 #endif
 
 }
+
 void Player::setPlayerKeys(const char* keys) {
 
 	arrowKeys[0] = keys[0];
@@ -86,13 +80,53 @@ void Player::setPlayerKeys(const char* keys) {
 	arrowKeys[4] = keys[4];
 }
 
+bool Player::drop()
+{
+	while (moveDown()){}
+	direction = DEFAULT;
+	return false;
+}
+
+int Player::getDirection(char key)
+{
+	for (int i = 0; i < 5; i++)
+	{
+		if (key == arrowKeys[i] || key == (arrowKeys[i] - 32))
+				return i;
+	}
+	return -1;
+}
+
+bool Player::isDown(const char& key)
+{
+	if (arrowKeys[DROP] == key || (arrowKeys[DROP] - 32) == key)
+		return true;
+	return false;
+}
+
+char Player::getKey(const int& dir)
+{
+	if (dir < arrowKeys.size())
+		return arrowKeys[dir];
+	return 0;
+}
+
+void Player::getNewBlock()
+{
+	block = box.blocks[0];
+	if (playerNum == 1)
+		block.pos = { LEFT_CURRENT_BLOCK };
+	else
+		block.pos = { RIGHT_CURRENT_BLOCK };
+	const Point temp = box.blocks[0].pos;
+	box.blocks[0] = box.blocks[1];
+	box.blocks[0].pos = temp;
+	box.blocks[1].createNewBlock();
+}
+
 void Player::move()
 {
-	if (direction == DROP)
-		drop();
-	else if (checkStep())
-		block.move(direction);
-	else if (direction == DOWN)
+	if (!makeTheMove() && direction == DEFAULT)
 	{
 		board.freezeBlock(block);
 		getNewBlock();
@@ -105,132 +139,161 @@ void Player::move()
 	score += (num * num * POINTS_FOR_FULL_ROW);
 }
 
-void Player::drop()
-{
-	while (checkStep())
-		block.move(direction);
-}
-
-int Player::getDirection(char key)
-{
-	for (int i = 0; i < 5; i++)
-	{
-		if (key == arrowKeys[i] || key == (arrowKeys[i] - 32))
-			if (i == 1)
-				return DROP;
-			else
-				return i;
-	}
-	return -1;
-}
-
-bool Player::isDown(const char& key)
-{
-	if (arrowKeys[DOWN] == key || (arrowKeys[DOWN] - 32) == key)
-		return true;
-	return false;
-}
-
-char Player::getKey(const int& dir)
-{
-	if (dir == DROP)
-		return arrowKeys[DOWN];
-	else if (dir == DOWN)
-		return 0;
-	return arrowKeys[dir];
-}
-
-
-
-void Player::getNewBlock()
-{
-	block = box.blocks[0];
-	if (playerNum == 1)
-		block.pos = { LEFT_CURRENT_BLOCK };
-	else
-		block.pos = { RIGHT_CURRENT_BLOCK };
-	Point temp = box.blocks[0].pos;
-	box.blocks[0] = box.blocks[1];
-	box.blocks[0].pos = temp;
-	box.blocks[1].createNewBlock();
-}
-
-bool Player::checkStep()
+bool Player::makeTheMove()
 {
 	switch (direction)
 	{
+	case COUNTER_CLOCKWISE:
+		return counterClockwiseRotate();
+	case CLOCKWISE:
+		return clockwiseRotate();
 	case DROP:
-		if (check_Down())
-			return true;
-		return false;
-	case LEFT:
-		if (check_Left())
-			return true;
-		return false;
-	case RIGHT:
-		if (check_Right())
-			return true;
-		return false;
-	case DOWN:
-		if (check_Down())
-			return true;
-		return false;
-	default:
-		return true;
+		return drop();
+	case MOVE_LEFT:
+		return moveLeft();
+	case MOVE_RIGHT:
+		return moveRight();
+		
+		default:
+			return moveDown();
 	}
 }
 
-bool Player::check_Down()
+bool Player::moveDown()
 {
 	if (block.pos.getY() < board.pos.getY())
-		return true;
-	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		block.moveDown();
+		return true;
+	}
+	for (int i = 0; i < block.figure.size(); i++)
+	{
+		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (block.figure[i][j] &&
 				(board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' '))
 				return false;
 		}
-	}		
+	}
+	block.moveDown();
 	return true;
 }
 
-bool Player::check_Left()
+bool Player::moveLeft()
 {
 	if (block.pos.getY() < board.pos.getY())
-		return false;
-	for (int i = 0; i < 4; i++)
+		return moveLeftAboveBoard();
+	for (int i = 0; i < block.figure.size(); i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
+				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
 				return false;
 		}
 	}
+	block.moveLeft();
 	return true;
 }
 
-bool Player::check_Right()
+bool Player::moveLeftAboveBoard()
+{
+	if (block.pos.getX() > board.pos.getX() + 1)
+	{
+		block.moveLeft();
+		return true;
+	}
+	direction = DEFAULT;
+	return makeTheMove();
+}
+
+bool Player::moveRight()
 {
 	if (block.pos.getY() < board.pos.getY())
-		return false;
-	for (int i = 0; i < 4; i++)
+		return moveRightAboveBoard();
+	for (int i = 0; i < block.figure.size(); i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != ' '))
+				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
 				return false;
 		}
 	}
+	block.moveRight();
 	return true;
 }
 
+bool Player::moveRightAboveBoard()
+{
+	if (block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1)
+	{
+		block.moveRight();
+		return true;
+	}
+	direction = DEFAULT;
+	return makeTheMove();
+}
 
+bool Player::clockwiseRotate()
+{
+	if (block.pos.getY() + block.figure[0].size() >= board.pos.getY() + board.board[0].size())
+		return false;
+	Block temp = block;
+	temp.clockwiseRotate();
+	if (block.pos.getY() < board.pos.getY())
+		return rotateAboveBoard(temp);
+	for (int i = 0; i < block.figure.size(); i++)
+	{
+		for (int j = 0; j < block.figure[i].size(); j++)
+		{
+			if (temp.figure[i][j] &&
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				return false;
+		}
+	}
+	block.cleanPrint();
+	block = temp;
+	block.drawBlock();
+	return true;
+}
 
+bool Player::rotateAboveBoard(const Block& temp)
+{
+	if ((block.pos.getX() > board.pos.getX()) &&
+		(block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1))
+		
+	{
+		block.cleanPrint();
+		block = temp;
+		block.drawBlock();
+		return true;
+	}
+	direction = DEFAULT;
+	return makeTheMove();
+}
 
-
+bool Player::counterClockwiseRotate()
+{
+	if (block.pos.getY() + block.figure[0].size() >= board.pos.getY() + board.board[0].size())
+		return false;
+	Block temp = block;
+	temp.counterClockwiseRotate();
+	if (block.pos.getY() < board.pos.getY())
+		return rotateAboveBoard(temp);
+	for (int i = 0; i < block.figure.size(); i++)
+	{
+		for (int j = 0; j < block.figure[i].size(); j++)
+		{
+			if (temp.figure[i][j] &&
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				return false;
+		}
+	}
+	block.cleanPrint();
+	block = temp;
+	block.drawBlock();
+	return true;
+}
 
 

@@ -28,16 +28,16 @@ private:
 	void set_Figure5();
 	void set_Figure6();
 	void set_Figure7();
-	void move_Left();
-	void move_Right();
-	void move_Down();
-	void clockwiseRotate();
-	void counterClockwiseRotate();
+
+
 	void transpose_Matrix();
 	void reverseColumns();
 	void reverseRows();
-	bool isEmptyRow(const unsigned int& row);
-	void moveFifureInMatrix();
+	bool isRowZeroEmpty();
+	bool isColumnZeroEmpty();
+	
+	void pullFigureUp();
+	void pullFigureLeft();
 	void arrangeMatrix();
 
 public:
@@ -51,9 +51,14 @@ public:
 	void move(int dir);
 	void cleanBlock();
 	void setFigure();
-	void cleanPrint();
-	
-	
+	void cleanPrint()const;
+	void clockwiseRotate();
+	void counterClockwiseRotate();
+	void drawMatrix();
+	void DropRows(const uint& row);
+	void moveLeft();
+	void moveRight();
+	void moveDown();
 };
 
 #endif

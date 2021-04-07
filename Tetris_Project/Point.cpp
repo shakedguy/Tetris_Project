@@ -25,10 +25,10 @@ void Point::move(int direction) {
 	case DOWN: // DOWN
 		++y;
 		break;
-	case LEFT: // LEFT
+	case LEFT: // MOVE_LEFT
 		--x;
 		break;
-	case RIGHT: // RIGHT
+	case RIGHT: // MOVE_RIGHT
 		++x;
 		break;
 	}
