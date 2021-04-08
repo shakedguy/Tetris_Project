@@ -73,14 +73,14 @@ void Block::setFigure()
 	}
 }
 
-//This fucntion sets the figure of the 1st block
+//This function sets the figure of the 1st block
 void Block::set_Figure1()
 {
 	for (int i = 0; i < figure.size(); i++)
 		figure[i][0]++;
 }
 
-//This fucntion sets the figure of the 2nd block
+//This function sets the figure of the 2nd block
 void Block::set_Figure2()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -95,7 +95,7 @@ void Block::set_Figure2()
 	}
 }
 
-//This fucntion sets the figure of the 3rd block
+//This function sets the figure of the 3rd block
 void Block::set_Figure3()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -104,7 +104,7 @@ void Block::set_Figure3()
 				figure[i][j]++;
 }
 
-//This fucntion sets the figure of the 4th block
+//This function sets the figure of the 4th block
 void Block::set_Figure4()
 {
 	for (int i = 0; i < figure.size() - 2; i++)
@@ -112,7 +112,7 @@ void Block::set_Figure4()
 			figure[i][j]++;
 }
 
-//This fucntion sets the figure of the 5th block
+//This function sets the figure of the 5th block
 void Block::set_Figure5()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
@@ -130,7 +130,7 @@ void Block::set_Figure6()
 				figure[i][j]++;
 }
 
-//This fucntion sets the figure of the 7th block
+//This function sets the figure of the 7th block
 void Block::set_Figure7()
 {
 	for (int i = 0; i < figure.size() - 1; i++)
