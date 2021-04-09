@@ -18,10 +18,13 @@ using namespace std;
 /************ and remove the Comment mark ( // ) from the #define ___COLORS___ **************/
 int main() {
 
+	hideCursor();
 	Game game;
 	game.menuPage();
-	gotoxy(15, 5);
-	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl;
+	gotoxy(WINNING_MASSAGE);
+	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
+
+	
 }
 
 

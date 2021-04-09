@@ -2,86 +2,116 @@
 
 Menu::Menu(Point _pos) : pos(_pos)
 {
-	for (int i = 0; i < menu.size(); ++i)
-	{
-		menu[i].pos = { pos.getX(), pos.getY() + i * MENU_BLOCK_LENGTH + 1 };
-		menu[i].resizeBoundaries(MENU_BLOCK_WIDTH, MENU_BLOCK_LENGTH);
-		menu[i].setAllBoundaries();
-	}
+	menu.pos = _pos;
+	menu.resizeBoundaries(MENU_BLOCK_WIDTH, 25);
+	menu.setAllBoundaries();
+	for (int i = 1; i < menu.length - 1; i++)
+		if (i % 4 == 0)
+			menu.setSeparators(i);
+	setMenuBlock();
 }
-void Menu::drawMenu()
+
+bool Menu::colorsMode = false;
+
+void Menu::drawMenu() const
 {
 
-	for (size_t i = 0; i < menu.size(); ++i)
-	{
-#ifdef ___COLORS___
-		if (!i)
-			setTextColor(GREEN);
-		else if (i == 1)
-			setTextColor(YELLOW);
-		else if (i == 2)
-			setTextColor(LIGHTBLUE);
-		else
-			setTextColor(LIGHTRED);
-#endif
-
-		menu[i].drawBoard();
-#ifdef ___COLORS___
-		printMenuColor(i);
-#endif
-	}
-#ifdef  ___COLORS___
-	setTextColor(WHITE);
-#endif
+	if (colorsMode)
+		setTextColor(YELLOW);
+	cout << menu;
+	
+	if (colorsMode)
+		printMenuColor();
 	printMenuOptions();
 	drawBlocksInMenu();
-
 }
-void Menu::printMenuColor(const ushort& blockNum)
+
+void Menu::printMenuColor() const
 {
-	for (size_t i = 1; i < menu[blockNum].width - 1; ++i)
+	for (size_t i = 1; i < menu.width - 1; ++i)
 	{
-		for (size_t j = 1; j < menu[blockNum].length - 1; ++j)
+		for (size_t j = 1; j < menu.length - 1; ++j)
 		{
-			gotoxy(menu[blockNum].pos.getX() + i, menu[blockNum].pos.getY() + j);
-			cout << static_cast<uchar>(SHAPE_AFTER_FREEZE);
+			gotoxy(menu.pos.getX() + i, menu.pos.getY() + j);
+			if (j % 4 != 0)
+			{
+				pickColor(j);
+				cout << static_cast<uchar>(SHAPE_AFTER_FREEZE);
+				setTextColor(WHITE);
+			}
 		}
 	}
 }
 
-void Menu::printMenuOptions()
+void Menu::pickColor(const int& row)const
 {
-	gotoxy(menu[0].pos.getX() + 9, menu[0].pos.getY() + 2);
+	if (row < MENU_BLOCK_LENGTH)
+		setTextColor(GREEN);
+	else if (row < (MENU_BLOCK_LENGTH - 1) * 2)
+		setTextColor(BROWN);
+	else if (row < (MENU_BLOCK_LENGTH - 1) * 3)
+		setTextColor(MAGENTA);
+	else if (row < (MENU_BLOCK_LENGTH - 1) * 4)
+		setTextColor(DARKGREY);
+	else if (row < (MENU_BLOCK_LENGTH - 1) * 5)
+		setTextColor(BLUE);
+	else if (row < (MENU_BLOCK_LENGTH - 1) * 6)
+		setTextColor(LIGHTRED);
+}
+
+void Menu::printMenuOptions() const
+{
+	gotoxy(menu.pos.getX() + 9, menu.pos.getY() + 2);
 	cout << "For new game press - " << NEW_GAME_INPUT << endl;
-	gotoxy(menu[1].pos.getX() + 3, menu[1].pos.getY() + 2);
+	gotoxy(menu.pos.getX() + 3, menu.pos.getY() + (MENU_BLOCK_LENGTH-1) + 2);
 	cout << "For resume to your game press - " << RESUME_GAME_INPUT << endl;
-	gotoxy(menu[2].pos.getX() + 3, menu[2].pos.getY() + 2);
+	gotoxy(menu.pos.getX() + 4, menu.pos.getY() + ((MENU_BLOCK_LENGTH-1) * 2) + 2);
+	cout << "For set players names press - " << SET_NAMES_INPUT << endl;
+	gotoxy(menu.pos.getX() + 2, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 4) + 2);
 	cout << "For keys and instructions press - " << INSTRUCTIONS_AND_KEYS << endl;
-	gotoxy(menu[3].pos.getX() + 10, menu[3].pos.getY() + 2);
+	gotoxy(menu.pos.getX() + 11, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 5) + 2);
 	cout << "For exit press - " << EXIT_GAME_INPUT << endl;
+
+	if(colorsMode)
+	{
+		gotoxy(menu.pos.getX() + 5, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 3) + 2);
+		cout << "For black and white press - " << COLOR_MODE_INPUT << endl;
+	}
+	else
+	{
+		gotoxy(menu.pos.getX() + 6, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 3) + 2);
+		cout << "For colors mode press - " << COLOR_MODE_INPUT << endl;
+	}
 }
 
 ushort Menu::getOption()
 {
-	gotoxy(menu[menu.size() - 1].pos.getX() + 20, menu[menu.size() - 1].pos.getY() + 6);
 	const uchar in = _getch();
 	return in - '0';
 }
 
-void Menu::drawBlocksInMenu()
+void Menu::drawBlocksInMenu() const
+{
+	for (const Block& block : blocks)
+		cout << block;
+}
+
+void Menu::setMenuBlock()
 {
 	for (int i = 0; i < blocks.size(); ++i)
 	{
-		if (i < (BLOCKS_IN_MENU / 3))
-			blocks[i].pos = { menu[0].pos.getX() - 8, menu[0].pos.getY() + ((i + 1) * 5) };
-		else if (i < (BLOCKS_IN_MENU / 3) * 2)
-			blocks[i].pos = { menu[0].pos.getX() + 48, menu[0].pos.getY() + ((i - 3) * 5) };
-		else if (i < (BLOCKS_IN_MENU / 3) * 3)
-			blocks[i].pos = { menu[menu.size() - 1].pos.getX() + ((i - 8) * 13), menu[menu.size() - 1].pos.getY() + 8 };
-		blocks[i].drawBlock();
+		if (i < (blocks.size() / 2))
+			blocks[i].pos = {menu.pos.getX() - 8, menu.pos.getY() + ((i + 1) * 5)};
+		else
+			blocks[i].pos = {menu.pos.getX() + 48, menu.pos.getY() + ((i - 3) * 5)};
 	}
 }
 
-
-
+void Menu::changeColorsMode()
+{
+	if (colorsMode)
+		colorsMode = false;
+	else
+		colorsMode = true;
+}
 

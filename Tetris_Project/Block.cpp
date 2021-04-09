@@ -11,6 +11,8 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE)
 	setFigure();
 }
 
+bool Block::colorsMode = false;
+
 Block& Block::operator=(const Block& b)
 {
 	if(&b!=this)
@@ -306,9 +308,8 @@ void Block::reverseRows()
 
 void Block::drawBlock()const {
 
-#ifdef ___COLORS___
-	setTextColor(color);
-#endif
+	if(colorsMode)
+		setTextColor(color);
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -321,9 +322,8 @@ void Block::drawBlock()const {
 			}
 		}
 	}
-#ifdef ___COLORS___
-	setTextColor(WHITE);
-#endif
+	if (colorsMode)
+		setTextColor(WHITE);
 }
 
 void Block::drawMatrix()
@@ -358,6 +358,14 @@ void Block::moveRight()
 	cleanPrint();
 	pos.move(RIGHT);
 	drawBlock();
+}
+
+void Block::changeColorsMode()
+{
+	if (colorsMode)
+		colorsMode = false;
+	else
+		colorsMode = true;
 }
 
 

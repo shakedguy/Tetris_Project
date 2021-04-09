@@ -10,8 +10,8 @@
 #include "Box.h"
 #include "Menu.h"
 #include "Player.h"
-#include "Public const and structs.h"
-
+#include "Public_const_and_structs.h"
+#pragma once
 using namespace std;
 
 class Game
@@ -21,17 +21,19 @@ class Game
 	ushort gameNumber = 0;
 
 private:
+	uchar avoidMultipleHits();
 	void returnDown() { players[0].setDirection(DEFAULT); players[1].setDirection(DEFAULT); }
-	void drawBoards() { players[0].drawBoard(); players[1].drawBoard(); }
+	void drawBoards()const { players[0].drawBoard(); players[1].drawBoard(); }
 	void printScores()const { players[0].printScore(); players[1].printScore(); }
 	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
 	bool winningMassage();
 	bool resumeGame();
 	void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
-	uchar avoidMultipleHits();
 	void keyAndInstructions();
 	void setNames() { players[0].setName(); players[1].setName(); }
 	void inputErrorMassage();
+	void changeColorsMode();
+
 public:
 	Game() : menu({ MENU_BOARD_POS }),
 		players{ {1,{LEFT_BOARD_POS},{LEFT_BOX_POS}},

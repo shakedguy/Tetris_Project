@@ -12,6 +12,14 @@ void setTextColor(Color color) {}
 void hideCursor() {}
 void clear_screen() {}
 #else
+
+void set_cursor(bool visible) {
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 100;
+	info.bVisible = visible;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+}
+
 void gotoxy(int x, int y)
 {
 	HANDLE hConsoleOutput;
