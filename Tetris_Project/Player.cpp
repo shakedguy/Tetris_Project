@@ -1,23 +1,71 @@
-﻿
-#include "Player.h"
+﻿#include "Player.h"
 
 #include "Game.h"
 
 Player::Player(ushort _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum),
-boardPos(_boardPos), boxPos(_boxPos), board(boardPos, BOARD_LENGTH, BOARD_WIDTH), box(boxPos), direction(DEFAULT)
+                                                                    boardPos(_boardPos),
+                                                                    boxPos(_boxPos),
+                                                                    board(boardPos, BOARD_LENGTH, BOARD_WIDTH),
+                                                                    box(boxPos)
 {
-	if (playerNum == 1)
-		block.pos = { LEFT_CURRENT_BLOCK };
-	else
-		block.pos = { RIGHT_CURRENT_BLOCK };
+	direction = DEFAULT;
 	score = 0;
+	if (playerNum == 1)
+	{
+		block.pos = {LEFT_CURRENT_BLOCK};
+		name = "Player 1";
+	}
+	else
+	{
+		block.pos = {RIGHT_CURRENT_BLOCK};
+		name = "Player 2";
+	}
 	setGameBoundaries();
+	setKeysIndication();
+}
+
+bool Player::colorsMode = false;
+
+ostream& operator<<(ostream& out, const Player& _player)
+{
+	cout << _player.board << _player.box << _player.block;
+	_player.drawKeysIndication();
+	return out;
+}
+
+void Player::setKeysIndication()
+{
+	for (auto i = 0; i < keyIndicators.size(); i++)
+	{
+		keyIndicators[i].resizeBoundaries(kEY_INDIVATORS_WIDTH, kEY_INDIVATORS_LENGTH);
+		keyIndicators[i].setAllBoundaries();
+		if (i < keyIndicators.size() - 2)
+			keyIndicators[i].pos = {boardPos.getX() + 4, boardPos.getY() + BOARD_LENGTH + (i * kEY_INDIVATORS_LENGTH) };
+	}
+	keyIndicators[keyIndicators.size() - 2].pos = {
+		keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY()
+	};
+	keyIndicators[keyIndicators.size() - 1].pos = {
+		static_cast<int>(keyIndicators[1].width) + keyIndicators[1].pos.getX(), keyIndicators[1].pos.getY()
+	};
+}
+
+void Player::drawKeysIndication()const
+{
+	for(ushort i=0;i<keyIndicators.size();++i)
+	{
+		cout << keyIndicators[i];
+		gotoxy(keyIndicators[i].pos.getX() + 1, keyIndicators[i].pos.getY() + 1);
+		cout << getKey(i);
+	}
+	//for (const Board& board : keyIndicators)
+	//	cout << board;
 }
 
 void Player::setName()
 {
 	gotoxy(WINNING_MASSAGE);
-	cout << "Please enter player " << playerNum << " name: ";
+	cout << "Please enter player " << playerNum << " name:  ";
 	cin >> name;
 	clear_screen();
 }
@@ -29,9 +77,9 @@ void Player::clearGame()
 	block.createNewBlock();
 	setGameBoundaries();
 	if (playerNum == 1)
-		block.pos = { LEFT_CURRENT_BLOCK };
+		block.pos = {LEFT_CURRENT_BLOCK};
 	else
-		block.pos = { RIGHT_CURRENT_BLOCK };
+		block.pos = {RIGHT_CURRENT_BLOCK};
 }
 
 void Player::setGameBoundaries()
@@ -51,63 +99,97 @@ bool Player::isLost()
 
 void Player::printScore() const
 {
-#ifdef ___COLORS___
-	setTextColor(LIGHTCYAN);
-#endif
-	
+	if (colorsMode)
+		setTextColor(LIGHTCYAN);
+
 	Point pos;
 	if (playerNum == 1)
-		pos = { LEFT_SCORE_POS };
+		pos = {LEFT_SCORE_POS};
 	else
-		pos = { RIGHT_SCORE_POS };
+		pos = {RIGHT_SCORE_POS};
 	gotoxy(pos.getX(), pos.getY());
 	cout << name << "'s score: ";
 	gotoxy(pos.getX() + 5, pos.getY() + 1);
 	cout << score;
 	
-#ifdef ___COLORS___
-	setTextColor(WHITE);
-#endif
-
+	if(colorsMode)
+		setTextColor(WHITE);
 }
 
-void Player::setPlayerKeys(const char* keys) {
-
-	arrowKeys[0] = keys[0];
-	arrowKeys[1] = keys[1];
-	arrowKeys[2] = keys[2];
-	arrowKeys[3] = keys[3];
-	arrowKeys[4] = keys[4];
+void Player::setPlayerKeys(const string& arrowKeys)
+{
+	for (sint i = 0; i < arrowKeys.size(); ++i)
+	{
+		keys.insert({ arrowKeys[i], i });
+		if(arrowKeys[i]>='a')
+			keys.insert({ arrowKeys[i]-('a'-'A'), i });
+		else
+			keys.insert({ arrowKeys[i] + ('a' - 'A'), i });
+	}
+		
 }
 
 bool Player::drop()
 {
-	while (moveDown()){}
+	while (moveDown()) {}
 	direction = DEFAULT;
 	return false;
 }
 
 sint Player::getDirection(const uchar& key)
 {
-	for (int i = 0; i < 5; i++)
+	auto find = keys.find(key);
+	if (find != keys.end())
 	{
-		if (key == arrowKeys[i] || key == (arrowKeys[i] - 32))
-				return i;
-	}
+		showIndicateHit(keys.at(find->first));
+		return keys.at(find->first);
+	}	
 	return -1;
 }
 
+void Player::showIndicateHit(const ushort& dir)
+{
+
+	drawKeysIndication();
+	if (colorsMode)
+	{
+		setTextColor(RED);
+		cout << keyIndicators[dir];
+		gotoxy(keyIndicators[dir].pos.getX() + 1, keyIndicators[dir].pos.getY() + 1);
+		setTextColor(WHITE);
+		cout << getKey(dir);
+	}
+	else
+	{
+		keyIndicators[dir].fillAllBoard('#');
+		cout << keyIndicators[dir];
+		gotoxy(keyIndicators[dir].pos.getX() + 1, keyIndicators[dir].pos.getY() + 1);
+		cout << getKey(dir);
+		keyIndicators[dir].setAllBoundaries();
+	}
+}
+void Player::cleanIndicatorsHit(const ushort& dir)
+{
+	if (colorsMode)
+		setTextColor(WHITE);
+	keyIndicators[dir].cleanBoard();
+	keyIndicators[dir].setAllBoundaries();
+	drawKeysIndication();
+}
+
+
 bool Player::isDown(const uchar& key)
 {
-	if (arrowKeys[DROP] == key || (arrowKeys[DROP] - 32) == key)
+	if (keys[key] == DEFAULT)
 		return true;
 	return false;
 }
 
-char Player::getKey(const ushort& dir)
+const uchar& Player::getKey(const ushort& dir)const
 {
-	if (dir < arrowKeys.size())
-		return arrowKeys[dir];
+	for(auto const& pair:keys)
+		if (dir == pair.second)
+			return pair.first;
 	return 0;
 }
 
@@ -115,9 +197,9 @@ void Player::getNewBlock()
 {
 	block = box.blocks[0];
 	if (playerNum == 1)
-		block.pos = { LEFT_CURRENT_BLOCK };
+		block.pos = {LEFT_CURRENT_BLOCK};
 	else
-		block.pos = { RIGHT_CURRENT_BLOCK };
+		block.pos = {RIGHT_CURRENT_BLOCK};
 	const Point temp = box.blocks[0].pos;
 	box.blocks[0] = box.blocks[1];
 	box.blocks[0].pos = temp;
@@ -130,12 +212,12 @@ void Player::move()
 	{
 		board.freezeBlock(block);
 		getNewBlock();
-		box.drawBox();
+		cout << box;
 		block.drawBlock();
 	}
 	board.drawBlocksInBoard();
 	board.drawBoundaries();
-	score += ((pow(board.checkBoard(),2)) * POINTS_FOR_FULL_ROW);
+	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
 }
 
 bool Player::makeTheMove()
@@ -152,7 +234,7 @@ bool Player::makeTheMove()
 		return moveLeft();
 	case MOVE_RIGHT:
 		return moveRight();
-		
+
 		default:
 			return moveDown();
 	}
@@ -170,7 +252,8 @@ bool Player::moveDown()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' '))
+				(board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' ')
+			)
 				return false;
 		}
 	}
@@ -255,7 +338,8 @@ bool Player::clockwiseRotate()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
+				))
 				return false;
 		}
 	}
@@ -269,7 +353,7 @@ bool Player::rotateAboveBoard(const Block& temp)
 {
 	if ((block.pos.getX() > board.pos.getX()) &&
 		(block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1))
-		
+
 	{
 		block.cleanPrint();
 		block = temp;
@@ -293,7 +377,8 @@ bool Player::counterClockwiseRotate()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
+				))
 				return false;
 		}
 	}
@@ -303,4 +388,10 @@ bool Player::counterClockwiseRotate()
 	return true;
 }
 
-
+void Player::changeColorsMode()
+{
+	if (colorsMode)
+		colorsMode = false;
+	else
+		colorsMode = true;
+}

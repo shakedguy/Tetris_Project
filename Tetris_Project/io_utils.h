@@ -13,6 +13,7 @@ void gotoxy(int x, int y);
 void setTextColor(Color);
 void hideCursor();
 void clear_screen();
+void set_cursor(bool visible);
 
 #ifndef WINDOWS	
 int _getch(void);

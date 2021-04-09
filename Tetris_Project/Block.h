@@ -8,18 +8,24 @@
 #include <random>
 #include "Point.h"
 #include <array>
-#include "Public const and structs.h"
+//#include "Public_const_and_structs.h"
 
 using namespace std;
 
 
-struct Block
+class Block
 {
-	array<array<ushort, BLOCK_MATRIX>, BLOCK_MATRIX> figure;
+	static bool colorsMode;
+	array<array<ushort, BLOCK_MATRIX>, BLOCK_MATRIX> figure{};
 	Point pos;
-	uchar shape;
-	ushort shapeNum;
+	uchar shape{};
+	ushort shapeNum{};
 	Color color;
+	
+	friend class Player;
+	friend class Box;
+	friend class Board;
+	friend class Menu;
 
 private:
 	void set_Figure1();
@@ -42,11 +48,13 @@ private:
 public:
 	Block() : Block({0, 0}){}
 	Block(Point _pos);
+	Block(const Block& _block) { *this = _block; }
 	Block& operator=(const Block& b);
 	~Block() = default;
+	friend ostream& operator<<(ostream& out, const Block& _block) { _block.drawBlock(); return out; }
 	void createNewBlock();
 	void drawBlock()const;
-	uchar getShape()const { return shape; }
+	const uchar& getShape()const { return shape; }
 	void move(int dir);
 	void cleanBlock();
 	void setFigure();
@@ -58,6 +66,7 @@ public:
 	void moveLeft();
 	void moveRight();
 	void moveDown();
+	static void changeColorsMode();
 };
 
 #endif

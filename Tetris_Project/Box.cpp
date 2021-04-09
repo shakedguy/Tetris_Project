@@ -8,7 +8,7 @@ Box::Box(const Point& _pos) : pos(_pos), box({ pos }, BOX_LENGTH,BOX_WIDTH)
 
 void Box::setBlocks()
 {
-	int y = 1;
+	ushort y = 1;
 	for (Block& block:blocks)
 	{
 		block.pos = { (pos.getX() + 2), (pos.getY() + y) };
@@ -20,6 +20,7 @@ void Box::drawBox()const
 {
 	gotoxy((box.pos.getX()), box.pos.getY() - 1);
 	cout << "Next blocks";
+	cout << box;
 	box.drawBoard();
 	for (const Block& i : blocks)
 		i.drawBlock();

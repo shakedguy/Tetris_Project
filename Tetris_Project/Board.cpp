@@ -1,7 +1,5 @@
 ﻿#include "Board.h"
 
-#include "io_utils.h"
-
 Board::Board(const Point& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width)
 {
 	allocateSize();
@@ -52,7 +50,7 @@ void Board::drawBoundaries()
 void Board::cleanBoard()
 {
 	for(int i=1;i<width-1;i++)
-		for (int j = 0; j < length - 1; j++)
+		for (int j = 1; j < length - 1; j++)
 			board[i][j] = EMPTY_CELL;
 	blocks.clear();
 }
@@ -107,6 +105,19 @@ void Board::setAllBoundaries()
 	board[width - 1][length - 1] = DOWN_RIGHT;
 }
 
+void Board::setSeparators(uint const& row)
+{
+	for (int i = 0; i < width; i++)
+	{
+		if (i && i < width - 1)
+			board[i][row] = FLOOR;
+		else if (i)
+			board[i][row] = RIGHT_CONNECTOR;
+		else
+			board[i][row] = LEFT_CONNECTOR;
+	}
+}
+
 void Board::freezeBlock(Block& block)
 {
 	for (int i = 0; i < 4; i++)
@@ -121,7 +132,7 @@ void Board::freezeBlock(Block& block)
 	blocks.push_back(block);
 }
 
-void Board::resizeBoundaries(const uint& x, const uint& y)
+void Board::resizeBoundaries(const int& x, const int& y)
 {
 	int tempW = width, tempL = length;
 	width = x;
@@ -200,3 +211,11 @@ int Board::isFigureInRow(Block& block, const uint& row)const
 	}
 	return -2;
 }
+
+void Board::fillAllBoard(const uchar& shape)
+{
+	for (size_t i = 0; i < board.size(); ++i)
+		for (size_t j = 0; j < board[i].size(); ++j)
+			board[i][j] = shape;
+}
+
