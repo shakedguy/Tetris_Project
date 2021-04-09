@@ -135,11 +135,6 @@ void Game::run()
 	if (winningMassage())
 		clear_screen();
 	menuPage();
-	
-#ifndef  ___COLOR___
-#define ___COLOR___
-	setTextColor(WHITE);
-#endif
 	clear_screen();
 }
 
