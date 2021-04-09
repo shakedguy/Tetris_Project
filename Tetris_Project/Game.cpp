@@ -145,9 +145,13 @@ uchar Game::avoidMultipleHits()
 	{
 		key = _getch();
 		for (int i = 0; i < 10 && key != ESC; i++)
+		{
+			_flushall();
 			if (_kbhit())
 				key = _getch();
+		}
 	}
+	_flushall();
 	return key;
 }
 
@@ -169,7 +173,7 @@ bool Game::winningMassage()
 	gotoxy(WINNING_MASSAGE);
 	if (players[0].isLost())
 	{
-		cout << "Congratulations " << players[1].getName() << ", you won with "
+		cout << "Congratulations " << players[1].getName() << ", you won with - "
 		<< players[1].getScore() << " points !" << endl;
 		Sleep(1500);
 		return true;

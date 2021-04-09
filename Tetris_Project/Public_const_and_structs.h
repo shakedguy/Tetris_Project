@@ -11,18 +11,18 @@ using namespace std;
 
 #define LEFT_BOARD_POS 40,4 //(x,y) location of player 1 board
 #define LEFT_BOX_POS 20,15 //(x,y) location of player 1 box
-#define LEFT_SCORE_POS 20,3 //(x,y) location of player 1 score
+#define LEFT_SCORE_POS 20,5 //(x,y) location of player 1 score
 #define RIGHT_BOARD_POS 60,4 //(x,y) location of player 2 board
 #define RIGHT_BOX_POS 80,15 //(x,y) location of player 2 box
-#define RIGHT_SCORE_POS 80,3 //(x,y) location of player 2 score
+#define RIGHT_SCORE_POS 80,5 //(x,y) location of player 2 score
 #define LEFT_CURRENT_BLOCK 44,2
 #define RIGHT_CURRENT_BLOCK 64,2
 #define MENU_BOARD_POS 35,0
 #define WINNING_MASSAGE 35,10
 #define MENU_BLOCK_LENGTH 5
 #define MENU_BLOCK_WIDTH 40
-#define BOARD_LENGTH 18
-#define BOARD_WIDTH 12
+#define BOARD_LENGTH 19
+#define BOARD_WIDTH 14
 #define BOX_LENGTH 8
 #define BOX_WIDTH 8
 #define EMPTY_CELL ' '
