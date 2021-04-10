@@ -4,14 +4,10 @@
 #ifndef _BOX_H_
 #define _BOX_H_
 
-#include <iostream>
-
+#include "Public_const_and_structs.h"
 #include "Block.h"
 #include "Board.h"
 #include "Point.h"
-#include "Public_const_and_structs.h"
-
-using namespace std;
 
 class Box
 {

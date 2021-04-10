@@ -17,7 +17,7 @@ void Menu::drawMenu() const
 {
 
 	if (colorsMode)
-		setTextColor(YELLOW);
+		setTextColor(BROWN);
 	cout << menu;
 	
 	if (colorsMode)
@@ -84,12 +84,6 @@ void Menu::printMenuOptions() const
 	}
 }
 
-ushort Menu::getOption()
-{
-	const uchar in = _getch();
-	return in - '0';
-}
-
 void Menu::drawBlocksInMenu() const
 {
 	for (const Block& block : blocks)
@@ -109,7 +103,7 @@ void Menu::setMenuBlock()
 
 void Menu::changeColorsMode()
 {
-	if (colorsMode)
+	if (Menu::colorsMode)
 		colorsMode = false;
 	else
 		colorsMode = true;

@@ -4,13 +4,11 @@
 #include "Point.h"
 #include "io_utils.h"
 
-Point& Point::operator=(const Point& p)
+Point& Point::operator=(const Point& _point)
 {
-	if(&p!=this)
+	if(&_point!=this)
 	{
-		x = p.x;
-		y = p.y;
-		shape = p.shape;
+		assign(_point);
 	}
 	return *this;
 }

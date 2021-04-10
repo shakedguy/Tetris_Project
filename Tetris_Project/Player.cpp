@@ -1,12 +1,10 @@
 ﻿#include "Player.h"
 
-#include "Game.h"
-
 Player::Player(ushort _playerNum, Point _boardPos, Point _boxPos) : playerNum(_playerNum),
-                                                                    boardPos(_boardPos),
-                                                                    boxPos(_boxPos),
-                                                                    board(boardPos, BOARD_LENGTH, BOARD_WIDTH),
-                                                                    box(boxPos)
+																	boardPos(_boardPos),
+																	boxPos(_boxPos),
+																	board(boardPos, BOARD_LENGTH, BOARD_WIDTH),
+																	box(boxPos)
 {
 	direction = DEFAULT;
 	score = 0;
@@ -58,8 +56,6 @@ void Player::drawKeysIndication()const
 		gotoxy(keyIndicators[i].pos.getX() + 1, keyIndicators[i].pos.getY() + 1);
 		cout << getKey(i);
 	}
-	//for (const Board& board : keyIndicators)
-	//	cout << board;
 }
 
 void Player::setName()
@@ -67,7 +63,7 @@ void Player::setName()
 	gotoxy(WINNING_MASSAGE);
 	cout << "Please enter player " << playerNum << " name:  ";
 	cin >> name;
-	clear_screen();
+	clrscr();
 }
 
 void Player::clearGame()
@@ -168,6 +164,7 @@ void Player::showIndicateHit(const ushort& dir)
 		keyIndicators[dir].setAllBoundaries();
 	}
 }
+
 void Player::cleanIndicatorsHit(const ushort& dir)
 {
 	if (colorsMode)
@@ -176,7 +173,6 @@ void Player::cleanIndicatorsHit(const ushort& dir)
 	keyIndicators[dir].setAllBoundaries();
 	drawKeysIndication();
 }
-
 
 bool Player::isDown(const uchar& key)
 {
@@ -327,8 +323,6 @@ bool Player::moveRightAboveBoard()
 
 bool Player::clockwiseRotate()
 {
-	if (block.pos.getY() + block.figure[0].size() >= board.pos.getY() + board.board[0].size())
-		return false;
 	Block temp = block;
 	temp.clockwiseRotate();
 	if (block.pos.getY() < board.pos.getY())
@@ -338,9 +332,9 @@ bool Player::clockwiseRotate()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
-				))
-				return false;
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				return moveDown();
+				
 		}
 	}
 	block.cleanPrint();
@@ -360,14 +354,11 @@ bool Player::rotateAboveBoard(const Block& temp)
 		block.drawBlock();
 		return true;
 	}
-	direction = DEFAULT;
-	return makeTheMove();
+	return moveDown();;
 }
 
 bool Player::counterClockwiseRotate()
 {
-	if (block.pos.getY() + block.figure[0].size() >= board.pos.getY() + board.board[0].size())
-		return false;
 	Block temp = block;
 	temp.counterClockwiseRotate();
 	if (block.pos.getY() < board.pos.getY())
@@ -377,9 +368,9 @@ bool Player::counterClockwiseRotate()
 		for (int j = 0; j < block.figure[i].size(); j++)
 		{
 			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
-				))
-				return false;
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				return moveDown();
+				
 		}
 	}
 	block.cleanPrint();
@@ -390,8 +381,16 @@ bool Player::counterClockwiseRotate()
 
 void Player::changeColorsMode()
 {
-	if (colorsMode)
+	if (Player::colorsMode)
 		colorsMode = false;
 	else
 		colorsMode = true;
 }
+
+const bool& Player::checkSpeed(const int& accNum) const {
+
+	if (board.blocks.size() > accNum * 5 || score > accNum * 200)
+		return true;
+	return false;
+}
+

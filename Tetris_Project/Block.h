@@ -4,45 +4,43 @@
 #ifndef _BLOCK_H_
 #define _BLOCK_H_
 
-#include <iostream>
-#include <random>
+#include "Public_const_and_structs.h"
 #include "Point.h"
-#include <array>
-//#include "Public_const_and_structs.h"
-
-using namespace std;
 
 
 class Block
 {
+	enum SHAPES { LINE, L, LEFT_L, DICE, RIGHT_STEPS, CENTER_STEP, LEFT_STEPS };
 	static bool colorsMode;
-	array<array<ushort, BLOCK_MATRIX>, BLOCK_MATRIX> figure{};
+	array<array<ushort, BLOCK_MATRIX>, BLOCK_MATRIX> figure;
 	Point pos;
-	uchar shape{};
-	ushort shapeNum{};
+	uchar shape;
+	ushort shapeNum;
 	Color color;
 	
 	friend class Player;
 	friend class Box;
 	friend class Board;
 	friend class Menu;
+	friend class Game;
 
 private:
-	void set_Figure1();
-	void set_Figure2();
-	void set_Figure3();
-	void set_Figure4();
-	void set_Figure5();
-	void set_Figure6();
-	void set_Figure7();
+	void setLineFigure();
+	void setLfigure();
+	void setLeftLfigure();
+	void setDiceFigure();
+	void setRightStepsFigure();
+	void setCenterStepsFigure();
+	void setLeftStepsFigure();
 
 	void transpose_Matrix();
-	void reverseColumns();
 	void reverseRows();
+	void reverseColumns();
 	bool isRowZeroEmpty();
 	bool isColumnZeroEmpty();	
 	void pullFigureUp();
 	void pullFigureLeft();
+	void pullFigureRight();
 	void arrangeMatrix();
 
 public:

@@ -10,15 +10,8 @@ int _kbhit(void) { return 0; }
 void Sleep(unsigned long) {}
 void setTextColor(Color color) {}
 void hideCursor() {}
-void clear_screen() {}
+void clrscr() {}
 #else
-
-void set_cursor(bool visible) {
-	CONSOLE_CURSOR_INFO info;
-	info.dwSize = 100;
-	info.bVisible = visible;
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-}
 
 void gotoxy(int x, int y)
 {
@@ -44,7 +37,7 @@ void hideCursor()
 	SetConsoleCursorInfo(myconsole, &CURSOR);//second argument need pointer
 }
 
-void clear_screen()
+void clrscr()
 {
 	system("cls");
 }

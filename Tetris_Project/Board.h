@@ -1,29 +1,25 @@
 ﻿/***************************************
 	Header file for class "Board".
 ***************************************/
-#pragma once
-
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
-#include <iostream>
-
-
+#include "Public_const_and_structs.h"
 #include "Block.h"
 #include "Point.h"
-#include "io_utils.h"
-//#include "Public_const_and_structs.h"
-
-using namespace std;
 
 class Board
 {
-	
+	enum Boundaries {
+		WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200, DOWN_RIGHT = 188,
+		RIGHT_CONNECTOR = 185, LEFT_CONNECTOR = 204
+	};
 	Point pos;
 	uint length, width;
 	vector<vector<uchar>> board;
 	vector<Block> blocks;
-	
+
+	friend class Game;
 	friend class Player;
 	friend class Menu;
 	friend class Box;
@@ -45,7 +41,7 @@ public:
 	Board(const Point& _pos) : Board({ _pos }, BOARD_LENGTH, BOARD_WIDTH) {}
 	Board(uint _len, uint _width) :Board({ 0,0 }, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
-	~Board();
+	~Board()= default;
 	friend ostream& operator<<(ostream& out, const Board& board) { board.drawBoard(); return out; }
 	void allocateSize();
 	void initialEmptyCells();
@@ -59,6 +55,7 @@ public:
 	void fillAllBoard(const uchar& shape);
 	const uint& getLength()const { return length; }
 	const uint& getWidth()const { return width; }
+	const size_t& getNumberOfBlocks()const { return blocks.size(); }
 };
 
 #endif

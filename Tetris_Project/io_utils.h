@@ -12,10 +12,9 @@
 void gotoxy(int x, int y);
 void setTextColor(Color);
 void hideCursor();
-void clear_screen();
-void set_cursor(bool visible);
+void clrscr();
 
-#ifndef WINDOWS	
+#ifndef WINDOWS
 int _getch(void);
 int _kbhit(void);
 void Sleep(unsigned long);

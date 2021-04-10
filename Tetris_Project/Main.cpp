@@ -5,17 +5,12 @@
 	Main file - Tetris game
 	
 ***************************************/
-#include <windows.h>
-#include <iostream>
+//#include <windows.h>
 
 #include "Game.h"
 
-
 using namespace std;
 
-
-/************ To switch to color mode go to "Public const and structs.h" file ****************/
-/************ and remove the Comment mark ( // ) from the #define ___COLORS___ **************/
 int main() {
 
 	hideCursor();
@@ -24,7 +19,8 @@ int main() {
 	gotoxy(WINNING_MASSAGE);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
 
-	
+	//Game g;
+	//g.init();
 }
 
 

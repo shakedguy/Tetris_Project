@@ -4,46 +4,10 @@
 
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
-#include "io_utils.h"
+#include "Public_const_and_structs.h"
 #include "Point.h"
 #include "Board.h"
 #include "Box.h"
-#include "Public_const_and_structs.h"
-using namespace std;
-#include <iostream>
-#include <map>
-
-//class Key
-//{
-//	map<int, char> _keys;
-//
-//public:
-//	void add(const int& num, const char& ch)
-//	{
-//		_keys.insert({ num, ch });
-//	}
-//	void add(const string& str)
-//	{
-//		for (int i = 0; i < str.size(); i++)
-//			_keys.insert(i, { str[i] });
-//	}
-//	friend ostream& operator<<(ostream& out, const Key& _key) { _key.printKeys(); return out; }
-//	void printKeys()const
-//	{
-//		for (int i = 0; i < _keys.size(); i++)
-//			cout << _keys.at(i)<< ' ';
-//	}
-//	const char& getKey(const int& dir)
-//	{
-//		return _keys[dir];
-//	}
-//	int& getDir(const char& key)
-//	{
-//		for (int i = 0; i < _keys.size(); i++)
-//			if (_keys[i] == key)
-//				return i;
-//	}
-//};
 
 class Player
 {
@@ -51,7 +15,6 @@ class Player
 	string name;
 	ushort playerNum;
 	ushort direction;
-	//array<uchar, NUMBER_OF_KEYS> arrowKeys;
 	map<uchar, sint> keys;
 	array<Board, NUMBER_OF_KEYS> keyIndicators;
 	Point boardPos;
@@ -60,6 +23,8 @@ class Player
 	Box box;
 	Block block;
 	uint score;
+	
+	friend class Game;
 	
 
 private:
@@ -79,6 +44,7 @@ private:
 	void showIndicateHit(const ushort& dir);
 	void cleanIndicatorsHit(const ushort& dir);
 	void drawKeysIndication()const;
+	
 
 public:
 	Player() : Player(0, { 0,0 }, { 0,0 }) {}
@@ -99,6 +65,7 @@ public:
 	bool isDown(const uchar& key);
 	const uchar& getKey(const ushort& dir)const;
 	uint getScore()const { return score; }
+	const bool& checkSpeed(const int& accNum)const;
 	static void changeColorsMode();
 };
 

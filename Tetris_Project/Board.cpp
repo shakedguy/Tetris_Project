@@ -6,14 +6,6 @@ Board::Board(const Point& _pos, uint _len, uint _width) : pos(_pos), length(_len
 	initialEmptyCells();
 }
 
-Board::~Board() 
-{
-	for (int i = 0; i < board.size(); i++)
-		board[i].clear();
-	board.clear();
-	blocks.clear();
-}
-
 void Board::drawBoard()const
 {
 	for (int i = 0; i < width; i++)
