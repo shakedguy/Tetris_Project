@@ -1,5 +1,5 @@
 ﻿/***************************************
-	Header file for class "Brick".
+	Header file for class "Block".
 ***************************************/
 #ifndef _BLOCK_H_
 #define _BLOCK_H_

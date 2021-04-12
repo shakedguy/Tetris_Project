@@ -1,5 +1,5 @@
 ﻿/***************************************
-	Header file for class "Brick".
+	Header file for class "Menu".
 ***************************************/
 #pragma once
 #ifndef _MENU_H_

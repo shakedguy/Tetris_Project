@@ -4,6 +4,10 @@
 #ifndef _CONSTS_STRUCTS_H_
 #define _CONSTS_STRUCTS_H_
 
+/* In this file all the const parameters of the project will be written,
+ * so if we will want to change sizes, locations or characters of objects,
+ * we can do it from here and will not have to change each file of the relevant class */
+
 #include <iostream>
 #include "io_utils.h"
 #include <random>
@@ -13,7 +17,6 @@
 #include <array>
 #include "Colors.h"
 #include <time.h>
-
 
 using std::cin;
 using std::cout;
@@ -41,9 +44,9 @@ using std::map;
 #define BOARD_WIDTH 14
 #define BOX_LENGTH 8
 #define BOX_WIDTH 8
-#define EMPTY_CELL ' '
-#define PLAYER_ONE_KEYS "wsxad"
-#define PLAYER_TWO_KEYS "ikmjl"
+#define EMPTY_CELL ' '// Define the character of the empty cell in the board
+#define PLAYER_ONE_KEYS "wsxad" // Const of game characters for player 1
+#define PLAYER_TWO_KEYS "ikmjl" // Const of game characters for player 2
 #define BLOCK_MATRIX 4
 #define NEW_GAME_INPUT 1
 #define RESUME_GAME_INPUT 2
@@ -51,31 +54,31 @@ using std::map;
 #define COLOR_MODE_INPUT 4
 #define INSTRUCTIONS_AND_KEYS 8
 #define EXIT_GAME_INPUT 9
-#define POINTS_FOR_FULL_ROW 100
-#define BOXES_IN_MENU 6
-#define BLOCKS_IN_BOX 2
+#define POINTS_FOR_FULL_ROW 100 // Define how many points player gets for filling a line
+#define BLOCKS_IN_BOX 2 // Define how many blocks are in a box
 #define BLOCKS_IN_MENU 8
-#define NUMBER_OF_KEYS 5
+#define NUMBER_OF_KEYS 5 // Define how many keys is available to the player
 #define kEY_INDIVATORS_WIDTH 3
 #define kEY_INDIVATORS_LENGTH 3
 #define TIE_GAME_CODE 2
-#define GAME_SPEED 200
-#define ACCELERATION 30
-#define GAME_BUTTONS 2
+#define GAME_SPEED 200 // Define the game's default speed
+#define ACCELERATION 30 // Define the acceleration height in speed mode
+#define GAME_BUTTONS 2 // Define how many modes buttons the game have
 #define GAME_BUTTON_WIDTH 11
 #define GAME_BUTTON_LENGTH 5
-#define NUM_OF_PLAYERS 2
-#define BLOCKS_FOR_ACCELERATION 5
-#define SCORE_FOR_ACCELERATION 20
+#define NUM_OF_PLAYERS 2 // Define the number of players in the game
+#define BLOCKS_FOR_ACCELERATION 5 // Define how many freezing blocks in the board needed for acceleration
+#define SCORE_FOR_ACCELERATION 20 // Define how many points is needed for acceleration
 
 using ushort = unsigned short int;
 using uint = unsigned int;
 using sint = short int;
 using uchar = unsigned char;
 
-
+// Defining the shape fill characters as consts
 enum Shapes { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
 
+// Define the numbers that represent steps as consts
 enum Keys { COUNTER_CLOCKWISE, CLOCKWISE, DROP, MOVE_LEFT, MOVE_RIGHT, SPEED_MODE = 42, DEFAULT, ESC = 27 };
 
 #endif
