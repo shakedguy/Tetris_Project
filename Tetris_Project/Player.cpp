@@ -4,17 +4,14 @@ Player::Player(ushort _playerNum, Point _boardPos, Point _boxPos) : playerNum(_p
 																	boardPos(_boardPos),
 																	boxPos(_boxPos),
 																	board(boardPos, BOARD_LENGTH, BOARD_WIDTH),
-																	box(boxPos)
-{
+																	box(boxPos) {
 	direction = DEFAULT;
 	score = 0;
-	if (playerNum == 1)
-	{
+	if (playerNum == 1) {
 		block.pos = {LEFT_CURRENT_BLOCK};
 		name = "Player 1";
 	}
-	else
-	{
+	else {
 		block.pos = {RIGHT_CURRENT_BLOCK};
 		name = "Player 2";
 	}
@@ -24,50 +21,48 @@ Player::Player(ushort _playerNum, Point _boardPos, Point _boxPos) : playerNum(_p
 
 bool Player::colorsMode = false;
 
-ostream& operator<<(ostream& out, const Player& _player)
-{
+std::ostream& operator<<(std::ostream& out, const Player& _player) {
+	
 	cout << _player.board << _player.box << _player.block;
 	_player.drawKeysIndication();
 	return out;
 }
 
-void Player::setKeysIndication()
-{
-	for (auto i = 0; i < keyIndicators.size(); i++)
-	{
+// Sets the map of keys indicators
+void Player::setKeysIndication() {
+	
+	for (auto i = 0; i < keyIndicators.size(); i++) {
+		
 		keyIndicators[i].resizeBoundaries(kEY_INDIVATORS_WIDTH, kEY_INDIVATORS_LENGTH);
 		keyIndicators[i].setAllBoundaries();
 		if (i < keyIndicators.size() - 2)
-			keyIndicators[i].pos = {boardPos.getX() + 4, boardPos.getY() + BOARD_LENGTH + (i * kEY_INDIVATORS_LENGTH) };
+			keyIndicators[i].pos = {boardPos.getX() + 4, boardPos.getY() + BOARD_LENGTH + (i * kEY_INDIVATORS_LENGTH)};
 	}
 	keyIndicators[keyIndicators.size() - 2].pos = {
-		keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY()
-	};
+			keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY()};
 	keyIndicators[keyIndicators.size() - 1].pos = {
-		static_cast<int>(keyIndicators[1].width) + keyIndicators[1].pos.getX(), keyIndicators[1].pos.getY()
-	};
+			static_cast<int>(keyIndicators[1].width) + keyIndicators[1].pos.getX(), keyIndicators[1].pos.getY()};
 }
 
-void Player::drawKeysIndication()const
-{
-	for(ushort i=0;i<keyIndicators.size();++i)
-	{
+void Player::drawKeysIndication() const {
+	
+	for (ushort i = 0; i < keyIndicators.size(); ++i) {
 		cout << keyIndicators[i];
 		gotoxy(keyIndicators[i].pos.getX() + 1, keyIndicators[i].pos.getY() + 1);
 		cout << getKey(i);
 	}
 }
 
-void Player::setName()
-{
+void Player::setName() {
+	
 	gotoxy(WINNING_MASSAGE);
 	cout << "Please enter player " << playerNum << " name:  ";
 	cin >> name;
 	clrscr();
 }
 
-void Player::clearGame()
-{
+void Player::clearGame() {
+	
 	board.cleanBoard();
 	box.clearBox();
 	block.createNewBlock();
@@ -78,24 +73,25 @@ void Player::clearGame()
 		block.pos = {RIGHT_CURRENT_BLOCK};
 }
 
-void Player::setGameBoundaries()
-{
+// Remove the top boundary of the board
+void Player::setGameBoundaries() {
+	
 	board.setAllBoundaries();
 	for (size_t i = 0; i < board.width; ++i)
 		board.board[i][0] = EMPTY_CELL;
 }
 
-bool Player::isLost()
-{
-	for (unsigned int i = 1; i < board.width - 1; ++i)
+// check if the player losed
+bool Player::isLost() {
+	for (uint i = 1; i < board.width - 1; ++i)
 		if (board.board[i][1] != EMPTY_CELL)
 			return true;
 	return false;
 }
 
-void Player::printScore() const
-{
-	if (colorsMode)
+void Player::printScore() const {
+	
+	if (Player::colorsMode)
 		setTextColor(LIGHTCYAN);
 
 	Point pos;
@@ -107,56 +103,55 @@ void Player::printScore() const
 	cout << name << "'s score: ";
 	gotoxy(pos.getX() + 5, pos.getY() + 1);
 	cout << score;
-	
-	if(colorsMode)
+
+	if (Player::colorsMode)
 		setTextColor(WHITE);
 }
 
-void Player::setPlayerKeys(const string& arrowKeys)
-{
-	for (sint i = 0; i < arrowKeys.size(); ++i)
-	{
-		keys.insert({ arrowKeys[i], i });
-		if(arrowKeys[i]>='a')
-			keys.insert({ arrowKeys[i]-('a'-'A'), i });
-		else
-			keys.insert({ arrowKeys[i] + ('a' - 'A'), i });
-	}
+// Inserting characters and numbers into the step's representation map
+void Player::setPlayerKeys(const string& arrowKeys) {
+	
+	for (sint i = 0; i < arrowKeys.size(); ++i) {
 		
+		keys.insert({arrowKeys[i], i});
+		if (arrowKeys[i] >= 'a')
+			keys.insert({arrowKeys[i] - ('a' - 'A'), i});
+		else
+			keys.insert({arrowKeys[i] + ('a' - 'A'), i});
+	}
 }
 
-bool Player::drop()
-{
+// Loop of moving the block down until it comes across another block or the board border
+bool Player::drop() {
+	
 	while (moveDown()) {}
 	direction = DEFAULT;
 	return false;
 }
 
-sint Player::getDirection(const uchar& key)
-{
+// Returns the number representing the step, if the character does not belong to the player's step characters, returns -1
+sint Player::getDirection(const uchar& key) {
+	
 	auto find = keys.find(key);
-	if (find != keys.end())
-	{
+	if (find != keys.end()) {
 		showIndicateHit(keys.at(find->first));
 		return keys.at(find->first);
-	}	
+	}
 	return -1;
 }
 
-void Player::showIndicateHit(const ushort& dir)
-{
+// Draw an indication of a step click
+void Player::showIndicateHit(const ushort& dir) {
 
 	drawKeysIndication();
-	if (colorsMode)
-	{
+	if (Player::colorsMode) {
 		setTextColor(RED);
 		cout << keyIndicators[dir];
 		gotoxy(keyIndicators[dir].pos.getX() + 1, keyIndicators[dir].pos.getY() + 1);
 		setTextColor(WHITE);
 		cout << getKey(dir);
 	}
-	else
-	{
+	else {
 		keyIndicators[dir].fillAllBoard('#');
 		cout << keyIndicators[dir];
 		gotoxy(keyIndicators[dir].pos.getX() + 1, keyIndicators[dir].pos.getY() + 1);
@@ -165,32 +160,36 @@ void Player::showIndicateHit(const ushort& dir)
 	}
 }
 
-void Player::cleanIndicatorsHit(const ushort& dir)
-{
-	if (colorsMode)
+void Player::cleanIndicatorsHit(const ushort& dir) {
+	
+	if (Player::colorsMode)
 		setTextColor(WHITE);
 	keyIndicators[dir].cleanBoard();
 	keyIndicators[dir].setAllBoundaries();
 	drawKeysIndication();
 }
 
-bool Player::isDown(const uchar& key)
-{
+// Gets a key and returns if it represents the DEFAULT direction
+bool Player::isDown(const uchar& key) {
+	
 	if (keys[key] == DEFAULT)
 		return true;
 	return false;
 }
 
-const uchar& Player::getKey(const ushort& dir)const
-{
-	for(auto const& pair:keys)
+// Gets a direction and returns the characters representation, if its the DEFAULT direction, returns 0
+const uchar& Player::getKey(const ushort& dir) const {
+	
+	for (auto const& pair : keys)
 		if (dir == pair.second)
 			return pair.first;
 	return 0;
 }
 
-void Player::getNewBlock()
-{
+// Takes the first block from the box and put it in the "current block", put the second instead of the first and
+// get new block to the second
+void Player::getNewBlock() {
+	
 	block = box.blocks[0];
 	if (playerNum == 1)
 		block.pos = {LEFT_CURRENT_BLOCK};
@@ -202,10 +201,12 @@ void Player::getNewBlock()
 	box.blocks[1].createNewBlock();
 }
 
-void Player::move()
-{
-	if (!makeTheMove() && direction == DEFAULT)
-	{
+/* Player move function, if the step faild and the direction is DEFAULT,
+ * "freeze" the block and insert it to the board's blocks and brings a new block to the playing field,
+ * update the score and the returns the direction to DEFAULT */
+void Player::move() {
+	
+	if (!makeTheMove() && direction == DEFAULT) {
 		board.freezeBlock(block);
 		getNewBlock();
 		cout << box;
@@ -214,12 +215,14 @@ void Player::move()
 	board.drawBlocksInBoard();
 	board.drawBoundaries();
 	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
+	direction = DEFAULT;
 }
 
-bool Player::makeTheMove()
-{
-	switch (direction)
-	{
+/* Check the current direction and send to the step execution function,
+ * returns if the step succeeded or failed */
+bool Player::makeTheMove() {
+	
+	switch (direction) {
 	case COUNTER_CLOCKWISE:
 		return counterClockwiseRotate();
 	case CLOCKWISE:
@@ -231,22 +234,22 @@ bool Player::makeTheMove()
 	case MOVE_RIGHT:
 		return moveRight();
 
-		default:
-			return moveDown();
+	default:
+		return moveDown();
 	}
 }
 
-bool Player::moveDown()
-{
-	if (block.pos.getY() < board.pos.getY())
-	{
+/* A function that checks if a down step is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Player::moveDown() {
+	
+	if (block.pos.getY() < board.pos.getY()) {
 		block.moveDown();
 		return true;
 	}
-	for (int i = 0; i < block.figure.size(); i++)
-	{
-		for (int j = 0; j < block.figure[i].size(); j++)
-		{
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
 			if (block.figure[i][j] &&
 				(board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' ')
 			)
@@ -257,18 +260,18 @@ bool Player::moveDown()
 	return true;
 }
 
-bool Player::moveLeft()
-{
+/* A function that checks if a left step is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Player::moveLeft() {
+	
 	if (block.pos.getY() < board.pos.getY())
 		return moveLeftAboveBoard();
-	for (int i = 0; i < block.figure.size(); i++)
-	{
-		for (int j = 0; j < block.figure[i].size(); j++)
-		{
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
 			if (block.figure[i][j] &&
 				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()]
-					!= EMPTY_CELL))
-			{
+					!= EMPTY_CELL)) {
 				direction = DEFAULT;
 				return makeTheMove();
 			}
@@ -278,10 +281,9 @@ bool Player::moveLeft()
 	return true;
 }
 
-bool Player::moveLeftAboveBoard()
-{
-	if (block.pos.getX() > board.pos.getX() + 1)
-	{
+bool Player::moveLeftAboveBoard() {
+	
+	if (block.pos.getX() > board.pos.getX() + 1) {
 		block.moveLeft();
 		return true;
 	}
@@ -289,18 +291,18 @@ bool Player::moveLeftAboveBoard()
 	return makeTheMove();
 }
 
-bool Player::moveRight()
-{
+/* A function that checks if a right step is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Player::moveRight() {
+	
 	if (block.pos.getY() < board.pos.getY())
 		return moveRightAboveBoard();
-	for (int i = 0; i < block.figure.size(); i++)
-	{
-		for (int j = 0; j < block.figure[i].size(); j++)
-		{
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
 			if (block.figure[i][j] &&
 				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()]
-					!= EMPTY_CELL))
-			{
+					!= EMPTY_CELL)) {
 				direction = DEFAULT;
 				return makeTheMove();
 			}
@@ -310,10 +312,9 @@ bool Player::moveRight()
 	return true;
 }
 
-bool Player::moveRightAboveBoard()
-{
-	if (block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1)
-	{
+bool Player::moveRightAboveBoard() {
+	
+	if (block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1) {
 		block.moveRight();
 		return true;
 	}
@@ -321,20 +322,22 @@ bool Player::moveRightAboveBoard()
 	return makeTheMove();
 }
 
-bool Player::clockwiseRotate()
-{
+/* A function that checks if a clockwise rotate is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Player::clockwiseRotate() {
+	
 	Block temp = block;
 	temp.clockwiseRotate();
 	if (block.pos.getY() < board.pos.getY())
 		return rotateAboveBoard(temp);
-	for (int i = 0; i < block.figure.size(); i++)
-	{
-		for (int j = 0; j < block.figure[i].size(); j++)
-		{
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
 			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
+				))
 				return moveDown();
-				
+
 		}
 	}
 	block.cleanPrint();
@@ -343,54 +346,54 @@ bool Player::clockwiseRotate()
 	return true;
 }
 
-bool Player::rotateAboveBoard(const Block& temp)
-{
-	if ((block.pos.getX() > board.pos.getX()) &&
-		(block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1))
+/* A function that checks if a counter clockwise rotate is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Player::counterClockwiseRotate() {
 
-	{
+	Block temp = block;
+	temp.counterClockwiseRotate();
+	if (block.pos.getY() < board.pos.getY())
+		return rotateAboveBoard(temp);
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
+			if (temp.figure[i][j] &&
+				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
+					))
+				return moveDown();
+
+		}
+	}
+	block.cleanPrint();
+	block = temp;
+	block.drawBlock();
+	return true;
+}
+
+bool Player::rotateAboveBoard(const Block& temp) {
+	
+	if ((block.pos.getX() > board.pos.getX()) &&
+		(block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1)) {
 		block.cleanPrint();
 		block = temp;
 		block.drawBlock();
 		return true;
 	}
-	return moveDown();;
+	return moveDown();
 }
 
-bool Player::counterClockwiseRotate()
-{
-	Block temp = block;
-	temp.counterClockwiseRotate();
-	if (block.pos.getY() < board.pos.getY())
-		return rotateAboveBoard(temp);
-	for (int i = 0; i < block.figure.size(); i++)
-	{
-		for (int j = 0; j < block.figure[i].size(); j++)
-		{
-			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL))
-				return moveDown();
-				
-		}
-	}
-	block.cleanPrint();
-	block = temp;
-	block.drawBlock();
-	return true;
-}
-
-void Player::changeColorsMode()
-{
+void Player::changeColorsMode() {
+	
 	if (Player::colorsMode)
-		colorsMode = false;
+		Player::colorsMode = false;
 	else
-		colorsMode = true;
+		Player::colorsMode = true;
 }
 
+// Check if game speed needs to be increased
 const bool& Player::checkSpeed(const int& accNum) const {
 
-	if (board.blocks.size() > accNum * 5 || score > accNum * 200)
+	if (board.blocks.size() > accNum * BLOCKS_FOR_ACCELERATION || score > accNum * SCORE_FOR_ACCELERATION)
 		return true;
 	return false;
 }
-

@@ -9,6 +9,7 @@
 class Point
 {
 	enum Moves { UP = 6, DOWN, LEFT, RIGHT };
+
 	int x, y;
 	uchar shape;
 
@@ -21,6 +22,7 @@ public:
 	Point(int _x, int _y) : Point(_x, _y, EMPTY_CELL) {}
 	Point(int _x, int _y, uchar _shape) : x(_x), y(_y), shape(_shape) {}
 	Point(const Point& _point) { x = _point.x; y = _point.y; shape = _point.shape; }
+	~Point() = default;
 	Point& operator=(const Point& _point);
 	Point& operator++(int) { y++; return *this; }
 	Point& operator+=(const int& _y) { y += _y; return *this; }
@@ -28,12 +30,11 @@ public:
 	Point& operator-=(const int& _y) { y -= _y; return *this; }
 	Point& operator>>=(const int& _x) { x += _x; return *this; }
 	Point& operator<<=(const int& _x) { x -= _x; return *this; }
-	friend ostream& operator<<(ostream& out, const Point& _point) { _point.draw(); return out; }
-	~Point() = default;
+	friend std::ostream& operator<<(std::ostream& out, const Point& _point) { _point.draw(); return out; }
 	void draw(uchar ch);
 	void move(int direction);
 	void setShape(const char& _shape) { shape = _shape; }
-	uchar getShape()	const { return shape; }
+	uchar getShape() const { return shape; }
 	const int& getX() const { return x; }
 	const int& getY() const { return y; }
 };

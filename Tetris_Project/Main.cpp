@@ -9,7 +9,6 @@
 
 #include "Game.h"
 
-using namespace std;
 
 int main() {
 
@@ -19,8 +18,4 @@ int main() {
 	gotoxy(WINNING_MASSAGE);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
 
-	//Game g;
-	//g.init();
 }
-
-

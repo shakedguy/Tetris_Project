@@ -12,42 +12,46 @@
 
 class Game
 {
+	static bool colorsMode;
 	static bool speedMode;
-	static ushort gameSpeed;
-	static ushort accNum;
+	ushort accNum = 1;
+	array<Board, GAME_BUTTONS> buttons;
+	ushort gameSpeed = GAME_SPEED;
 	Menu menu;
-	Player players[2];
+	Player players[NUM_OF_PLAYERS];
 	ushort gameNumber = 0;
-	Board speedButton;
-
-	friend class Player;
 
 private:
 	uchar avoidMultipleHits();
-	void returnDown() { players[0].setDirection(DEFAULT); players[1].setDirection(DEFAULT); }
-	void drawBoards()const { players[0].drawBoard(); players[1].drawBoard(); }
-	void printScores()const { players[0].printScore(); players[1].printScore(); }
-	void clearGame() { players[0].clearGame(); players[1].clearGame(); }
+	void move() { players[0].move(); players[1].move(); }
+	void drawBoards() const { players[0].drawBoard();	players[1].drawBoard(); }
+	void printScores() const { players[0].printScore(); players[1].printScore(); }
+	void clearGame() { players[0].clearGame();	players[1].clearGame(); }
 	bool isSomeoneLose();
 	bool resumeGame();
 	void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
 	void keyAndInstructions();
-	void setNames() { players[0].setName(); players[1].setName(); }
+	void setNames() { players[0].setName();	players[1].setName(); }
 	void inputErrorMassage();
 	void changeColorsMode();
-	void winningMassage(const ushort& flag)const;
+	void winningMassage(const ushort& flag) const;
 	void checkSpeedStatus();
-	static void changeSpeedMode();
-	static void acceleration() { gameSpeed -= 30; accNum++; }
-	
+	void setGameButtons();
+	void printButtonsInfo();
+	void checkGameModes(const uchar& key);
+	void directions(const uchar& key);
+	void returnLastSpeed();
+
 public:
-	Game(); 
+	Game();
 	~Game() = default;
+	static void changeSpeedMode();
+	void drawButtons();
+	void acceleration() { gameSpeed -= ACCELERATION; accNum++; }
 	void menuPage();
 	void init();
 	void run();
-	void move() { players[0].move(); players[1].move(); }
-	
+
 	
 };
 

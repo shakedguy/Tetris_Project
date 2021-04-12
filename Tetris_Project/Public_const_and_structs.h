@@ -7,14 +7,21 @@
 #include <iostream>
 #include "io_utils.h"
 #include <random>
-#include <array>
+#include <stdio.h>
+#include <vector>
 #include <map>
+#include <array>
 #include "Colors.h"
 #include <time.h>
 
 
-
-using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::array;
+using std::vector;
+using std::string;
+using std::map;
 
 
 #define LEFT_BOARD_POS 40,4 //(x,y) location of player 1 board
@@ -27,6 +34,7 @@ using namespace std;
 #define RIGHT_CURRENT_BLOCK 64,2
 #define MENU_BOARD_POS 35,0
 #define WINNING_MASSAGE 30,10
+#define SPEED_MODE_BUTTON_POS 1,2 //(x,y) location of player 2 board
 #define MENU_BLOCK_LENGTH 5
 #define MENU_BLOCK_WIDTH 40
 #define BOARD_LENGTH 19
@@ -52,7 +60,13 @@ using namespace std;
 #define kEY_INDIVATORS_LENGTH 3
 #define TIE_GAME_CODE 2
 #define GAME_SPEED 200
-
+#define ACCELERATION 30
+#define GAME_BUTTONS 2
+#define GAME_BUTTON_WIDTH 11
+#define GAME_BUTTON_LENGTH 5
+#define NUM_OF_PLAYERS 2
+#define BLOCKS_FOR_ACCELERATION 5
+#define SCORE_FOR_ACCELERATION 20
 
 using ushort = unsigned short int;
 using uint = unsigned int;
@@ -61,6 +75,7 @@ using uchar = unsigned char;
 
 
 enum Shapes { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
+
 enum Keys { COUNTER_CLOCKWISE, CLOCKWISE, DROP, MOVE_LEFT, MOVE_RIGHT, SPEED_MODE = 42, DEFAULT, ESC = 27 };
 
 #endif

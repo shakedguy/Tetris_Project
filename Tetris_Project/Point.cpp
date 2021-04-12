@@ -4,10 +4,8 @@
 #include "Point.h"
 #include "io_utils.h"
 
-Point& Point::operator=(const Point& _point)
-{
-	if(&_point!=this)
-	{
+Point& Point::operator=(const Point& _point) {
+	if (&_point != this) {
 		assign(_point);
 	}
 	return *this;

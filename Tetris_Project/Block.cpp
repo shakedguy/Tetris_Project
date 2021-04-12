@@ -1,10 +1,9 @@
 ﻿#include "Block.h"
 
-Block::Block(Point _pos) : pos(_pos), shape(SHAPE)
-{
-	random_device rnd;
-	const uniform_int_distribution<> shapeRange(0, 6);
-	const uniform_int_distribution<> colorRange(1, 14);
+Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
+	std::random_device rnd;
+	const std::uniform_int_distribution<> shapeRange(0, 6);
+	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
 	cleanBlock();
@@ -13,10 +12,8 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE)
 
 bool Block::colorsMode = false;
 
-Block& Block::operator=(const Block& b)
-{
-	if (&b != this)
-	{
+Block& Block::operator=(const Block& b) {
+	if (&b != this) {
 		cleanBlock();
 		for (int i = 0; i < figure.size(); i++)
 			for (int j = 0; j < figure[i].size(); j++)
@@ -31,12 +28,12 @@ Block& Block::operator=(const Block& b)
 	return *this;
 }
 
-void Block::createNewBlock()
-{
+void Block::createNewBlock() {
+	
 	cleanBlock();
-	random_device rnd;
-	const uniform_int_distribution<> shapeRange(0, 6);
-	const uniform_int_distribution<> colorRange(1, 14);
+	std::random_device rnd;
+	const std::uniform_int_distribution<> shapeRange(0, 6);
+	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
 	setFigure();
@@ -44,10 +41,9 @@ void Block::createNewBlock()
 
 
 /********** Set figures ***********/
-void Block::setFigure()
-{
-	switch (shapeNum)
-	{
+void Block::setFigure() {
+	
+	switch (shapeNum) {
 	case LINE:
 		setLineFigure();
 		break;
@@ -75,20 +71,16 @@ void Block::setFigure()
 	}
 }
 
-//This function sets the figure of the 1st block
-void Block::setLineFigure()
-{
+void Block::setLineFigure() {
+	
 	for (int i = 0; i < figure.size(); i++)
 		figure[i][0]++;
 }
 
-//This function sets the figure of the 2nd block
-void Block::setLfigure()
-{
-	for (int i = 0; i < figure.size() - 1; i++)
-	{
-		for (int j = 0; j < figure[i].size() - 2; j++)
-		{
+void Block::setLfigure() {
+	
+	for (int i = 0; i < figure.size() - 1; i++) {
+		for (int j = 0; j < figure[i].size() - 2; j++) {
 			if (!(i + j))
 				figure[i][j]++;
 			else if (j)
@@ -97,44 +89,40 @@ void Block::setLfigure()
 	}
 }
 
-//This function sets the figure of the 3rd block
-void Block::setLeftLfigure()
-{
+void Block::setLeftLfigure() {
+	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			if ((!j && i > 1) || j)
 				figure[i][j]++;
 }
 
-//This function sets the figure of the 4th block
-void Block::setDiceFigure()
-{
+void Block::setDiceFigure() {
+	
 	for (int i = 0; i < figure.size() - 2; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			figure[i][j]++;
 }
 
-//This function sets the figure of the 5th block
-void Block::setRightStepsFigure()
-{
+void Block::setRightStepsFigure() {
+	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			if ((!j && i) || (j && i < 2))
 				figure[i][j]++;
 }
 
-//This fucntion sets the figure of the 6th block.
-void Block::setCenterStepsFigure()
-{
+
+void Block::setCenterStepsFigure() {
+	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			if ((!j && i == 1) || j)
 				figure[i][j]++;
 }
 
-//This function sets the figure of the 7th block
-void Block::setLeftStepsFigure()
-{
+void Block::setLeftStepsFigure() {
+	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			if ((!j && i < 2) || (j && i))
@@ -143,23 +131,21 @@ void Block::setLeftStepsFigure()
 
 /********** End set figures ***********/
 
-void Block::arrangeMatrix()
-{
-	if (isRowZeroEmpty())
-	{
+/* Swap rows and columns as needed so that the block shape starts at point (0,0) of the matrix */
+void Block::arrangeMatrix() {
+	
+	if (isRowZeroEmpty()) {
 		pullFigureUp();
 		arrangeMatrix();
 	}
-	if (isColumnZeroEmpty())
-	{
+	if (isColumnZeroEmpty()) {
 		pullFigureLeft();
 		arrangeMatrix();
 	}
 }
 
-//This function checks if the first row is empty
-bool Block::isRowZeroEmpty()
-{
+// This function checks if the first row is empty
+bool Block::isRowZeroEmpty() {
 	for (int i = 0; i < BLOCK_MATRIX; i++)
 		if (figure[i][0])
 			return false;
@@ -167,18 +153,15 @@ bool Block::isRowZeroEmpty()
 }
 
 //This function checks if the first collumn is empty
-bool Block::isColumnZeroEmpty()
-{
+bool Block::isColumnZeroEmpty() {
 	for (int i = 0; i < figure[0].size(); i++)
 		if (figure[0][i])
 			return false;
 	return true;
 }
 
-void Block::DropRows(const uint& row)
-{
-	if (row)
-	{
+void Block::DropRows(const uint& row) {
+	if (row) {
 		for (int i = 0; i < figure.size(); i++)
 			for (int j = row; j > 0; j--)
 				std::swap(figure[i][j], figure[i][j - 1]);
@@ -187,23 +170,22 @@ void Block::DropRows(const uint& row)
 		figure[i][0] = 0;
 }
 
-void Block::pullFigureUp()
-{
+/* Swap rows so that the block shape starts with row 0 of the matrix */
+void Block::pullFigureUp() {
 	for (int i = 0; i < figure.size(); i++)
 		for (int j = 0; j < figure[i].size() - 1; j++)
 			std::swap(figure[i][j], figure[i][j + 1]);
 }
 
-void Block::pullFigureLeft()
-{
+/* Swap columns so that the block shape starts with column 0 of the matrix */
+void Block::pullFigureLeft() {
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size(); j++)
 			std::swap(figure[i][j], figure[i + 1][j]);
 }
 
 // This function cleans the block (by reseting the matrix that holds the block's figure)
-void Block::cleanBlock()
-{
+void Block::cleanBlock() {
 	//	pos = { 0,0 };
 	//shapeNum = 0;
 	for (int i = 0; i < 4; i++)
@@ -211,32 +193,28 @@ void Block::cleanBlock()
 			figure[i][j] = 0;
 }
 
-void Block::cleanPrint() const
-{
-	for (size_t i = 0; i < figure.size(); i++)
-	{
-		for (size_t j = 0; j < figure[i].size(); j++)
-		{
+// print the EMPTY_CELL on the matrix
+void Block::cleanPrint() const {
+	for (size_t i = 0; i < figure.size(); i++) {
+		for (size_t j = 0; j < figure[i].size(); j++) {
 			gotoxy(pos.getX() + i, pos.getY() + j);
 			cout << EMPTY_CELL;
 		}
 	}
 }
 
-// This function rotates the block clockwise
-void Block::clockwiseRotate()
-{
-	if (shapeNum == 4)
+// This function rotates the block clockwise - transpose the matrix and than reverses the order of the columns
+void Block::clockwiseRotate() {
+	if (shapeNum == DICE)
 		return;
 	transpose_Matrix();
 	reverseColumns();
 	arrangeMatrix();
 }
 
-// this function rotates the block counter clockwise
-void Block::counterClockwiseRotate()
-{
-	if (shapeNum == 4)
+// this function rotates the block counter clockwise - transpose the matrix and than reverses the order of the rows
+void Block::counterClockwiseRotate() {
+	if (shapeNum == DICE)
 		return;
 	transpose_Matrix();
 	reverseRows();
@@ -244,106 +222,82 @@ void Block::counterClockwiseRotate()
 }
 
 // This fucntion tranpose the matrix (swaps the collumn and the rows)
-void Block::transpose_Matrix()
-{
+void Block::transpose_Matrix() {
 	for (size_t i = 0; i < figure.size(); i++)
 		for (size_t j = i + 1; j < figure[i].size(); j++)
 			std::swap(figure[i][j], figure[j][i]);
 }
 
-// This function 
-void Block::reverseRows()
-{
-	for (size_t i = 0; i < BLOCK_MATRIX; i++)
-	{
+// Function reverse row order in a matrix
+void Block::reverseRows() {
+	
+	for (size_t i = 0; i < BLOCK_MATRIX; i++) {
 		size_t start = 0;
 		size_t end = BLOCK_MATRIX - 1;
 
-
-		while (start < end)
-		{
-			swap(figure[i][start], figure[i][end]);
+		while (start < end) {
+			std::swap(figure[i][start], figure[i][end]);
 			start++;
 			end--;
 		}
 	}
 }
 
-void Block::reverseColumns()
-{
-	for (int i = 0; i < BLOCK_MATRIX; i++)
-	{
+// Function Reverses the order of the columns in the matrix
+void Block::reverseColumns() {
+	for (int i = 0; i < BLOCK_MATRIX; i++) {
 		int start = 0;
 		int end = BLOCK_MATRIX - 1;
 
 
-		while (start < end)
-		{
-			swap(figure[start][i], figure[end][i]);
+		while (start < end) {
+			std::swap(figure[start][i], figure[end][i]);
 			start++;
 			end--;
 		}
 	}
 }
 
-void Block::drawBlock() const
-{
-	if (colorsMode)
+void Block::drawBlock() const {
+	if (Block::colorsMode)
 		setTextColor(color);
 
-	for (int i = 0; i < 4; ++i)
-	{
-		for (int j = 0; j < 4; ++j)
-		{
-			if (figure[i][j])
-			{
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			if (figure[i][j]) {
 				gotoxy(pos.getX() + i, pos.getY() + j);
 				cout << shape;
 			}
 		}
 	}
-	if (colorsMode)
+	if (Block::colorsMode)
 		setTextColor(WHITE);
 }
 
-void Block::drawMatrix()
-{
-	for (int i = 0; i < figure.size(); ++i)
-		for (int j = 0; j < figure[i].size(); ++j)
-		{
-			gotoxy(pos.getX() + i, pos.getY() + j);
-			if (figure[i][j])
-				setTextColor(RED);
-			cout << figure[i][j];
-			setTextColor(WHITE);
-		}
-}
-
-void Block::moveDown()
-{
+// Raise the y componente in the position data member of the block
+void Block::moveDown() {
 	cleanPrint();
 	pos++;
 	drawBlock();
 }
 
-void Block::moveLeft()
-{
+// Reduction the x componente in the position data member of the block
+void Block::moveLeft() {
 	cleanPrint();
 	pos <<= 1;
 	drawBlock();
 }
 
-void Block::moveRight()
-{
+// Raise the x componente in the position data member of the block
+void Block::moveRight() {
 	cleanPrint();
 	pos >>= 1;
 	drawBlock();
 }
 
-void Block::changeColorsMode()
-{
+void Block::changeColorsMode() {
 	if (Block::colorsMode)
-		colorsMode = false;
+		Block::colorsMode = false;
 	else
-		colorsMode = true;
+		Block::colorsMode = true;
 }

@@ -14,20 +14,20 @@ class Box
 	Point pos;
 	Board box;
 	array<Block,BLOCKS_IN_BOX> blocks;
-	
-	friend class Player;
 
+	friend class Player;
+	friend class Game;
 
 private:
 	void setBlocks();
-	void drawBox()const;
+	void drawBox() const;
 public:
-	Box() : Box({ 0,0 }) {}
+	Box() : Box({0, 0}) {}
 	Box(const Point& _pos);
 	~Box() = default;
-	friend ostream& operator<<(ostream& out, const Box& _box) { _box.drawBox(); return out; }
+	friend std::ostream& operator<<(std::ostream& out, const Box& _box) { _box.drawBox(); return out; }
 	void clearBox();
+	void setBoxPosition(const Point& _pos) { pos = _pos; }
 };
 
 #endif
-
