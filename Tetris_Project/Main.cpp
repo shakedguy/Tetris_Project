@@ -1,11 +1,10 @@
 ﻿/***************************************
  
 	Guy Shaked - 205717952 
-	your name
+	Gur shmuelevitz - 207423625
 	Main file - Tetris game
 	
 ***************************************/
-//#include <windows.h>
 
 #include "Game.h"
 
@@ -17,5 +16,4 @@ int main() {
 	game.menuPage();
 	gotoxy(WINNING_MASSAGE);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
-
 }
