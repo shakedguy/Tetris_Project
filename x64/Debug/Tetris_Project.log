@@ -1,40 +1,43 @@
 ﻿  Block.cpp
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Block.cpp(200,41): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Block.cpp(200,41): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Board.cpp
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(10,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(11,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(27,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(28,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(39,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(40,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(49,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(56,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(57,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(64,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(70,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(76,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(82,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(102,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(103,14): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(131,12): warning C4018: '>': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(132,25): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(133,22): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(135,13): warning C4018: '>': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(136,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(137,26): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(146,6): warning C4267: 'argument': conversion from 'size_t' to 'const uint', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(147,14): warning C4267: 'argument': conversion from 'size_t' to 'const uint', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(159,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Board.cpp(168,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(10,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(11,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(27,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(28,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(39,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(40,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(49,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(56,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(57,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(64,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(70,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(76,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(82,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(102,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(103,14): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(131,12): warning C4018: '>': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(132,25): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(133,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(135,13): warning C4018: '>': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(136,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(137,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(146,6): warning C4267: 'argument': conversion from 'size_t' to 'const uint', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(147,14): warning C4267: 'argument': conversion from 'size_t' to 'const uint', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(159,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(168,20): warning C4018: '<': signed/unsigned mismatch
   Box.cpp
   Game.cpp
+  io_utils.cpp
   Main.cpp
   Menu.cpp
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Menu.cpp(7,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Menu.cpp(31,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Menu.cpp(33,16): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(7,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(31,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(33,16): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
   Player.cpp
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Player.cpp(217,63): warning C4244: '+=': conversion from 'double' to 'uint', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Tetris_Project\Player.cpp(396,70): warning C4018: '>': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Player.cpp(217,63): warning C4244: '+=': conversion from 'double' to 'uint', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Player.cpp(396,70): warning C4018: '>': signed/unsigned mismatch
+  Point.cpp
   Generating Code...
-  Tetris_Project.vcxproj -> C:\Users\shake\Source\Repos\Tetris_Project\Tetris_Project\x64\Debug\Tetris_Project.exe
+  LINK : C:\Users\shake\Source\Repos\Tetris_Project\x64\Debug\Tetris_Project.exe not found or not built by the last incremental link; performing full link
+  Tetris_Project.vcxproj -> C:\Users\shake\Source\Repos\Tetris_Project\x64\Debug\Tetris_Project.exe
