@@ -10,7 +10,7 @@
 
 
 int main() {
-
+	/*guyshaked*/
 	hideCursor();
 	Game game;
 	game.menuPage();
