@@ -9,7 +9,7 @@ Menu::Menu(const Point& _pos) : pos(_pos) {
 			menu.setSeparators(i);
 	setMenuBlock();
 }
-/*gyu*/
+
 bool Menu::colorsMode = false;
 
 void Menu::drawMenu() const {
