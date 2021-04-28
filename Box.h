@@ -11,9 +11,10 @@
 
 class Box
 {
+	enum Constants { LENGTH = 8, WIDTH = 8, NUM_OF_BLOCKS = 2 };
 	Point pos;
 	Board box;
-	array<Block,BLOCKS_IN_BOX> blocks;
+	array<Block, NUM_OF_BLOCKS> blocks;
 
 	friend class Player;
 	friend class Game;

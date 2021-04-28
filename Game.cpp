@@ -3,70 +3,22 @@
 ***************************************/
 #include "Game.h"
 
-Game::Game() : menu({MENU_BOARD_POS}), players{
-				   {1, {LEFT_BOARD_POS}, {LEFT_BOX_POS}},
-				   {2, {RIGHT_BOARD_POS}, {RIGHT_BOX_POS}}
+Game::Game() : menu({Menu::MENU_X,Menu::MENU_Y}), players{
+				   {1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
+				   {2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}}
 			   } {
 	setGameButtons();
 }
 
 void Game::setGameButtons() {
 
-	const Point& temp = {SPEED_MODE_BUTTON_POS};
+	const Point& temp = {SPEED_X,SPEED_Y};
 	int y = 0;
 	for (int i = 0; i < buttons.size(); ++i) {
 
 		buttons[i].resizeBoundaries(GAME_BUTTON_WIDTH, GAME_BUTTON_LENGTH);
 		buttons[i].setAllBoundaries();
 		buttons[i].pos = {temp.getX(), temp.getY() + (static_cast<int>(buttons[i].length) * i) + y++};
-	}
-}
-
-/* Print the menu page, check what option the users input and send to the right function
- * if the input is not valid prints a message.
- */
-void Game::menuPage() {
-	cout << menu;
-	switch (menu.getOption()) {
-	case NEW_GAME_INPUT:
-		clrscr();
-		if (gameNumber)
-			clearGame();
-		init();
-		break;
-	case RESUME_GAME_INPUT:
-		if (resumeGame()) {
-			clrscr();
-			players[0].setCurrentBlockPos({LEFT_CURRENT_BLOCK});
-			players[1].setCurrentBlockPos({RIGHT_CURRENT_BLOCK});
-			run();
-		}
-		else
-			menuPage();
-		break;
-	case SET_NAMES_INPUT:
-		clrscr();
-		setNames();
-		menuPage();
-		break;
-	case INSTRUCTIONS_AND_KEYS:
-		clrscr();
-		keyAndInstructions();
-		if (_kbhit())
-			uchar c = _getch();
-		break;
-	case COLOR_MODE_INPUT:
-		changeColorsMode();
-		clrscr();
-		menuPage();
-		break;
-	case EXIT_GAME_INPUT:
-		clrscr();
-		break;
-
-	default:
-		inputErrorMassage();
-		break;
 	}
 }
 
@@ -80,7 +32,6 @@ void Game::changeColorsMode() {
 		Game::colorsMode = false;
 	else
 		Game::colorsMode = true;
-	Menu::changeColorsMode();
 	Player::changeColorsMode();
 	Block::changeColorsMode();
 }
@@ -90,23 +41,7 @@ void Game::inputErrorMassage() {
 	cout << menu;
 	gotoxy(menu.getLastBoxPos().getX() + 2, menu.getLastBoxPos().getY());
 	cout << "Not in the options, please try again" << endl;
-	menuPage();
-}
-
-void Game::keyAndInstructions() {
-	clrscr();
-	cout << "\tInstructions" << "\t\t\t\t\t     " << "Left player" << "  |  " << "Right player" << endl;
-	cout << "\t----------------------------------------------------------------------------------" << endl;
-	cout << "\t\t\t\t\t\t\t\t\t  |" << endl;
-	cout << "\tMove the block to the right with the key:" << "\t\t" << "d/D" << "\t  |\t" << "l/L" << endl;
-	cout << "\tMove the block left with the key:" << "\t\t\t" << "a/A" << "\t  |\t" << "j/J" << endl;
-	cout << "\tRotate the block clockwise with the key:" << "\t\t" << "w/W" << "\t  |\t" << "i/I" << endl;
-	cout << "\tRotate the block counterclockwise with the key:" << "\t\t" << "s/S" << "\t  |\t" << "k/K" << endl;
-	cout << "\tDropping the block with the key:" << "\t\t\t" << "x/X" << "\t  |\t" << "m/M" << endl << endl << endl;
-	cout << "\tPress any key to return to the menu" << endl;
-	_getch();
-	clrscr();
-	menuPage();
+	menu.menuPage(*this);
 }
 
 /* Checks if there is a game to return to */
@@ -198,18 +133,27 @@ void Game::run() {
 		avoidMultipleMoves(key, temp, temp2);
 		move();
 		printScores();
+		
 		Sleep(gameSpeed);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;
 		temp = key;
+		resetIndicators();
 	}
 	while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
 	if (isSomeoneLose())
 		clrscr();
-	menuPage();
+	menu.menuPage(*this);
 	clrscr();
 }
+
+void Game::resetIndicators()
+{
+	players[0].showIndicateHit(DEFAULT);
+	players[1].showIndicateHit(DEFAULT);
+}
+
 
 /* Checks if the received character belongs to one of the player's buttons */
 void Game::directions(const uchar& key) {
@@ -229,7 +173,7 @@ void Game::checkGameModes(const uchar& key) {
 		changeSpeedMode();
 		returnLastSpeed();
 	}
-	else if (key - '0' == COLOR_MODE_INPUT)
+	else if (key - '0' == Game::Menu::COLOR_MODE)
 		changeColorsMode();
 	
 	drawButtons();
@@ -243,7 +187,7 @@ uchar Game::avoidMultipleHits() {
 	uchar key = DEFAULT;
 	if (_kbhit()) {
 		key = _getch();
-		for (int i = 0; i < 10 && key != ESC; i++) {
+		for (int i = 0; i < HITS_LIMIT && key != ESC; ++i) {
 			if (_kbhit())
 				key = _getch();
 		}
@@ -309,17 +253,17 @@ void Game::winningMassage(const ushort& flag) const {
 void Game::changeSpeedMode() {
 
 	if (Game::speedMode)
-		speedMode = false;
+		Game::speedMode = false;
 	else
-		speedMode = true;
+		Game::speedMode = true;
 }
 
 void Game::returnLastSpeed() {
 
 	if(Game::speedMode)
-		gameSpeed -= (accNum - 1) * ACCELERATION;// If the player changed more than one time during the game,
+		Game::gameSpeed -= (accNum - 1) * ACCELERATION;// If the player changed more than one time during the game,
 	else                                          //the speed will come back to the highest mode they got so far
-		gameSpeed = GAME_SPEED;	
+		Game::gameSpeed = GAME_SPEED;
 }
 
 void Game::checkSpeedStatus() {
@@ -327,3 +271,10 @@ void Game::checkSpeedStatus() {
 	if (players[0].checkSpeed(accNum) || players[1].checkSpeed(accNum))
 		acceleration();
 }
+
+void Game::resetCurrentBlocksPos()
+{
+	players[0].setCurrentBlockPos({ Player::LEFT_BLOCK,Player::BLOCKS_Y });
+	players[1].setCurrentBlockPos({ Player::RIGHT_BLOCK,Player::BLOCKS_Y });
+}
+

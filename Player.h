@@ -11,12 +11,22 @@
 
 class Player
 {
+	enum objectsPositions
+	{
+	     LEFT_SCORE = 18, RIGHT_SCORE = 68, SCORES_Y = 2,
+		LEFT_BLOCK = 34, RIGHT_BLOCK = 54, BLOCKS_Y = 0
+	};
+	enum Constants
+	{
+	     POINTS_FOR_FULL_ROW = 100, BLOCKS_FOR_ACCELERATION = 5, SCORE_FOR_ACCELERATION = 20,
+		INDIVATORS_WIDTH =3, INDIVATORS_LENGTH =2, NUM_OF_KEYS = 5
+	};
 	static bool colorsMode;
 	string name;
 	ushort playerNum;
 	ushort direction;
 	map<uchar, sint> keys;
-	array<Board, NUMBER_OF_KEYS> keyIndicators;
+	array<Board, NUM_OF_KEYS> keyIndicators;
 	Point boardPos;
 	Point boxPos;
 	Board board;
@@ -42,7 +52,6 @@ private:
 	bool moveDown();
 	void setKeysIndication();
 	void showIndicateHit(const ushort& dir);
-	void cleanIndicatorsHit(const ushort& dir);
 	void drawKeysIndication() const;
 
 

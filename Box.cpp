@@ -1,6 +1,6 @@
 ﻿#include "Box.h"
 
-Box::Box(const Point& _pos) : pos(_pos), box({pos}, BOX_LENGTH,BOX_WIDTH) {
+Box::Box(const Point& _pos) : pos(_pos), box({pos}, LENGTH,WIDTH) {
 	
 	box.setAllBoundaries();
 	setBlocks();

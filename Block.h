@@ -10,10 +10,12 @@
 
 class Block
 {
-	enum SHAPES { LINE, L, LEFT_L, DICE, RIGHT_STEPS, CENTER_STEP, LEFT_STEPS };
+	enum Shapes { LINE, L, LEFT_L, DICE, RIGHT_STEPS, CENTER_STEP, LEFT_STEPS };
+	enum Filling { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
+	enum Matrix { COLUMNS = 4, ROWS = 4 };
 
 	static bool colorsMode;
-	array<array<ushort, BLOCK_MATRIX>, BLOCK_MATRIX> figure;
+	array<array<ushort, COLUMNS>, ROWS> figure;
 	Point pos;
 	uchar shape;
 	ushort shapeNum;
@@ -22,7 +24,8 @@ class Block
 	friend class Player;
 	friend class Box;
 	friend class Board;
-	friend class Menu;
+	friend class Game;
+
 
 private:
 	void setLineFigure();

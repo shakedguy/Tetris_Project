@@ -13,7 +13,7 @@ int main() {
 
 	hideCursor();
 	Game game;
-	game.menuPage();
+	game.startGame();
 	gotoxy(WINNING_MASSAGE);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
 }

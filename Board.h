@@ -22,6 +22,8 @@ class Board
 		LEFT_CONNECTOR = 204
 	};
 
+	enum Sizes { LENGTH = 19, WIDTH = 14 };
+
 	Point pos;
 	uint length, width;
 	vector<vector<uchar>> board;
@@ -46,7 +48,7 @@ private:
 
 public:
 	Board() : Board({0, 0}, 0, 0) {}
-	Board(const Point& _pos) : Board({_pos}, BOARD_LENGTH, BOARD_WIDTH) {}
+	Board(const Point& _pos) : Board({_pos}, LENGTH, WIDTH) {}
 	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
 	~Board() = default;

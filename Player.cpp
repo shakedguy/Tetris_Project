@@ -3,16 +3,16 @@
 Player::Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) : playerNum(_playerNum),
 																	boardPos(_boardPos),
 																	boxPos(_boxPos),
-																	board(boardPos, BOARD_LENGTH, BOARD_WIDTH),
+																	board(boardPos, Board::LENGTH, Board::WIDTH),
 																	box(boxPos) {
 	direction = DEFAULT;
 	score = 0;
 	if (playerNum == 1) {
-		block.pos = {LEFT_CURRENT_BLOCK};
+		block.pos = {LEFT_BLOCK, BLOCKS_Y};
 		name = "Player 1";
 	}
 	else {
-		block.pos = {RIGHT_CURRENT_BLOCK};
+		block.pos = { RIGHT_BLOCK, BLOCKS_Y };
 		name = "Player 2";
 	}
 	setGameBoundaries();
@@ -33,10 +33,10 @@ void Player::setKeysIndication() {
 	
 	for (auto i = 0; i < keyIndicators.size(); i++) {
 		
-		keyIndicators[i].resizeBoundaries(kEY_INDIVATORS_WIDTH, kEY_INDIVATORS_LENGTH);
+		keyIndicators[i].resizeBoundaries(INDIVATORS_WIDTH, INDIVATORS_LENGTH);
 		keyIndicators[i].setAllBoundaries();
 		if (i < keyIndicators.size() - 2)
-			keyIndicators[i].pos = {boardPos.getX() + 4, boardPos.getY() + BOARD_LENGTH + (i * kEY_INDIVATORS_LENGTH)};
+			keyIndicators[i].pos = {boardPos.getX() + 4, boardPos.getY() + Board::LENGTH + (i * INDIVATORS_LENGTH)};
 	}
 	keyIndicators[keyIndicators.size() - 2].pos = {
 			keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY()};
@@ -45,12 +45,9 @@ void Player::setKeysIndication() {
 }
 
 void Player::drawKeysIndication() const {
-	
-	for (ushort i = 0; i < keyIndicators.size(); ++i) {
-		cout << keyIndicators[i];
-		gotoxy(keyIndicators[i].pos.getX() + 1, keyIndicators[i].pos.getY() + 1);
-		cout << getKey(i);
-	}
+
+	for (const Board& indicator : keyIndicators)
+		cout << indicator;
 }
 
 void Player::setName() {
@@ -68,9 +65,9 @@ void Player::clearGame() {
 	block.createNewBlock();
 	setGameBoundaries();
 	if (playerNum == 1)
-		block.pos = {LEFT_CURRENT_BLOCK};
+		block.pos = {LEFT_BLOCK, BLOCKS_Y};
 	else
-		block.pos = {RIGHT_CURRENT_BLOCK};
+		block.pos = {RIGHT_BLOCK,BLOCKS_Y};
 }
 
 // Remove the top boundary of the board
@@ -96,12 +93,14 @@ void Player::printScore() const {
 
 	Point pos;
 	if (playerNum == 1)
-		pos = {LEFT_SCORE_POS};
+		pos = {LEFT_SCORE,SCORES_Y};
 	else
-		pos = {RIGHT_SCORE_POS};
+		pos = { RIGHT_SCORE,SCORES_Y };
 	gotoxy(pos.getX(), pos.getY());
-	cout << name << "'s score: ";
-	gotoxy(pos.getX() + 5, pos.getY() + 1);
+	cout << name;
+	gotoxy(pos.getX(), pos.getY() + 1);
+	cout << "score: ";
+	gotoxy(pos.getX() + 2, pos.getY() + 2);
 	cout << score;
 
 	if (Player::colorsMode)
@@ -144,29 +143,19 @@ sint Player::getDirection(const uchar& key) {
 void Player::showIndicateHit(const ushort& dir) {
 
 	drawKeysIndication();
-	if (Player::colorsMode) {
-		setTextColor(RED);
-		cout << keyIndicators[dir];
-		gotoxy(keyIndicators[dir].pos.getX() + 1, keyIndicators[dir].pos.getY() + 1);
-		setTextColor(WHITE);
-		cout << getKey(dir);
+	if(dir!=DEFAULT)
+	{
+	     if (Player::colorsMode) {
+	          setTextColor(RED);
+	          cout << keyIndicators[dir];
+	          setTextColor(WHITE);
+	     }
+	     else {
+	          keyIndicators[dir].fillAllBoard('#');
+	          cout << keyIndicators[dir];
+	          keyIndicators[dir].setAllBoundaries();
+	     }
 	}
-	else {
-		keyIndicators[dir].fillAllBoard('#');
-		cout << keyIndicators[dir];
-		gotoxy(keyIndicators[dir].pos.getX() + 1, keyIndicators[dir].pos.getY() + 1);
-		cout << getKey(dir);
-		keyIndicators[dir].setAllBoundaries();
-	}
-}
-
-void Player::cleanIndicatorsHit(const ushort& dir) {
-	
-	if (Player::colorsMode)
-		setTextColor(WHITE);
-	keyIndicators[dir].cleanBoard();
-	keyIndicators[dir].setAllBoundaries();
-	drawKeysIndication();
 }
 
 // Gets a key and returns if it represents the DEFAULT direction
@@ -192,9 +181,9 @@ void Player::getNewBlock() {
 	
 	block = box.blocks[0];
 	if (playerNum == 1)
-		block.pos = {LEFT_CURRENT_BLOCK};
+		block.pos = {LEFT_BLOCK,BLOCKS_Y};
 	else
-		block.pos = {RIGHT_CURRENT_BLOCK};
+		block.pos = {RIGHT_BLOCK,BLOCKS_Y};
 	const Point temp = box.blocks[0].pos;
 	box.blocks[0] = box.blocks[1];
 	box.blocks[0].pos = temp;

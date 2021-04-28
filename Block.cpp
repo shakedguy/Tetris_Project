@@ -146,7 +146,7 @@ void Block::arrangeMatrix() {
 
 // This function checks if the first row is empty
 bool Block::isRowZeroEmpty() {
-	for (int i = 0; i < BLOCK_MATRIX; i++)
+	for (int i = 0; i < ROWS; i++)
 		if (figure[i][0])
 			return false;
 	return true;
@@ -231,9 +231,9 @@ void Block::transpose_Matrix() {
 // Function reverse row order in a matrix
 void Block::reverseRows() {
 	
-	for (size_t i = 0; i < BLOCK_MATRIX; i++) {
+	for (size_t i = 0; i < figure.size(); i++) {
 		size_t start = 0;
-		size_t end = BLOCK_MATRIX - 1;
+		size_t end = figure[i].size() - 1;
 
 		while (start < end) {
 			std::swap(figure[i][start], figure[i][end]);
@@ -245,9 +245,9 @@ void Block::reverseRows() {
 
 // Function Reverses the order of the columns in the matrix
 void Block::reverseColumns() {
-	for (int i = 0; i < BLOCK_MATRIX; i++) {
-		int start = 0;
-		int end = BLOCK_MATRIX - 1;
+	for (size_t i = 0; i < figure[i].size(); i++) {
+		size_t start = 0;
+		size_t end = figure.size() - 1;
 
 
 		while (start < end) {
