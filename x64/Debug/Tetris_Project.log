@@ -1,11 +1,6 @@
-﻿  Game.cpp
-  Main.cpp
-  Menu.cpp
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(7,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(29,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(31,16): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
-  Player.cpp
-C:\Users\shake\source\repos\Tetris_Project\Player.cpp(206,63): warning C4244: '+=': conversion from 'double' to 'uint', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Player.cpp(385,70): warning C4018: '>': signed/unsigned mismatch
-  Generating Code...
-  Tetris_Project.vcxproj -> C:\Users\shake\Source\Repos\Tetris_Project\x64\Debug\Tetris_Project.exe
+﻿  Menu.cpp
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(23,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(30,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(78,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(80,16): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+  Tetris_Project.vcxproj -> C:\Users\shake\source\repos\Tetris_Project\x64\Debug\Tetris_Project.exe

@@ -2,12 +2,49 @@
 
 Game::Menu::Menu(const Point& _pos) : pos(_pos) {
 	menu.pos = _pos;
-	menu.resizeBoundaries(MENU_BLOCK_WIDTH, 25);
+	newGameMenu = _pos;
+	menu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
+	newGameMenu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
+	setMenuBoard();
+	setNewGameMenuBoard();
+	setMenuBlock();
+}
+
+bool Game::Menu::resumeGame = false;
+
+void Game::Menu::possibleResumeGame(const bool& possible)
+{
+	Game::Menu::resumeGame = possible;
+}
+
+void Game::Menu::setNewGameMenuBoard()
+{
+	newGameMenu.setAllBoundaries();
+	for (int i = 1; i < newGameMenu.length - 1; i++)
+		if (i % 4 == 0)
+			newGameMenu.setSeparators(i);
+}
+void Game::Menu::setMenuBoard()
+{
 	menu.setAllBoundaries();
 	for (int i = 1; i < menu.length - 1; i++)
-		if (i % 4 == 0)
-			menu.setSeparators(i);
-	setMenuBlock();
+	     if (i % 4 == 0)
+	          menu.setSeparators(i);
+}
+
+void Game::Menu::updateMenuBoard()
+{
+	if (Game::Menu::resumeGame && menu.length == MENU_BOARD_LENGTH)
+	{
+		menu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH + MENU_BLOCK_LENGTH - 1);
+		setMenuBoard();
+
+	}
+	else if (!Game::Menu::resumeGame && menu.length > MENU_BOARD_LENGTH)
+	{
+		menu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
+		setMenuBoard();
+	}
 }
 
 void Game::Menu::drawMenu() const {
@@ -22,8 +59,20 @@ void Game::Menu::drawMenu() const {
 	drawBlocksInMenu();
 }
 
+void Game::Menu::drawNewGameMenu() const {
+
+	if (Game::colorsMode)
+		setTextColor(BROWN);
+	cout << newGameMenu;
+
+	if (Game::colorsMode)
+		printMenuColor();
+	printNewGameMenuOptions();
+	drawBlocksInMenu();
+}
+
 void Game::Menu::printMenuColor() const {
-	
+
 	for (size_t i = 1; i < menu.width - 1; ++i) {
 		for (size_t j = 1; j < menu.length - 1; ++j) {
 			gotoxy(menu.pos.getX() + i, menu.pos.getY() + j);
@@ -38,7 +87,7 @@ void Game::Menu::printMenuColor() const {
 
 // Selects a suitable color for the block
 void Game::Menu::pickColor(const int& row) const {
-	
+
 	if (row < MENU_BLOCK_LENGTH)
 		setTextColor(GREEN);
 	else if (row < (MENU_BLOCK_LENGTH - 1) * 2)
@@ -54,25 +103,51 @@ void Game::Menu::pickColor(const int& row) const {
 }
 
 void Game::Menu::printMenuOptions() const {
-	
+
+	ushort temp = 1;
 	gotoxy(menu.pos.getX() + NEW_GAME_X, menu.pos.getY() + TEXT_Y);
 	cout << "For new game press - " << NEW_GAME << endl;
-	gotoxy(menu.pos.getX() + RESUME_GAME_X, menu.pos.getY() + (MENU_BLOCK_LENGTH - 1) + TEXT_Y);
-	cout << "For resume to your game press - " << RESUME_GAME << endl;
-	gotoxy(menu.pos.getX() + SET_NAMES_X, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 2) + TEXT_Y);
+	if (Game::Menu::resumeGame)
+	{
+		gotoxy(menu.pos.getX() + RESUME_GAME_X, menu.pos.getY() + (MENU_BLOCK_LENGTH - 1) * (temp++) + TEXT_Y);
+		cout << "For resume to your game press - " << RESUME_GAME << endl;
+	}
+	gotoxy(menu.pos.getX() + SET_NAMES_X, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
 	cout << "For set players names press - " << SET_NAMES << endl;
-	gotoxy(menu.pos.getX() + INSTRUCTIONS, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 4) + TEXT_Y);
-	cout << "For keys and instructions press - " << INSTRUCTIONS_AND_KEYS << endl;
-	gotoxy(menu.pos.getX() + EXIT, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 5) + TEXT_Y);
-	cout << "For exit press - " << EXIT_GAME << endl;
 	if (Game::colorsMode) {
-		gotoxy(menu.pos.getX() + COLOR_MODE_ON, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 3) + TEXT_Y);
+		gotoxy(menu.pos.getX() + COLOR_MODE_ON, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
 		cout << "For black and white press - " << COLOR_MODE << endl;
 	}
 	else {
-		gotoxy(menu.pos.getX() + COLOR_MODE_OF, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * 3) + TEXT_Y);
+		gotoxy(menu.pos.getX() + COLOR_MODE_OF, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
 		cout << "For colors mode press - " << COLOR_MODE << endl;
 	}
+	gotoxy(menu.pos.getX() + INSTRUCTIONS, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	cout << "For keys and instructions press - " << INSTRUCTIONS_AND_KEYS << endl;
+	gotoxy(menu.pos.getX() + EXIT, menu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	cout << "For exit press - " << EXIT_GAME << endl;
+
+}
+
+void Game::Menu::printNewGameMenuOptions() const {
+
+	ushort temp = 1;
+	gotoxy(newGameMenu.pos.getX() + PRINT_H_H, newGameMenu.pos.getY() + TEXT_Y);
+	cout << "For Human vs Human press - " << H_VS_H << endl;
+	gotoxy(newGameMenu.pos.getX() + PRINT_H_C, newGameMenu.pos.getY() + (MENU_BLOCK_LENGTH - 1) * (temp++) + TEXT_Y);
+	cout << "For Human vs Computer press - " << H_VS_C << endl;
+	gotoxy(newGameMenu.pos.getX() + PRINT_C_C, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	cout << "For Computer vs Computer press - " << C_VS_C << endl;
+	if (Game::colorsMode) {
+		gotoxy(newGameMenu.pos.getX() + COLOR_MODE_ON, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+		cout << "For black and white press - " << COLOR_MODE << endl;
+	}
+	else {
+		gotoxy(newGameMenu.pos.getX() + COLOR_MODE_OF, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+		cout << "For colors mode press - " << COLOR_MODE << endl;
+	}
+	gotoxy(newGameMenu.pos.getX() + BACK, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	cout << "For back to menu press - " << EXIT_GAME << endl;
 }
 
 void Game::Menu::drawBlocksInMenu() const {
@@ -82,14 +157,14 @@ void Game::Menu::drawBlocksInMenu() const {
 
 // Sets locations of the menu blocks
 void Game::Menu::setMenuBlock() {
-	
+
 	for (int i = 0; i < blocks.size(); ++i) {
 		if (i < (blocks.size() / 2))
 			blocks[i].pos = { menu.pos.getX() + LEFT_BLOCKS_DISTANCE,
-		     menu.pos.getY() + ((i + 1) * VERTICAL_BLOCKS_DISTANCE) };
+			menu.pos.getY() + (i * VERTICAL_BLOCKS_DISTANCE) + MENU_BLOCK_LENGTH / 2 };
 		else
 			blocks[i].pos = { menu.pos.getX() + RIGHT_BLOCKS_DISTANCE,
-		     menu.pos.getY() + ((i - 3) * VERTICAL_BLOCKS_DISTANCE) };
+			menu.pos.getY() + ((i - 4) * VERTICAL_BLOCKS_DISTANCE) + MENU_BLOCK_LENGTH / 2 };
 	}
 }
 
@@ -104,13 +179,13 @@ Point Game::Menu::getLastBoxPos()const
  */
 void Game::Menu::menuPage(Game& game)
 {
-	cout << game.menu;
-	switch (game.menu.getOption()) {
+	drawMenu();
+	switch (getOption()) {
 	case NEW_GAME:
 		clrscr();
 		if (game.gameNumber)
 			game.clearGame();
-		game.init();
+		newGameOptions(game);
 		break;
 	case RESUME_GAME:
 		if (game.resumeGame()) {
@@ -140,10 +215,46 @@ void Game::Menu::menuPage(Game& game)
 		break;
 
 	default:
-		game.inputErrorMassage();
+		inputErrorMassage();
+		menuPage(game);
 		break;
 	}
 }
+
+void Game::Menu::newGameOptions(Game& game)
+{
+	drawNewGameMenu();
+     switch (getOption())
+     {
+	case H_VS_H:
+		clrscr();
+		game.init(H_VS_H);
+		break;
+	case H_VS_C:
+		clrscr();
+		game.init(H_VS_C);
+		break;
+	case C_VS_C:
+		clrscr();
+		game.init(C_VS_C);
+		break;
+	case COLOR_MODE:
+		game.changeColorsMode();
+		clrscr();
+		newGameOptions(game);
+		break;
+	case EXIT_GAME:
+		clrscr();
+		menuPage(game);
+		break;
+
+	default:
+		inputErrorMassage();
+		newGameOptions(game);
+		break;
+     }
+}
+
 
 void Game::Menu::keyAndInstructions() {
 	clrscr();
@@ -158,6 +269,12 @@ void Game::Menu::keyAndInstructions() {
 	cout << "\tPress any key to return to the menu" << endl;
 	_getch();
 	clrscr();
+}
+
+void Game::Menu::inputErrorMassage() {
+
+	gotoxy(pos.getX() + 2, pos.getY() + menu.length);
+	cout << "Not in the options, please try again" << endl;
 }
 
 

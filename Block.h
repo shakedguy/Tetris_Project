@@ -22,6 +22,8 @@ class Block
 	Color color;
 
 	friend class Player;
+	friend class HumanPlayer;
+	friend class ComputerPlayer;
 	friend class Box;
 	friend class Board;
 	friend class Game;

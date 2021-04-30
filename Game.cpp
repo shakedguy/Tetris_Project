@@ -3,10 +3,12 @@
 ***************************************/
 #include "Game.h"
 
-Game::Game() : menu({Menu::MENU_X,Menu::MENU_Y}), players{
-				   {1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
-				   {2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}}
-			   } {
+Game::Game() : menu({Menu::MENU_X,Menu::MENU_Y}),
+     humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
+			     HumanPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} },
+	     computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
+				     ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
+{
 	setGameButtons();
 }
 
@@ -36,20 +38,12 @@ void Game::changeColorsMode() {
 	Block::changeColorsMode();
 }
 
-void Game::inputErrorMassage() {
-	clrscr();
-	cout << menu;
-	gotoxy(menu.getLastBoxPos().getX() + 2, menu.getLastBoxPos().getY());
-	cout << "Not in the options, please try again" << endl;
-	menu.menuPage(*this);
-}
-
 /* Checks if there is a game to return to */
 bool Game::resumeGame() {
 	
 	clrscr();
 	cout << menu;
-	if (players[0].isLost() || players[1].isLost()) {
+	if (players[0]->isLost() || players[1]->isLost()) {
 		gotoxy(menu.pos.getX() + 4, menu.pos.getY() + static_cast<int>(menu.menu.getLength()));
 		cout << "The game ended, please try again" << endl;
 		Sleep(1500);
@@ -66,14 +60,44 @@ bool Game::resumeGame() {
 }
 
 /* initialization new game and printing players boards */
-void Game::init() {
+void Game::init(const ushort& option) {
+
+	if (!initializePlayers(option))
+		return;
 	gameNumber++;
-	players[0].setPlayerKeys(PLAYER_ONE_KEYS);
-	players[1].setPlayerKeys(PLAYER_TWO_KEYS);
+	players[0]->setPlayerKeys(PLAYER_ONE_KEYS);
+	players[1]->setPlayerKeys(PLAYER_TWO_KEYS);
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
 }
+
+bool Game::initializePlayers(const ushort& option)
+{
+     switch (option)
+     {
+	case Menu::H_VS_H:
+		players[0] = &humanPlayers[0];
+		players[1] = &humanPlayers[1];
+		return true;
+		break;
+	case Menu::H_VS_C:
+		players[0] = &humanPlayers[0];
+		players[1] = &computerPlayers[1];
+		return true;
+		break;
+	case Menu::C_VS_C:
+		players[0] = &computerPlayers[0];
+		players[1] = &computerPlayers[1];
+		return true;
+		break;
+
+		default:
+			return false;
+			break;
+     }
+}
+
 
 /* drawing the modes buttons */
 void Game::drawButtons() {
@@ -141,17 +165,18 @@ void Game::run() {
 		temp = key;
 		resetIndicators();
 	}
-	while (key != ESC && (!players[0].isLost()) && (!players[1].isLost()));
+	while (key != ESC && (!players[0]->isLost()) && (!players[1]->isLost()));
 	if (isSomeoneLose())
 		clrscr();
+	menu.updateMenuBoard();
 	menu.menuPage(*this);
 	clrscr();
 }
 
 void Game::resetIndicators()
 {
-	players[0].showIndicateHit(DEFAULT);
-	players[1].showIndicateHit(DEFAULT);
+	players[0]->showIndicateHit(DEFAULT);
+	players[1]->showIndicateHit(DEFAULT);
 }
 
 
@@ -159,10 +184,10 @@ void Game::resetIndicators()
 void Game::directions(const uchar& key) {
 
 	short dir = DEFAULT; // initialization the direction to the DEFAULT step
-	if ((dir = players[0].getDirection(key)) != -1)
-		players[0].setDirection(dir);
-	else if ((dir = players[1].getDirection(key)) != -1)
-		players[1].setDirection(dir);
+	if ((dir = players[0]->getDirection(key)) != -1)
+		players[0]->setDirection(dir);
+	else if ((dir = players[1]->getDirection(key)) != -1)
+		players[1]->setDirection(dir);
 }
 
 /* Checks if the received character belongs to one of the mode's buttons */
@@ -200,38 +225,42 @@ uchar Game::avoidMultipleHits() {
 void Game::avoidMultipleMoves(uchar& key, const uchar& temp, const uchar& temp2) {
 	
 	if (temp == key && temp2 == key) {
-		if (players[0].getDirection(key) != -1 && !players[0].isDown(key))
-			players[0].setDirection(DEFAULT);
-		else if (players[1].getDirection(key) != -1 && !players[1].isDown(key))
-			players[1].setDirection(DEFAULT);
-		key = players[0].getKey(DROP);
+		if (players[0]->getDirection(key) != -1 && !players[0]->isDown(key))
+			players[0]->setDirection(DEFAULT);
+		else if (players[1]->getDirection(key) != -1 && !players[1]->isDown(key))
+			players[1]->setDirection(DEFAULT);
+		key = players[0]->getKey(DROP);
 	}
 }
 
 /* if both players "lose" at the same time, the score determines and if the scores are equal, its a time gime */
 bool Game::isSomeoneLose() {
 	clrscr();
-	bool p1 = players[0].isLost(), p2 = players[1].isLost();
+	bool p1 = players[0]->isLost(), p2 = players[1]->isLost();
 	if (p1 && p2) {
 
 		uint s1, s2;
-		if ((s1 = players[0].getScore()) == (s2 = players[1].getScore()))
+		if ((s1 = players[0]->getScore()) == (s2 = players[1]->getScore()))
 			winningMassage(TIE_GAME_CODE);
 		else if (s1 > s2)
 			winningMassage(0);
 		else
 			winningMassage(1);
+		menu.possibleResumeGame(false);
 		return true;
 	}
 	if (p1) {
 
 		winningMassage(1);
+		menu.possibleResumeGame(false);
 		return true;
 	}
 	if (p2) {
 		winningMassage(static_cast<ushort>(0));
+		menu.possibleResumeGame(false);
 		return true;
 	}
+	menu.possibleResumeGame(true);
 	return false;
 }
 
@@ -242,7 +271,7 @@ void Game::winningMassage(const ushort& flag) const {
 	if (flag == TIE_GAME_CODE)
 		cout << "\t\t\t\tTie game";
 	else {
-		cout << players[flag].getName() << " won with - " << players[flag].getScore();
+		cout << players[flag]->getName() << " won with - " << players[flag]->getScore();
 		cout << " point! Congratulations!!!";
 	}
 	gotoxy(temp.getX() + 7, temp.getY() + 1);
@@ -268,13 +297,13 @@ void Game::returnLastSpeed() {
 
 void Game::checkSpeedStatus() {
 
-	if (players[0].checkSpeed(accNum) || players[1].checkSpeed(accNum))
+	if (players[0]->checkSpeed(accNum) || players[1]->checkSpeed(accNum))
 		acceleration();
 }
 
 void Game::resetCurrentBlocksPos()
 {
-	players[0].setCurrentBlockPos({ Player::LEFT_BLOCK,Player::BLOCKS_Y });
-	players[1].setCurrentBlockPos({ Player::RIGHT_BLOCK,Player::BLOCKS_Y });
+	players[0]->setCurrentBlockPos({ Player::LEFT_BLOCK,Player::BLOCKS_Y });
+	players[1]->setCurrentBlockPos({ Player::RIGHT_BLOCK,Player::BLOCKS_Y });
 }
 

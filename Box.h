@@ -17,6 +17,8 @@ class Box
 	array<Block, NUM_OF_BLOCKS> blocks;
 
 	friend class Player;
+	friend class HumanPlayer;
+	friend class ComputerPlayer;
 	friend class Game;
 
 private:
@@ -28,7 +30,7 @@ public:
 	~Box() = default;
 	friend std::ostream& operator<<(std::ostream& out, const Box& _box) { _box.drawBox(); return out; }
 	void clearBox();
-	void setBoxPosition(const Point& _pos) { pos = _pos; }
+	void setBoxPos(const Point& _pos) { pos = _pos; box.pos = _pos; setBlocks(); }
 };
 
 #endif

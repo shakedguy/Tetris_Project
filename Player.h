@@ -11,6 +11,7 @@
 
 class Player
 {
+protected:
 	enum objectsPositions
 	{
 	     LEFT_SCORE = 18, RIGHT_SCORE = 68, SCORES_Y = 2,
@@ -37,7 +38,7 @@ class Player
 	friend class Game;
 
 
-private:
+
 	void setGameBoundaries();
 	bool drop();
 	bool moveLeftAboveBoard();
@@ -51,30 +52,31 @@ private:
 	bool moveRight();
 	bool moveDown();
 	void setKeysIndication();
-	void showIndicateHit(const ushort& dir);
 	void drawKeysIndication() const;
 
 
 public:
-	Player() : Player(0, {0, 0}, {0, 0}) {}
-	Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos);
-	~Player() = default;
-	friend std::ostream& operator<<(std::ostream& out, const Player& _player);
+	virtual ~Player() = default;
+	Player& operator=(const Player& _player);
+	friend std::ostream& operator<<(std::ostream& out, const Player* _player);
 	void setName();
 	void printScore() const;
 	void drawBoard() const { }
-	void setPlayerKeys(const string& arrowKeys);
 	void move();
-	sint getDirection(const uchar& key);
 	void setDirection(const ushort& dir) { direction = dir; }
 	bool isLost();
 	void setCurrentBlockPos(const Point& pos) { block.pos = pos; }
 	void clearGame();
 	string getName() const { return name; }
-	bool isDown(const uchar& key);
-	uchar getKey(const ushort& dir) const;
+	virtual bool isDown(const uchar& key) = 0;
+	virtual uchar getKey(const ushort& dir) const = 0;
+	virtual void setPlayerKeys(const string& arrowKeys) = 0;
+	virtual sint getDirection(const uchar& key) = 0;
+	void showIndicateHit(const ushort& dir);
 	uint getScore() const { return score; }
 	bool checkSpeed(const int& accNum) const;
+	void setBoardPos(const Point& _pos) { boardPos = _pos; board.pos = _pos; }
+	void setBoxPos(const Point& _pos) { boxPos = _pos; box.setBoxPos(_pos); }
 	static void changeColorsMode();
 };
 

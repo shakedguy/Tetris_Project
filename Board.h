@@ -47,7 +47,7 @@ private:
 	void setSeparators(uint const& row);
 
 public:
-	Board() : Board({0, 0}, 0, 0) {}
+	Board() : Board({0, 0}, LENGTH, WIDTH) {}
 	Board(const Point& _pos) : Board({_pos}, LENGTH, WIDTH) {}
 	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);

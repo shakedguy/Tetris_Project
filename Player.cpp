@@ -1,30 +1,28 @@
 ﻿#include "Player.h"
 
-Player::Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) : playerNum(_playerNum),
-																	boardPos(_boardPos),
-																	boxPos(_boxPos),
-																	board(boardPos, Board::LENGTH, Board::WIDTH),
-																	box(boxPos) {
-	direction = DEFAULT;
-	score = 0;
-	if (playerNum == 1) {
-		block.pos = {LEFT_BLOCK, BLOCKS_Y};
-		name = "Player 1";
-	}
-	else {
-		block.pos = { RIGHT_BLOCK, BLOCKS_Y };
-		name = "Player 2";
-	}
-	setGameBoundaries();
-	setKeysIndication();
-}
 
 bool Player::colorsMode = false;
 
-std::ostream& operator<<(std::ostream& out, const Player& _player) {
+Player& Player::operator=(const Player& _player)
+{
+	name = _player.name;
+	playerNum = _player.playerNum;
+	direction = _player.direction;
+	keys = _player.keys;
+	boardPos = _player.boardPos;
+	boxPos = _player.boxPos;
+	board = _player.board;
+	box = _player.box;
+	block = _player.block;
+	score = _player.score;
+	return *this;
+}
+
+
+std::ostream& operator<<(std::ostream& out, const Player* _player) {
 	
-	cout << _player.board << _player.box << _player.block;
-	_player.drawKeysIndication();
+	cout << _player->board << _player->box << _player->block;
+	_player->drawKeysIndication();
 	return out;
 }
 
@@ -107,36 +105,12 @@ void Player::printScore() const {
 		setTextColor(WHITE);
 }
 
-// Inserting characters and numbers into the step's representation map
-void Player::setPlayerKeys(const string& arrowKeys) {
-	
-	for (sint i = 0; i < arrowKeys.size(); ++i) {
-		
-		keys.insert({arrowKeys[i], i});
-		if (arrowKeys[i] >= 'a')
-			keys.insert({arrowKeys[i] - ('a' - 'A'), i});
-		else
-			keys.insert({arrowKeys[i] + ('a' - 'A'), i});
-	}
-}
-
 // Loop of moving the block down until it comes across another block or the board border
 bool Player::drop() {
 	
 	while (moveDown()) {}
 	direction = DEFAULT;
 	return false;
-}
-
-// Returns the number representing the step, if the character does not belong to the player's step characters, returns -1
-sint Player::getDirection(const uchar& key) {
-	
-	auto find = keys.find(key);
-	if (find != keys.end()) {
-		showIndicateHit(keys.at(find->first));
-		return keys.at(find->first);
-	}
-	return -1;
 }
 
 // Draw an indication of a step click
@@ -156,23 +130,6 @@ void Player::showIndicateHit(const ushort& dir) {
 	          keyIndicators[dir].setAllBoundaries();
 	     }
 	}
-}
-
-// Gets a key and returns if it represents the DEFAULT direction
-bool Player::isDown(const uchar& key) {
-	
-	if (keys[key] == DEFAULT)
-		return true;
-	return false;
-}
-
-// Gets a direction and returns the characters representation, if its the DEFAULT direction, returns 0
-uchar Player::getKey(const ushort& dir) const {
-	
-	for (auto const& pair : keys)
-		if (dir == pair.second)
-			return pair.first;
-	return 0;
 }
 
 // Takes the first block from the box and put it in the "current block", put the second instead of the first and
