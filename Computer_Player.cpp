@@ -63,3 +63,13 @@ uchar ComputerPlayer::getKey(const ushort& dir) const {
 			return pair.first;
 	return 0;
 }
+
+void ComputerPlayer::setDirection(const uchar& key)
+{
+	direction = calculateNextMove();
+}
+
+ushort ComputerPlayer::calculateNextMove()
+{
+	return DEFAULT;
+}

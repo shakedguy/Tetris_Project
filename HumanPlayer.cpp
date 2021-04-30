@@ -63,3 +63,12 @@ uchar HumanPlayer::getKey(const ushort& dir) const {
 			return pair.first;
 	return 0;
 }
+
+void HumanPlayer::setDirection(const uchar& key)
+{
+	short dir = DEFAULT; // initialization the direction to the DEFAULT step
+	if ((dir = getDirection(key)) != -1)
+		direction = dir;
+	else
+		direction = DEFAULT;
+}

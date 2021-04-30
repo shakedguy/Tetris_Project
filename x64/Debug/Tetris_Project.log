@@ -1,6 +1,2 @@
-﻿  Menu.cpp
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(23,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(30,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(78,51): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Menu.cpp(80,16): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+﻿  Computer_Player.cpp
   Tetris_Project.vcxproj -> C:\Users\shake\source\repos\Tetris_Project\x64\Debug\Tetris_Project.exe

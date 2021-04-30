@@ -63,7 +63,6 @@ public:
 	void printScore() const;
 	void drawBoard() const { }
 	void move();
-	void setDirection(const ushort& dir) { direction = dir; }
 	bool isLost();
 	void setCurrentBlockPos(const Point& pos) { block.pos = pos; }
 	void clearGame();
@@ -72,6 +71,7 @@ public:
 	virtual uchar getKey(const ushort& dir) const = 0;
 	virtual void setPlayerKeys(const string& arrowKeys) = 0;
 	virtual sint getDirection(const uchar& key) = 0;
+	virtual void setDirection(const uchar& key) = 0;
 	void showIndicateHit(const ushort& dir);
 	uint getScore() const { return score; }
 	bool checkSpeed(const int& accNum) const;

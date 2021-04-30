@@ -150,7 +150,6 @@ void Game::run() {
 	key = temp = temp2 = DEFAULT;
 	
 	do {
-		
 		key = avoidMultipleHits();
 		directions(key);
 		checkGameModes(key);
@@ -183,11 +182,8 @@ void Game::resetIndicators()
 /* Checks if the received character belongs to one of the player's buttons */
 void Game::directions(const uchar& key) {
 
-	short dir = DEFAULT; // initialization the direction to the DEFAULT step
-	if ((dir = players[0]->getDirection(key)) != -1)
-		players[0]->setDirection(dir);
-	else if ((dir = players[1]->getDirection(key)) != -1)
-		players[1]->setDirection(dir);
+	players[0]->setDirection(key);
+	players[1]->setDirection(key);
 }
 
 /* Checks if the received character belongs to one of the mode's buttons */

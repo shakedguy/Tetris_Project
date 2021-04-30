@@ -20,6 +20,7 @@ public:
      sint getDirection(const uchar& key)override;
      bool isDown(const uchar& key)override;
      uchar getKey(const ushort& dir) const override;
+     void setDirection(const uchar& key)override;
 
 
 };
