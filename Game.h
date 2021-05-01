@@ -92,7 +92,7 @@ private:
 	bool isSomeoneLose();
 	bool resumeGame();
 	void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
-	void setNames() { players[0]->setName();	players[1]->setName(); }
+	void setNames();
 	void changeColorsMode();
 	void winningMassage(const ushort& flag) const;
 	void checkSpeedStatus();

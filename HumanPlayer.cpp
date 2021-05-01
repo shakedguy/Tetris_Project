@@ -72,3 +72,11 @@ void HumanPlayer::setDirection(const uchar& key)
 	else
 		direction = DEFAULT;
 }
+
+void HumanPlayer::setName() {
+
+	gotoxy(WINNING_MASSAGE);
+	cout << "Please enter player " << playerNum << " name:  ";
+	cin >> name;
+	clrscr();
+}

@@ -12,11 +12,11 @@ ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos,
 	score = 0;
 	if (playerNum == 1) {
 		block.pos = { LEFT_BLOCK, BLOCKS_Y };
-		name = "Player 1";
+		name = "Computer 1";
 	}
 	else {
 		block.pos = { RIGHT_BLOCK, BLOCKS_Y };
-		name = "Player 2";
+		name = "Computer";
 	}
 
 	Player::setGameBoundaries();

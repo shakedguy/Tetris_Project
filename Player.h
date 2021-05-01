@@ -59,7 +59,6 @@ public:
 	virtual ~Player() = default;
 	Player& operator=(const Player& _player);
 	friend std::ostream& operator<<(std::ostream& out, const Player* _player);
-	void setName();
 	void printScore() const;
 	void drawBoard() const { }
 	void move();
@@ -72,6 +71,7 @@ public:
 	virtual void setPlayerKeys(const string& arrowKeys) = 0;
 	virtual sint getDirection(const uchar& key) = 0;
 	virtual void setDirection(const uchar& key) = 0;
+	virtual void setName() = 0;
 	void showIndicateHit(const ushort& dir);
 	uint getScore() const { return score; }
 	bool checkSpeed(const int& accNum) const;

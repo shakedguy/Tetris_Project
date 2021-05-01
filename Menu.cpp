@@ -188,13 +188,15 @@ void Game::Menu::menuPage(Game& game)
 		newGameOptions(game);
 		break;
 	case RESUME_GAME:
-		if (game.resumeGame()) {
+		if (Game::Menu::resumeGame) {
 			clrscr();
 			game.resetCurrentBlocksPos();
 			game.run();
 		}
-		else
-			menuPage(game);
+		else {
+		     inputErrorMassage();
+		     menuPage(game);
+		}
 		break;
 	case SET_NAMES:
 		clrscr();

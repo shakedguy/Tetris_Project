@@ -23,6 +23,7 @@ public:
      bool isDown(const uchar & key)override;
      uchar getKey(const ushort & dir) const override;
      void setDirection(const uchar& key)override;
+     void setName()override { return; }
     
 
 };

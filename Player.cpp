@@ -48,14 +48,6 @@ void Player::drawKeysIndication() const {
 		cout << indicator;
 }
 
-void Player::setName() {
-	
-	gotoxy(WINNING_MASSAGE);
-	cout << "Please enter player " << playerNum << " name:  ";
-	cin >> name;
-	clrscr();
-}
-
 void Player::clearGame() {
 	
 	board.cleanBoard();

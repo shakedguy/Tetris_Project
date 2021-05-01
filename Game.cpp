@@ -89,6 +89,7 @@ bool Game::initializePlayers(const ushort& option)
 	case Menu::C_VS_C:
 		players[0] = &computerPlayers[0];
 		players[1] = &computerPlayers[1];
+		players[1]->name = "Computer 2";
 		return true;
 		break;
 
@@ -301,5 +302,11 @@ void Game::resetCurrentBlocksPos()
 {
 	players[0]->setCurrentBlockPos({ Player::LEFT_BLOCK,Player::BLOCKS_Y });
 	players[1]->setCurrentBlockPos({ Player::RIGHT_BLOCK,Player::BLOCKS_Y });
+}
+
+void Game::setNames()
+{
+	humanPlayers[0].setName();
+	humanPlayers[1].setName();
 }
 
