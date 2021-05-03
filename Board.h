@@ -7,6 +7,7 @@
 #include "Public_const_and_structs.h"
 #include "Block.h"
 #include "Point.h"
+#include "Bomb.h"
 
 class Board
 {
@@ -35,8 +36,8 @@ class Board
 	friend class Box;
 
 private:
-	bool isFullRow(const uint& row);
-	void dropRows(const uint& row);
+	bool isFullRow(const uint& row, const uint& start, const uint& end);
+	void dropRows(const uint& startX, const uint& endX, const uint& startY, const uint& endY);
 	int isFigureInRow(Block& block, const uint& row) const;
 	void dropBlocks(const uint& row);
 	void setTopBoundary();
@@ -45,6 +46,11 @@ private:
 	void setLeftBoundary();
 	void drawBoard() const;
 	void setSeparators(uint const& row);
+	bool moveLeftAboveBoard(Block* block);
+	bool moveRightAboveBoard(Block* block);
+	bool rotateAboveBoard(Block* block, const Block& temp);
+	void DropBlock(Block& block);
+	void drawFillCells()const;
 
 public:
 	Board() : Board({0, 0}, LENGTH, WIDTH) {}
@@ -52,7 +58,7 @@ public:
 	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
 	~Board() = default;
-	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard();	return out; }
+	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); board.drawBlocksInBoard();	return out; }
 	void allocateSize();
 	void initialEmptyCells();
 	void setAllBoundaries();
@@ -61,11 +67,17 @@ public:
 	uint checkBoard();
 	void cleanBoard();
 	void drawBoundaries();
-	void drawBlocksInBoard();
+	void drawBlocksInBoard()const;
 	void fillAllBoard(const uchar& shape);
 	const uint& getLength() const { return length; }
 	const uint& getWidth() const { return width; }
 	const size_t& getNumberOfBlocks() const { return blocks.size(); }
+	void explosion(const Block& block);
+	bool clockwiseRotate(Block* block);
+	bool counterClockwiseRotate(Block* block);
+	bool moveLeft(Block* block);
+	bool moveRight(Block* block);
+	bool moveDown(Block* block);
 };
 
 #endif

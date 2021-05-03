@@ -7,6 +7,7 @@
 #include "Public_const_and_structs.h"
 #include "Point.h"
 #include "Board.h"
+#include "Bomb.h"
 #include "Box.h"
 
 class Player
@@ -32,7 +33,7 @@ protected:
 	Point boxPos;
 	Board board;
 	Box box;
-	Block block;
+	Block* block = new Block();
 	uint score;
 
 	friend class Game;
@@ -41,29 +42,22 @@ protected:
 
 	void setGameBoundaries();
 	bool drop();
-	bool moveLeftAboveBoard();
-	bool moveRightAboveBoard();
-	bool rotateAboveBoard(const Block& temp);
 	void getNewBlock();
 	bool makeTheMove();
-	bool clockwiseRotate();
-	bool counterClockwiseRotate();
-	bool moveLeft();
-	bool moveRight();
-	bool moveDown();
+
 	void setKeysIndication();
 	void drawKeysIndication() const;
 
 
 public:
-	virtual ~Player() = default;
+	virtual ~Player() { delete block; }
 	Player& operator=(const Player& _player);
 	friend std::ostream& operator<<(std::ostream& out, const Player* _player);
 	void printScore() const;
-	void drawBoard() const { }
+	void drawBoard() const {}
 	void move();
 	bool isLost();
-	void setCurrentBlockPos(const Point& pos) { block.pos = pos; }
+	void setCurrentBlockPos(const Point& pos) { block->pos = pos; }
 	void clearGame();
 	string getName() const { return name; }
 	virtual bool isDown(const uchar& key) = 0;

@@ -11,11 +11,11 @@ HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const
 	Player::direction = DEFAULT;
 	score = 0;
 	if (playerNum == 1) {
-		block.pos = { LEFT_BLOCK, BLOCKS_Y };
+		block->pos = { LEFT_BLOCK, BLOCKS_Y };
 		name = "Player 1";
 	}
 	else {
-		block.pos = { RIGHT_BLOCK, BLOCKS_Y };
+		block->pos = { RIGHT_BLOCK, BLOCKS_Y };
 		name = "Player 2";
 	}
 

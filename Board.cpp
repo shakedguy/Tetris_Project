@@ -9,25 +9,45 @@ void Board::drawBoard() const {
 	
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < length; j++) {
-			gotoxy(pos.getX() + i, pos.getY() + j);
-			cout << board[i][j];
+
+			if(board[i][j])
+			{
+			     gotoxy(pos.getX() + i, pos.getY() + j);
+			     cout << board[i][j];
+			}
 		}
 	}
 }
 
-void Board::drawBlocksInBoard() {
-	
-	for (int i = 0; i < blocks.size(); i++)
-		blocks[i].drawBlock();
+void Board::drawFillCells() const {
+
+	for (int i = 1; i < width-1; i++) {
+		for (int j = 1; j < length-1; j++) {
+
+			if (board[i][j] != EMPTY_CELL)
+			{
+				gotoxy(pos.getX() + i, pos.getY() + j);
+				cout << board[i][j];
+			}
+		}
+	}
+}
+
+void Board::drawBlocksInBoard()const {
+
+	if (blocks.empty())
+		return;
+	for (const Block& block : blocks)
+		cout << block;
 }
 
 // drowing only the boundaries of the boards
 void Board::drawBoundaries() {
 	
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < length; j++) {
+	for (size_t i = 0; i < width; i++) {
+		for (size_t j = 0; j < length; j++) {
 			if (!i || i == width - 1 || j == length - 1) {
-				gotoxy(pos.getX() + i, pos.getY() + j);
+				gotoxy(static_cast<int>(pos.getX() + i) , static_cast<int>(pos.getY() + j));
 				cout << board[i][j];
 			}
 		}
@@ -111,15 +131,31 @@ void Board::setSeparators(uint const& row) {
 
 // Inserting a block that ended a movement
 void Board::freezeBlock(Block& block) {
-	
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
 			if (block.figure[i][j])
-				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = block.shape;
+				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = Block::SHAPE_AFTER_FREEZE;
 		}
 	}
 	block.shape = Block::SHAPE_AFTER_FREEZE;
 	blocks.push_back(block);
+}
+
+void Board::explosion(const Block& block)
+{
+	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
+	size_t startX = (x - Bomb::EXPLOSION_RANGE > 0) ? x - Bomb::EXPLOSION_RANGE : 1;
+	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
+	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
+	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
+
+	for (size_t i = startX; i <= endX; ++i)
+		for (size_t j = startY; j <= endY; ++j)
+			board[i][j] = EMPTY_CELL;
+	for (int i = startY; i <= endY; i++)
+		dropRows(startX, endX, i, endY);
+	blocks.clear();
 }
 
 void Board::resizeBoundaries(const int& x, const int& y) {
@@ -143,8 +179,8 @@ uint Board::checkBoard() {
 	
 	ushort count = 0;
 	for (size_t i = 1; i < length - 1; i++) {
-		if (isFullRow(i)) {
-			dropRows(i);
+		if (isFullRow(i, 1, width - 2)) {
+			dropRows(1, width - 2, i, i + 1);
 			drawBlocksInBoard();
 			drawBoundaries();
 			count++;
@@ -154,36 +190,48 @@ uint Board::checkBoard() {
 	return count;
 }
 
-bool Board::isFullRow(const uint& row) {
-	
-	for (int i = 1; i < width - 1; i++)
+bool Board::isFullRow(const uint& row, const uint& start, const uint& end) {
+
+	for (int i = start; i <= end; i++)
 		if (board[i][row] == EMPTY_CELL)
 			return false;
 	return true;
 }
 
-void Board::dropRows(const uint& row) {
-	
-	dropBlocks(row);
-	for (int i = 1; i < width - 1; i++) {
-		for (int j = row; j > 1; j--) {
+void Board::dropRows(const uint& startX, const uint& endX, const uint& startY, const uint& endY) {
+
+	dropBlocks(startY);
+	for (int i = startX; i <= endX; i++)
+	{
+		for (int j = startY; j >= 1; j--) 
+		{
 			board[i][j] = board[i][j - 1];
 			gotoxy(pos.getX() + i, pos.getY() + j);
 			cout << board[i][j];
 		}
 	}
-	drawBlocksInBoard();
 }
-
 void Board::dropBlocks(const uint& row) {
-	
+
 	int temp = 0;
 	for (int i = 0; i < blocks.size(); ++i) {
 		if (temp = isFigureInRow(blocks[i], row) >= 0)
 			blocks[i].DropRows(temp);
 		else if (temp == -1)
-			blocks[i].moveDown();
+		{
+			blocks[i].cleanPrint();
+			if (!blocks[i].isCleanMatrix())
+				DropBlock(blocks[i]);
+		}
 	}
+}
+
+
+// Loop of moving the block down until it comes across another block or the board border
+void Board::DropBlock(Block& block) {
+
+	while (moveDown(&block))
+		block.moveDown();
 }
 
 int Board::isFigureInRow(Block& block, const uint& row) const {
@@ -202,4 +250,141 @@ void Board::fillAllBoard(const uchar& shape) {
 	for (size_t i = 0; i < board.size(); ++i)
 		for (size_t j = 0; j < board[i].size(); ++j)
 			board[i][j] = shape;
+}
+
+/* A function that checks if a down step is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Board::moveDown(Block* block) {
+
+	if (block->pos.getY() < pos.getY()) {
+		//block->moveDown();
+		return true;
+	}
+	for (int i = 0; i < block->figure.size(); i++) {
+		for (int j = 0; j < block->figure[i].size(); j++) {
+			if (block->figure[i][j] &&
+				(board[block->pos.getX() + i - pos.getX()][block->pos.getY() + j + 1 - pos.getY()] != ' '))
+				return false;
+		}
+	}
+	//block->moveDown();
+	return true;
+}
+
+/* A function that checks if a left step is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Board::moveLeft(Block* block) {
+
+	if (block->pos.getY() < pos.getY())
+		return moveLeftAboveBoard(block);
+	for (int i = 0; i < block->figure.size(); i++) {
+		for (int j = 0; j < block->figure[i].size(); j++) {
+			if (block->figure[i][j] &&
+				(board[block->pos.getX() + i -1 - pos.getX()][block->pos.getY() + j - pos.getY()]!= EMPTY_CELL)) {
+				return false;
+			}
+		}
+	}
+	//block->moveLeft();
+	return true;
+}
+
+bool Board::moveLeftAboveBoard(Block* block) {
+
+	if (block->pos.getX() > pos.getX() + 1) {
+		//block->moveLeft();
+		return true;
+	}
+	//direction = DEFAULT;
+	return false;
+}
+
+/* A function that checks if a right step is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Board::moveRight(Block* block) {
+
+	if (block->pos.getY() < pos.getY())
+		return moveRightAboveBoard(block);
+	for (int i = 0; i < block->figure.size(); i++) {
+		for (int j = 0; j < block->figure[i].size(); j++) {
+			if (block->figure[i][j] &&
+				(board[block->pos.getX() + i + 1 - pos.getX()][block->pos.getY() + j - pos.getY()]!= EMPTY_CELL)) {
+				//direction = DEFAULT;
+				return false;
+			}
+		}
+	}
+	//block->moveRight();
+	return true;
+}
+
+bool Board::moveRightAboveBoard(Block* block) {
+
+	if (block->pos.getX() + block->figure.size() < pos.getX() + board.size() - 1) {
+		block->moveRight();
+		return true;
+	}
+	//direction = DEFAULT;
+	return false;
+}
+
+/* A function that checks if a clockwise rotate is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Board::clockwiseRotate(Block* block) {
+
+	Block temp = *block;
+	temp.clockwiseRotate();
+	if (block->pos.getY() < pos.getY())
+		return rotateAboveBoard(block, temp);
+	for (int i = 0; i < block->figure.size(); i++) {
+		for (int j = 0; j < block->figure[i].size(); j++) {
+			if (temp.figure[i][j] &&
+				(board[temp.pos.getX() + i - pos.getX()][temp.pos.getY() + j - pos.getY()] != EMPTY_CELL))
+				return false;
+
+		}
+	}
+	//block->cleanPrint();
+	//*block = temp;
+	//block->drawBlock();
+	return true;
+}
+
+/* A function that checks if a counter clockwise rotate is valid,
+ * valid - tells the block to execute and returns true,
+ * not valid -  does not execute and returns no */
+bool Board::counterClockwiseRotate(Block* block) {
+
+	Block temp = *block;
+	temp.counterClockwiseRotate();
+	if (block->pos.getY() < pos.getY())
+		return rotateAboveBoard(block, temp);
+	for (int i = 0; i < block->figure.size(); i++) {
+		for (int j = 0; j < block->figure[i].size(); j++) {
+			if (temp.figure[i][j] &&
+				(board[temp.pos.getX() + i - pos.getX()][temp.pos.getY() + j - pos.getY()] != EMPTY_CELL))
+				return false;
+
+		}
+	}
+	//block->cleanPrint();
+	//*block = temp;
+	//block->drawBlock();
+	return true;
+}
+
+bool Board::rotateAboveBoard(Block* block, const Block& temp) {
+
+	if ((block->pos.getX() > pos.getX()) &&
+		(block->pos.getX() + block->figure.size() < pos.getX() + board.size() - 1)) {
+		//block->cleanPrint();
+		//*block = temp;
+		//block->drawBlock();
+		return true;
+	}
+	return false;
 }

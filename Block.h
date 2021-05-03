@@ -9,18 +9,16 @@
 
 
 class Block
-{
-	enum Shapes { LINE, L, LEFT_L, DICE, RIGHT_STEPS, CENTER_STEP, LEFT_STEPS };
-	enum Filling { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
+{			/*	    #
+	                   #
+                        #   #      #    ##    ##   #    ## 
+                        #   ###  ###    ##   ##	###    ##		*/
+	enum TetrisParts { I,   L,   J,    O,   S,    T,    Z };
 	enum Matrix { COLUMNS = 4, ROWS = 4 };
 
 	static bool colorsMode;
-	array<array<ushort, COLUMNS>, ROWS> figure;
-	Point pos;
-	uchar shape;
 	ushort shapeNum;
 	Color color;
-
 	friend class Player;
 	friend class HumanPlayer;
 	friend class ComputerPlayer;
@@ -28,15 +26,20 @@ class Block
 	friend class Board;
 	friend class Game;
 
+protected:
+	enum Fillings { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
+	Point pos;
+	uchar shape;
+	array<array<ushort, COLUMNS>, ROWS> figure;
 
 private:
-	void setLineFigure();
-	void setLfigure();
-	void setLeftLfigure();
-	void setDiceFigure();
-	void setRightStepsFigure();
-	void setCenterStepsFigure();
-	void setLeftStepsFigure();
+	void setShapeI();
+	void setShapeL();
+	void setShapeJ();
+	void setShapeO();
+	void setShapeS();
+	void setShapeT();
+	void setShapeZ();
 	void transpose_Matrix();
 	void reverseRows();
 	void reverseColumns();
@@ -51,14 +54,15 @@ public:
 	Block(Point _pos);
 	Block(const Block& _block) { *this = _block; }
 	Block& operator=(const Block& b);
-	~Block() = default;
+	virtual ~Block() = default;
 	friend std::ostream& operator<<(std::ostream& out, const Block& _block) { _block.drawBlock(); return out; }
+	Block& operator=(const Block* _block) { *this = *_block; return *this; }
 	void createNewBlock();
 	void drawBlock() const;
 	const uchar& getShape() const { return shape; }
 	void move(int dir);
 	void cleanBlock();
-	void setFigure();
+	virtual void setFigure();
 	void cleanPrint() const;
 	void clockwiseRotate();
 	void counterClockwiseRotate();
@@ -66,6 +70,7 @@ public:
 	void moveLeft();
 	void moveRight();
 	void moveDown();
+	bool isCleanMatrix();
 	static void changeColorsMode();
 };
 

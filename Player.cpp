@@ -21,7 +21,7 @@ Player& Player::operator=(const Player& _player)
 
 std::ostream& operator<<(std::ostream& out, const Player* _player) {
 	
-	cout << _player->board << _player->box << _player->block;
+	cout << _player->board << _player->box << *_player->block;
 	_player->drawKeysIndication();
 	return out;
 }
@@ -52,12 +52,12 @@ void Player::clearGame() {
 	
 	board.cleanBoard();
 	box.clearBox();
-	block.createNewBlock();
+	block->createNewBlock();
 	setGameBoundaries();
 	if (playerNum == 1)
-		block.pos = {LEFT_BLOCK, BLOCKS_Y};
+		block->pos = {LEFT_BLOCK, BLOCKS_Y};
 	else
-		block.pos = {RIGHT_BLOCK,BLOCKS_Y};
+		block->pos = {RIGHT_BLOCK,BLOCKS_Y};
 }
 
 // Remove the top boundary of the board
@@ -100,7 +100,7 @@ void Player::printScore() const {
 // Loop of moving the block down until it comes across another block or the board border
 bool Player::drop() {
 	
-	while (moveDown()) {}
+	while (board.moveDown(block)) { block->moveDown(); }
 	direction = DEFAULT;
 	return false;
 }
@@ -127,29 +127,45 @@ void Player::showIndicateHit(const ushort& dir) {
 // Takes the first block from the box and put it in the "current block", put the second instead of the first and
 // get new block to the second
 void Player::getNewBlock() {
-	
-	block = box.blocks[0];
-	if (playerNum == 1)
-		block.pos = {LEFT_BLOCK,BLOCKS_Y};
+
+	delete block;
+	std::random_device bombChances;
+	const std::uniform_int_distribution<> rnd(0, 4);
+	if (rnd(bombChances))
+	{
+		block = new Block();
+		*block = box.blocks[0];
+		const Point temp = box.blocks[0].pos;
+		box.blocks[0] = box.blocks[1];
+		box.blocks[0].pos = temp;
+		box.blocks[1].createNewBlock();
+	}
 	else
-		block.pos = {RIGHT_BLOCK,BLOCKS_Y};
-	const Point temp = box.blocks[0].pos;
-	box.blocks[0] = box.blocks[1];
-	box.blocks[0].pos = temp;
-	box.blocks[1].createNewBlock();
+		block = new Bomb();
+
+	if (playerNum == 1)
+		block->pos = { LEFT_BLOCK,BLOCKS_Y };
+	else
+		block->pos = { RIGHT_BLOCK,BLOCKS_Y };
 }
 
 /* Player move function, if the step faild and the direction is DEFAULT,
  * "freeze" the block and insert it to the board's blocks and brings a new block to the playing field,
  * update the score and the returns the direction to DEFAULT */
 void Player::move() {
-	
+
 	if (!makeTheMove() && direction == DEFAULT) {
-		board.freezeBlock(block);
-		getNewBlock();
+
+		if (typeid(*block) == typeid(Bomb))
+			board.explosion(*block);
+		else
+		     board.freezeBlock(*block);
+
+          getNewBlock();
 		cout << box;
-		block.drawBlock();
+		block->drawBlock();
 	}
+	board.drawFillCells();
 	board.drawBlocksInBoard();
 	board.drawBoundaries();
 	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
@@ -162,162 +178,47 @@ bool Player::makeTheMove() {
 	
 	switch (direction) {
 	case COUNTER_CLOCKWISE:
-		return counterClockwiseRotate();
+		if(board.counterClockwiseRotate(block))
+		{
+			block->counterClockwiseRotate();
+			return true;
+		}
+		direction = DEFAULT;
+		return makeTheMove();
 	case CLOCKWISE:
-		return clockwiseRotate();
+		if (board.clockwiseRotate(block))
+		{
+			block->clockwiseRotate();
+			return true;
+		}
+		direction = DEFAULT;
+		return makeTheMove();
 	case DROP:
 		return drop();
 	case MOVE_LEFT:
-		return moveLeft();
+		if(board.moveLeft(block))
+		{
+			block->moveLeft();
+			return true;
+		}
+		direction = DEFAULT;
+		return makeTheMove();
 	case MOVE_RIGHT:
-		return moveRight();
-
+		if (board.moveRight(block))
+		{
+			block->moveRight();
+			return true;
+		}
+		direction = DEFAULT;
+		return makeTheMove();
 	default:
-		return moveDown();
-	}
-}
-
-/* A function that checks if a down step is valid,
- * valid - tells the block to execute and returns true,
- * not valid -  does not execute and returns no */
-bool Player::moveDown() {
-	
-	if (block.pos.getY() < board.pos.getY()) {
-		block.moveDown();
-		return true;
-	}
-	for (int i = 0; i < block.figure.size(); i++) {
-		for (int j = 0; j < block.figure[i].size(); j++) {
-			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i - boardPos.getX()][block.pos.getY() + j + 1 - boardPos.getY()] != ' ')
-			)
-				return false;
+		if (board.moveDown(block))
+		{
+			block->moveDown();
+			return true;
 		}
+		return false;
 	}
-	block.moveDown();
-	return true;
-}
-
-/* A function that checks if a left step is valid,
- * valid - tells the block to execute and returns true,
- * not valid -  does not execute and returns no */
-bool Player::moveLeft() {
-	
-	if (block.pos.getY() < board.pos.getY())
-		return moveLeftAboveBoard();
-	for (int i = 0; i < block.figure.size(); i++) {
-		for (int j = 0; j < block.figure[i].size(); j++) {
-			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i - 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()]
-					!= EMPTY_CELL)) {
-				direction = DEFAULT;
-				return makeTheMove();
-			}
-		}
-	}
-	block.moveLeft();
-	return true;
-}
-
-bool Player::moveLeftAboveBoard() {
-	
-	if (block.pos.getX() > board.pos.getX() + 1) {
-		block.moveLeft();
-		return true;
-	}
-	direction = DEFAULT;
-	return makeTheMove();
-}
-
-/* A function that checks if a right step is valid,
- * valid - tells the block to execute and returns true,
- * not valid -  does not execute and returns no */
-bool Player::moveRight() {
-	
-	if (block.pos.getY() < board.pos.getY())
-		return moveRightAboveBoard();
-	for (int i = 0; i < block.figure.size(); i++) {
-		for (int j = 0; j < block.figure[i].size(); j++) {
-			if (block.figure[i][j] &&
-				(board.board[block.pos.getX() + i + 1 - boardPos.getX()][block.pos.getY() + j - boardPos.getY()]
-					!= EMPTY_CELL)) {
-				direction = DEFAULT;
-				return makeTheMove();
-			}
-		}
-	}
-	block.moveRight();
-	return true;
-}
-
-bool Player::moveRightAboveBoard() {
-	
-	if (block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1) {
-		block.moveRight();
-		return true;
-	}
-	direction = DEFAULT;
-	return makeTheMove();
-}
-
-/* A function that checks if a clockwise rotate is valid,
- * valid - tells the block to execute and returns true,
- * not valid -  does not execute and returns no */
-bool Player::clockwiseRotate() {
-	
-	Block temp = block;
-	temp.clockwiseRotate();
-	if (block.pos.getY() < board.pos.getY())
-		return rotateAboveBoard(temp);
-	for (int i = 0; i < block.figure.size(); i++) {
-		for (int j = 0; j < block.figure[i].size(); j++) {
-			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
-				))
-				return moveDown();
-
-		}
-	}
-	block.cleanPrint();
-	block = temp;
-	block.drawBlock();
-	return true;
-}
-
-/* A function that checks if a counter clockwise rotate is valid,
- * valid - tells the block to execute and returns true,
- * not valid -  does not execute and returns no */
-bool Player::counterClockwiseRotate() {
-
-	Block temp = block;
-	temp.counterClockwiseRotate();
-	if (block.pos.getY() < board.pos.getY())
-		return rotateAboveBoard(temp);
-	for (int i = 0; i < block.figure.size(); i++) {
-		for (int j = 0; j < block.figure[i].size(); j++) {
-			if (temp.figure[i][j] &&
-				(board.board[temp.pos.getX() + i - boardPos.getX()][temp.pos.getY() + j - boardPos.getY()] != EMPTY_CELL
-					))
-				return moveDown();
-
-		}
-	}
-	block.cleanPrint();
-	block = temp;
-	block.drawBlock();
-	return true;
-}
-
-bool Player::rotateAboveBoard(const Block& temp) {
-	
-	if ((block.pos.getX() > board.pos.getX()) &&
-		(block.pos.getX() + block.figure.size() < board.pos.getX() + board.board.size() - 1)) {
-		block.cleanPrint();
-		block = temp;
-		block.drawBlock();
-		return true;
-	}
-	return moveDown();
 }
 
 void Player::changeColorsMode() {

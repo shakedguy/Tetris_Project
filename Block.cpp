@@ -5,6 +5,7 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
 	const std::uniform_int_distribution<> shapeRange(0, 6);
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
+	shapeNum = I;
 	color = static_cast<Color>(colorRange(rnd));
 	cleanBlock();
 	setFigure();
@@ -36,6 +37,7 @@ void Block::createNewBlock() {
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
+	shapeNum = I;
 	setFigure();
 }
 
@@ -44,26 +46,26 @@ void Block::createNewBlock() {
 void Block::setFigure() {
 	
 	switch (shapeNum) {
-	case LINE:
-		setLineFigure();
+	case I:
+		setShapeI();
 		break;
 	case L:
-		setLfigure();
+		setShapeL();
 		break;
-	case LEFT_L:
-		setLeftLfigure();
+	case J:
+		setShapeJ();
 		break;
-	case DICE:
-		setDiceFigure();
+	case O:
+		setShapeO();
 		break;
-	case RIGHT_STEPS:
-		setRightStepsFigure();
+	case S:
+		setShapeS();
 		break;
-	case CENTER_STEP:
-		setCenterStepsFigure();
+	case T:
+		setShapeT();
 		break;
-	case LEFT_STEPS:
-		setLeftStepsFigure();
+	case Z:
+		setShapeZ();
 		break;
 
 	default:
@@ -71,13 +73,13 @@ void Block::setFigure() {
 	}
 }
 
-void Block::setLineFigure() {
+void Block::setShapeI() {
 	
 	for (int i = 0; i < figure.size(); i++)
 		figure[i][0]++;
 }
 
-void Block::setLfigure() {
+void Block::setShapeL() {
 	
 	for (int i = 0; i < figure.size() - 1; i++) {
 		for (int j = 0; j < figure[i].size() - 2; j++) {
@@ -89,7 +91,7 @@ void Block::setLfigure() {
 	}
 }
 
-void Block::setLeftLfigure() {
+void Block::setShapeJ() {
 	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
@@ -97,14 +99,14 @@ void Block::setLeftLfigure() {
 				figure[i][j]++;
 }
 
-void Block::setDiceFigure() {
+void Block::setShapeO() {
 	
 	for (int i = 0; i < figure.size() - 2; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
 			figure[i][j]++;
 }
 
-void Block::setRightStepsFigure() {
+void Block::setShapeS() {
 	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
@@ -113,7 +115,7 @@ void Block::setRightStepsFigure() {
 }
 
 
-void Block::setCenterStepsFigure() {
+void Block::setShapeT() {
 	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
@@ -121,7 +123,7 @@ void Block::setCenterStepsFigure() {
 				figure[i][j]++;
 }
 
-void Block::setLeftStepsFigure() {
+void Block::setShapeZ() {
 	
 	for (int i = 0; i < figure.size() - 1; i++)
 		for (int j = 0; j < figure[i].size() - 2; j++)
@@ -205,7 +207,7 @@ void Block::cleanPrint() const {
 
 // This function rotates the block clockwise - transpose the matrix and than reverses the order of the columns
 void Block::clockwiseRotate() {
-	if (shapeNum == DICE)
+	if (shapeNum == O)
 		return;
 	transpose_Matrix();
 	reverseColumns();
@@ -214,7 +216,7 @@ void Block::clockwiseRotate() {
 
 // this function rotates the block counter clockwise - transpose the matrix and than reverses the order of the rows
 void Block::counterClockwiseRotate() {
-	if (shapeNum == DICE)
+	if (shapeNum == O)
 		return;
 	transpose_Matrix();
 	reverseRows();
@@ -245,9 +247,9 @@ void Block::reverseRows() {
 
 // Function Reverses the order of the columns in the matrix
 void Block::reverseColumns() {
-	for (size_t i = 0; i < figure[i].size(); i++) {
+	for (size_t i = 0; i < figure.size(); i++) {
 		size_t start = 0;
-		size_t end = figure.size() - 1;
+		size_t end = figure[i].size() - 1;
 
 
 		while (start < end) {
@@ -264,10 +266,15 @@ void Block::drawBlock() const {
 
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
+
 			if (figure[i][j]) {
+
 				gotoxy(pos.getX() + i, pos.getY() + j);
+				//cout << figure[i][j];
 				cout << shape;
 			}
+			else
+				gotoxy(0, 0);
 		}
 	}
 	if (Block::colorsMode)
@@ -301,3 +308,16 @@ void Block::changeColorsMode() {
 	else
 		Block::colorsMode = true;
 }
+
+bool Block::isCleanMatrix()
+{
+	for (size_t i = 0; i < figure.size(); ++i)
+		for (size_t j = 0; j < figure[i].size(); ++j)
+			if (figure[i][j])
+				return false;
+	return true;
+}
+
+
+
+
