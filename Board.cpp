@@ -1,5 +1,7 @@
 ﻿#include "Board.h"
 
+#include "Player.h"
+
 Board::Board(const Point& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width) {
 	allocateSize();
 	initialEmptyCells();
@@ -18,6 +20,23 @@ void Board::drawBoard() const {
 		}
 	}
 }
+
+Board& Board::operator=(const Board& _board)
+{
+	pos = _board.pos;
+	width = _board.width;
+	length = _board.length;
+	resizeBoundaries(width, length);
+	for (size_t i = 0; i < width; ++i)
+	     for (size_t j = 0; j < length; ++j)
+			board[i][j] = _board.board[i][j];
+
+	blocks.clear();
+	for (Block block : blocks)
+		blocks.push_back(block);
+	return *this;
+}
+
 
 void Board::drawFillCells() const {
 
@@ -142,6 +161,28 @@ void Board::freezeBlock(Block& block) {
 	blocks.push_back(block);
 }
 
+void Board::freezeWithoutSave(Block& block)
+{
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
+			if (block.figure[i][j])
+				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = Block::SHAPE_AFTER_FREEZE;
+		}
+	}
+}
+
+
+void Board::deleteBlock(const Block& block)
+{
+	for (int i = 0; i < block.figure.size(); i++) {
+		for (int j = 0; j < block.figure[i].size(); j++) {
+			if (block.figure[i][j])
+				board[block.pos.getX() + i - pos.getX()][block.pos.getY() + j - pos.getY()] = EMPTY_CELL;
+		}
+	}
+}
+
+
 void Board::explosion(const Block& block)
 {
 	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
@@ -149,13 +190,39 @@ void Board::explosion(const Block& block)
 	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
 	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
 	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
+	size_t counter = 0;
 
 	for (size_t i = startX; i <= endX; ++i)
+	{
 		for (size_t j = startY; j <= endY; ++j)
-			board[i][j] = EMPTY_CELL;
+		{
+			if (board[i][j] != EMPTY_CELL)
+			{
+			     counter++;
+			     board[i][j] = EMPTY_CELL;
+			}
+		}
+	}
 	for (int i = startY; i <= endY; i++)
 		dropRows(startX, endX, i, endY);
 	blocks.clear();
+	cout << *this;
+}
+
+int Board::explosionCheck(const Block& block)
+{
+	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
+	size_t startX = (x - Bomb::EXPLOSION_RANGE > 0) ? x - Bomb::EXPLOSION_RANGE : 1;
+	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
+	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
+	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
+	int counter = 0;
+
+	for (size_t i = startX; i <= endX; ++i)
+		for (size_t j = startY; j <= endY; ++j)
+			if (board[i][j] != EMPTY_CELL)
+				counter++;
+	return counter;
 }
 
 void Board::resizeBoundaries(const int& x, const int& y) {
@@ -185,6 +252,21 @@ uint Board::checkBoard() {
 			drawBoundaries();
 			count++;
 			return count + checkBoard();
+		}
+	}
+	return count;
+}
+
+// Checks if there are full lines that need to be deleted 
+uint Board::checkBoardWithoutChanges() {
+
+	ushort count = 0;
+	for (size_t i = 1; i < length - 1; i++) {
+		if (isFullRow(i, 1, width - 2)) {
+			dropRows(1, width - 2, i, i + 1);
+			drawBoundaries();
+			count++;
+			return count + checkBoardWithoutChanges();
 		}
 	}
 	return count;
@@ -231,7 +313,7 @@ void Board::dropBlocks(const uint& row) {
 void Board::DropBlock(Block& block) {
 
 	while (moveDown(&block))
-		block.moveDown();
+		block.pos++;
 }
 
 int Board::isFigureInRow(Block& block, const uint& row) const {
@@ -388,3 +470,78 @@ bool Board::rotateAboveBoard(Block* block, const Block& temp) {
 	}
 	return false;
 }
+
+Point Board::findBestPos(Block* block, short& situations)
+{
+	Board* b = new Board;
+	*b = *this;
+	Block temp = *block;
+	temp.pos = pos;
+	if (typeid(*block) == typeid(Bomb))
+		return findBestBombPos(b,temp);
+	int bestSituation = situations;
+	uint maxFullRows = 0, fullRows = 0;
+	Point bestPos;
+	Point lowestPos = bestPos = block->pos;
+
+	for (size_t i = 0; i < situations; ++i)
+	{
+		for (size_t j = 1; j < width - 3 && b->moveRight(&temp); ++j)
+		{
+			temp.pos >>= j;
+			temp.cleanPrint();
+			b->DropBlock(temp);
+			b->freezeBlock(temp);
+			fullRows = b->checkBoardWithoutChanges();
+			if (fullRows > maxFullRows)
+			{
+				maxFullRows = fullRows;
+				bestPos = temp.pos;
+				bestSituation = i;
+			}
+			if (!maxFullRows && lowestPos.compareY(temp.pos) > 0)
+			{
+				lowestPos = temp.pos;
+				bestSituation = i;
+			}
+			b->deleteBlock(temp);
+			temp.pos = pos;
+
+		}
+		temp.pos = pos;
+		temp.clockwiseRotate();
+	}
+	temp.cleanPrint();
+	situations = bestSituation;
+	delete b;
+	return (maxFullRows) ? bestPos : lowestPos;
+}
+
+Point Board::findBestBombPos(Board* b, Block& temp)const
+{
+	Point bestPos = temp.pos;
+	int counter;
+	int max = counter = -1;
+
+	for (size_t j = 1; j < width - 1 && b->moveRight(&temp); ++j)
+	{
+		temp.pos >>= j;
+		b->DropBlock(temp);
+		counter = b->explosionCheck(temp);
+		if (counter > max)
+		{
+			max = counter;
+			bestPos = temp.pos;
+		}
+		else if (counter == max && bestPos.compareY(temp.pos) < 0)
+			bestPos = temp.pos;
+		b->deleteBlock(temp);
+		temp.pos = pos;
+	}
+	delete b;
+	return bestPos;
+}
+
+
+
+

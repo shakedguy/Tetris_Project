@@ -65,8 +65,10 @@ void Game::init(const ushort& option) {
 	if (!initializePlayers(option))
 		return;
 	gameNumber++;
-	players[0]->setPlayerKeys(PLAYER_ONE_KEYS);
-	players[1]->setPlayerKeys(PLAYER_TWO_KEYS);
+	if (typeid(*players[0]) == typeid(HumanPlayer))
+		players[0]->setPlayerKeys(PLAYER_ONE_KEYS);
+	if (typeid(*players[1]) == typeid(HumanPlayer))
+		players[1]->setPlayerKeys(PLAYER_TWO_KEYS);
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
@@ -158,7 +160,8 @@ void Game::run() {
 		move();
 		printScores();
 		
-		Sleep(gameSpeed);
+		//Sleep(gameSpeed);
+		Sleep(50);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;

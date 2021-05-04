@@ -72,6 +72,7 @@ public:
 	void setBoardPos(const Point& _pos) { boardPos = _pos; board.pos = _pos; }
 	void setBoxPos(const Point& _pos) { boxPos = _pos; box.setBoxPos(_pos); }
 	static void changeColorsMode();
+	virtual void initializeCalculate() = 0;
 };
 
 #endif

@@ -5,7 +5,6 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
 	const std::uniform_int_distribution<> shapeRange(0, 6);
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
-	shapeNum = I;
 	color = static_cast<Color>(colorRange(rnd));
 	cleanBlock();
 	setFigure();
@@ -37,7 +36,6 @@ void Block::createNewBlock() {
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
-	shapeNum = I;
 	setFigure();
 }
 

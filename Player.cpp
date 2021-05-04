@@ -130,7 +130,7 @@ void Player::getNewBlock() {
 
 	delete block;
 	std::random_device bombChances;
-	const std::uniform_int_distribution<> rnd(0, 4);
+	const std::uniform_int_distribution<> rnd(0, 19);
 	if (rnd(bombChances))
 	{
 		block = new Block();
@@ -142,6 +142,7 @@ void Player::getNewBlock() {
 	}
 	else
 		block = new Bomb();
+	initializeCalculate();
 
 	if (playerNum == 1)
 		block->pos = { LEFT_BLOCK,BLOCKS_Y };

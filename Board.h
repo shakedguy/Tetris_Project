@@ -32,6 +32,8 @@ class Board
 
 	friend class Game;
 	friend class Player;
+	friend class HumanPlayer;
+	friend class ComputerPlayer;
 	friend class Menu;
 	friend class Box;
 
@@ -51,14 +53,21 @@ private:
 	bool rotateAboveBoard(Block* block, const Block& temp);
 	void DropBlock(Block& block);
 	void drawFillCells()const;
+	uint checkBoardWithoutChanges();
+	void deleteBlock(const Block& block);
+	void freezeWithoutSave(Block& block);
+	Point findBestBombPos(Board* b, Block& temp)const;
+	int explosionCheck(const Block& block);
+	
 
 public:
 	Board() : Board({0, 0}, LENGTH, WIDTH) {}
 	Board(const Point& _pos) : Board({_pos}, LENGTH, WIDTH) {}
 	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
-	~Board() = default;
+	~Board() { this->blocks.clear(); this->cleanBoard(); }
 	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); board.drawBlocksInBoard();	return out; }
+	Board& operator=(const Board& _board);
 	void allocateSize();
 	void initialEmptyCells();
 	void setAllBoundaries();
@@ -78,6 +87,7 @@ public:
 	bool moveLeft(Block* block);
 	bool moveRight(Block* block);
 	bool moveDown(Block* block);
+	Point findBestPos(Block* block, short& situations);
 };
 
 #endif

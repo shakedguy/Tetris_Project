@@ -22,6 +22,7 @@ public:
      uchar getKey(const ushort& dir) const override;
      void setDirection(const uchar& key)override;
      void setName()override;
+     void initializeCalculate()override { return; }
 
 };
 

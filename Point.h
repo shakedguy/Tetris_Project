@@ -31,8 +31,10 @@ public:
 	Point& operator>>=(const int& _x) { x += _x; return *this; }
 	Point& operator<<=(const int& _x) { x -= _x; return *this; }
 	friend std::ostream& operator<<(std::ostream& out, const Point& _point) { _point.draw(); return out; }
-	void draw(uchar ch);
+	void draw(uchar ch)const;
 	void move(int direction);
+	int compareY(const Point& _point)const;
+	int compareX(const Point& _point)const;
 	void setShape(const char& _shape) { shape = _shape; }
 	uchar getShape() const { return shape; }
 	const int& getX() const { return x; }

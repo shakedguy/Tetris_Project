@@ -8,6 +8,10 @@
 
 #include "Game.h"
 
+int test(int x)
+{
+	return x++;
+}
 
 int main() {
 
@@ -16,4 +20,5 @@ int main() {
 	game.startGame();
 	gotoxy(WINNING_MASSAGE);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
+
 }
