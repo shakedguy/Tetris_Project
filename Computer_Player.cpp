@@ -7,7 +7,6 @@ ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos,
 	Player::setBoardPos(_boardPos);
 	Player::setBoxPos(_boxPos);
 
-
 	Player::direction = DEFAULT;
 	score = 0;
 	if (playerNum == 1) {
@@ -20,51 +19,28 @@ ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos,
 	}
 	for (ushort& i : directionCheck)
 		i = DEFAULT;
-		
+
 	Player::setGameBoundaries();
 	Player::setKeysIndication();
 }
 
-// Inserting characters and numbers into the step's representation map
-void ComputerPlayer::setPlayerKeys(const string& arrowKeys) {
-
-	for (sint i = 0; i < arrowKeys.size(); ++i) {
-
-		keys.insert({ arrowKeys[i], i });
-		if (arrowKeys[i] >= 'a')
-			keys.insert({ arrowKeys[i] - ('a' - 'A'), i });
-		else
-			keys.insert({ arrowKeys[i] + ('a' - 'A'), i });
+ComputerPlayer& ComputerPlayer::operator=(const ComputerPlayer& _player)
+{
+	if(this!=&_player)
+	{
+	     Player::operator=(_player);
+	     steps = _player.steps;
+	     clockWise = _player.clockWise;
+	     CounterClockWise = _player.clockWise;
+	     if(directionCheck.size()==_player.directionCheck.size())
+	     {
+	          for (size_t i = 0; i < directionCheck.size(); ++i)
+	               directionCheck[i] = _player.directionCheck[i];
+	     }
 	}
+	return *this;
 }
 
-// Returns the number representing the step, if the character does not belong to the player's step characters, returns -1
-sint ComputerPlayer::getDirection(const uchar& key) {
-
-	auto find = keys.find(key);
-	if (find != keys.end()) {
-		Player::showIndicateHit(keys.at(find->first));
-		return keys.at(find->first);
-	}
-	return -1;
-}
-
-// Gets a key and returns if it represents the DEFAULT direction
-bool ComputerPlayer::isDown(const uchar& key) {
-
-	if (keys[key] == DEFAULT)
-		return true;
-	return false;
-}
-
-// Gets a direction and returns the characters representation, if its the DEFAULT direction, returns 0
-uchar ComputerPlayer::getKey(const ushort& dir) const {
-
-	for (auto const& pair : keys)
-		if (dir == pair.second)
-			return pair.first;
-	return 0;
-}
 
 void ComputerPlayer::setDirection(const uchar& key)
 {

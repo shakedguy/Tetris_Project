@@ -160,7 +160,7 @@ bool Block::isColumnZeroEmpty() {
 	return true;
 }
 
-void Block::DropRows(const uint& row) {
+void Block::DropRows(const size_t& row) {
 	if (row) {
 		for (int i = 0; i < figure.size(); i++)
 			for (int j = row; j > 0; j--)
@@ -186,8 +186,7 @@ void Block::pullFigureLeft() {
 
 // This function cleans the block (by reseting the matrix that holds the block's figure)
 void Block::cleanBlock() {
-	//	pos = { 0,0 };
-	//shapeNum = 0;
+
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			figure[i][j] = 0;

@@ -11,6 +11,7 @@ public:
      Bomb(const Point& _pos) :Bomb(BOMB, { 0,0 }) {}
      Bomb(const uchar& _shape, const Point& _pos);
      ~Bomb()override = default;
+     Bomb& operator=(const Bomb& _bomb) { if (this != &_bomb) { Block::operator=(_bomb); return *this; } }
      void setFigure()override { figure[0][0] = shape; }
 };
 

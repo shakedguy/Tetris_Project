@@ -66,7 +66,7 @@ public:
 	void cleanPrint() const;
 	void clockwiseRotate();
 	void counterClockwiseRotate();
-	void DropRows(const uint& row);
+	void DropRows(const size_t& row);
 	void moveLeft();
 	void moveRight();
 	void moveDown();

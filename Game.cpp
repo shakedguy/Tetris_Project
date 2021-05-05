@@ -4,8 +4,8 @@
 #include "Game.h"
 
 Game::Game() : menu({Menu::MENU_X,Menu::MENU_Y}),
-     humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
-			     HumanPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} },
+     humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y},PLAYER_ONE_KEYS},
+			     HumanPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y},PLAYER_TWO_KEYS} },
 	     computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
 				     ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
 {
@@ -65,10 +65,6 @@ void Game::init(const ushort& option) {
 	if (!initializePlayers(option))
 		return;
 	gameNumber++;
-	if (typeid(*players[0]) == typeid(HumanPlayer))
-		players[0]->setPlayerKeys(PLAYER_ONE_KEYS);
-	if (typeid(*players[1]) == typeid(HumanPlayer))
-		players[1]->setPlayerKeys(PLAYER_TWO_KEYS);
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
@@ -161,7 +157,7 @@ void Game::run() {
 		printScores();
 		
 		//Sleep(gameSpeed);
-		Sleep(50);
+		Sleep(20);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;
@@ -206,7 +202,7 @@ void Game::checkGameModes(const uchar& key) {
 
 /* The function is responsible for receiving input from the players and preventing multiple keystrokes,
  * returns the last character received */
-uchar Game::avoidMultipleHits() {
+uchar Game::avoidMultipleHits()const {
 	
 	_flushall();
 	uchar key = DEFAULT;
@@ -225,11 +221,12 @@ uchar Game::avoidMultipleHits() {
 void Game::avoidMultipleMoves(uchar& key, const uchar& temp, const uchar& temp2) {
 	
 	if (temp == key && temp2 == key) {
-		if (players[0]->getDirection(key) != -1 && !players[0]->isDown(key))
+		sint dir;
+		if (typeid(*players[0]) == typeid(HumanPlayer) && (dir = players[0]->getDirection(key) != -1) && dir != DEFAULT/*!players[0]->isDown(key)*/)
 			players[0]->setDirection(DEFAULT);
-		else if (players[1]->getDirection(key) != -1 && !players[1]->isDown(key))
+		else if (typeid(*players[1]) == typeid(HumanPlayer) && (dir = players[1]->getDirection(key) != -1) && dir != DEFAULT/*!players[1]->isDown(key)*/)
 			players[1]->setDirection(DEFAULT);
-		key = players[0]->getKey(DROP);
+		key = DEFAULT;
 	}
 }
 
@@ -239,7 +236,7 @@ bool Game::isSomeoneLose() {
 	bool p1 = players[0]->isLost(), p2 = players[1]->isLost();
 	if (p1 && p2) {
 
-		uint s1, s2;
+		size_t s1, s2;
 		if ((s1 = players[0]->getScore()) == (s2 = players[1]->getScore()))
 			winningMassage(TIE_GAME_CODE);
 		else if (s1 > s2)

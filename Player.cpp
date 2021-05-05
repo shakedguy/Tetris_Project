@@ -5,16 +5,24 @@ bool Player::colorsMode = false;
 
 Player& Player::operator=(const Player& _player)
 {
-	name = _player.name;
-	playerNum = _player.playerNum;
-	direction = _player.direction;
-	keys = _player.keys;
-	boardPos = _player.boardPos;
-	boxPos = _player.boxPos;
-	board = _player.board;
-	box = _player.box;
-	block = _player.block;
-	score = _player.score;
+
+	if (this != &_player)
+	{
+		name = _player.name;
+		playerNum = _player.playerNum;
+		direction = _player.direction;
+		boardPos = _player.boardPos;
+		boxPos = _player.boxPos;
+		board = _player.board;
+		box = _player.box;
+		*block = *_player.block;
+		score = _player.score;
+		if (keyIndicators.size() == _player.keyIndicators.size())
+		{
+			for (size_t i = 0; i < keyIndicators.size(); ++i)
+				keyIndicators[i] = _player.keyIndicators[i];
+		}
+	}
 	return *this;
 }
 
@@ -70,7 +78,7 @@ void Player::setGameBoundaries() {
 
 // check if the player losed
 bool Player::isLost() {
-	for (uint i = 1; i < board.width - 1; ++i)
+	for (size_t i = 1; i < board.width - 1; ++i)
 		if (board.board[i][1] != EMPTY_CELL)
 			return true;
 	return false;
@@ -100,7 +108,8 @@ void Player::printScore() const {
 // Loop of moving the block down until it comes across another block or the board border
 bool Player::drop() {
 	
-	while (board.moveDown(block)) { block->moveDown(); }
+	while (board.moveDown(block))
+	     block->moveDown();
 	direction = DEFAULT;
 	return false;
 }
@@ -130,7 +139,7 @@ void Player::getNewBlock() {
 
 	delete block;
 	std::random_device bombChances;
-	const std::uniform_int_distribution<> rnd(0, 19);
+	const std::uniform_int_distribution<> rnd(0, 4);
 	if (rnd(bombChances))
 	{
 		block = new Block();
@@ -166,7 +175,7 @@ void Player::move() {
 		cout << box;
 		block->drawBlock();
 	}
-	board.drawFillCells();
+	//board.drawFillCells();
 	board.drawBlocksInBoard();
 	board.drawBoundaries();
 	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
@@ -179,7 +188,7 @@ bool Player::makeTheMove() {
 	
 	switch (direction) {
 	case COUNTER_CLOCKWISE:
-		if(board.counterClockwiseRotate(block))
+		if(board.rotateCheck(block, COUNTER_CLOCKWISE))
 		{
 			block->counterClockwiseRotate();
 			return true;
@@ -187,7 +196,7 @@ bool Player::makeTheMove() {
 		direction = DEFAULT;
 		return makeTheMove();
 	case CLOCKWISE:
-		if (board.clockwiseRotate(block))
+		if (board.rotateCheck(block, CLOCKWISE))
 		{
 			block->clockwiseRotate();
 			return true;

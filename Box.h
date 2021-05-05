@@ -29,6 +29,7 @@ public:
 	Box(const Point& _pos);
 	~Box() = default;
 	friend std::ostream& operator<<(std::ostream& out, const Box& _box) { _box.drawBox(); return out; }
+	Box& operator=(const Box& _box);
 	void clearBox();
 	void setBoxPos(const Point& _pos) { pos = _pos; box.pos = _pos; setBlocks(); }
 };

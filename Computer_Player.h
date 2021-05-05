@@ -9,7 +9,6 @@
 class ComputerPlayer : public Player
 {
      enum constants { INITIALIZE_STEPS = -Board::WIDTH, INITIALIZE_ROTATES = -1, DIRECTION_CHECK = 1 };
-     map<uchar, sint> keys;
      int steps = INITIALIZE_STEPS;
      short clockWise = INITIALIZE_ROTATES;
      short CounterClockWise = INITIALIZE_ROTATES;
@@ -29,13 +28,12 @@ private:
 public:
      ComputerPlayer() : ComputerPlayer(0, { 0, 0 }, { 0, 0 }) {}
      ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos);
-     ~ComputerPlayer() = default;
-     void setPlayerKeys(const string & arrowKeys)override;
-     sint getDirection(const uchar & key)override;
-     bool isDown(const uchar & key)override;
-     uchar getKey(const ushort & dir) const override;
+     ComputerPlayer(const ComputerPlayer& _ComputerPlayer) { *this = _ComputerPlayer; }
+     ComputerPlayer& operator=(const ComputerPlayer& _player);
+     sint getDirection(const uchar& key)override { return 0; }
      void setDirection(const uchar& key)override;
      void setName()override { return; }
+     void setPlayerKeys(const string& arrowKeys)override { return; }
      void initializeCalculate()override { steps = INITIALIZE_STEPS; clockWise = CounterClockWise = INITIALIZE_ROTATES; }
      
     

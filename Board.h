@@ -38,31 +38,33 @@ class Board
 	friend class Box;
 
 private:
-	bool isFullRow(const uint& row, const uint& start, const uint& end);
-	void dropRows(const uint& startX, const uint& endX, const uint& startY, const uint& endY);
-	int isFigureInRow(Block& block, const uint& row) const;
-	void dropBlocks(const uint& row);
+	bool isFullRow(const size_t& row, const size_t& start, const size_t& end);
+	void dropRows(const size_t& startX, const size_t& endX, const size_t& startY);
+	int isFigureInRow(Block& block, const size_t& row) const;
+	void dropBlocks(const size_t& row);
 	void setTopBoundary();
 	void setBottomBoundary();
 	void setRightBoundary();
 	void setLeftBoundary();
 	void drawBoard() const;
 	void setSeparators(uint const& row);
-	bool moveLeftAboveBoard(Block* block);
-	bool moveRightAboveBoard(Block* block);
-	bool rotateAboveBoard(Block* block, const Block& temp);
+	bool moveLeftAboveBoard(const Block* block)const;
+	bool moveRightAboveBoard(const Block* block)const;
+	bool rotateAboveBoard(const Block& temp)const;
 	void DropBlock(Block& block);
 	void drawFillCells()const;
+	void drawEmptyCells()const;
 	uint checkBoardWithoutChanges();
 	void deleteBlock(const Block& block);
 	void freezeWithoutSave(Block& block);
 	Point findBestBombPos(Board* b, Block& temp)const;
-	int explosionCheck(const Block& block);
-	
+	size_t explosionCheck(const Block& block);
+	void returnBlocks();
+	void fixBoard();
 
 public:
 	Board() : Board({0, 0}, LENGTH, WIDTH) {}
-	Board(const Point& _pos) : Board({_pos}, LENGTH, WIDTH) {}
+	Board(const Point& _pos) : Board(_pos, LENGTH, WIDTH) {}
 	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
 	~Board() { this->blocks.clear(); this->cleanBoard(); }
@@ -82,12 +84,13 @@ public:
 	const uint& getWidth() const { return width; }
 	const size_t& getNumberOfBlocks() const { return blocks.size(); }
 	void explosion(const Block& block);
-	bool clockwiseRotate(Block* block);
-	bool counterClockwiseRotate(Block* block);
-	bool moveLeft(Block* block);
-	bool moveRight(Block* block);
-	bool moveDown(Block* block);
-	Point findBestPos(Block* block, short& situations);
+	bool clockwiseRotate(const Block* block)const;
+	bool counterClockwiseRotate(const Block* block)const;
+	bool moveLeft(const Block* block)const;
+	bool moveRight(const Block* block)const;
+	bool moveDown(const Block* block)const;
+	Point findBestPos(Block* block, short& situations)const;
+	bool rotateCheck(Block* block, const ushort& dir)const;
 };
 
 #endif

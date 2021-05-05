@@ -38,7 +38,7 @@ using uchar = unsigned char;
 
 
 // Define the numbers that represent steps as consts
-enum Keys { COUNTER_CLOCKWISE, CLOCKWISE, DROP, MOVE_LEFT, MOVE_RIGHT, SPEED_MODE = 42, DEFAULT, ESC = 27 };
+enum Keys { COUNTER_CLOCKWISE, CLOCKWISE, DROP, MOVE_LEFT, MOVE_RIGHT, DEFAULT, SPEED_MODE = 42, ESC = 27 };
 
 
 #endif

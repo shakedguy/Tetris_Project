@@ -8,9 +8,10 @@
 
 #include "Game.h"
 
-int test(int x)
+size_t test()
 {
-	return x++;
+	size_t x = 0;
+	return x;
 }
 
 int main() {

@@ -27,47 +27,44 @@ protected:
 	string name;
 	ushort playerNum;
 	ushort direction;
-	map<uchar, sint> keys;
 	array<Board, NUM_OF_KEYS> keyIndicators;
 	Point boardPos;
 	Point boxPos;
 	Board board;
 	Box box;
-	Block* block = new Block();
-	uint score;
+	Block* block = new Block;
+	size_t score;
 
 	friend class Game;
 
 
 
 	void setGameBoundaries();
+	void setKeysIndication();
+
+private:
 	bool drop();
 	void getNewBlock();
 	bool makeTheMove();
-
-	void setKeysIndication();
 	void drawKeysIndication() const;
 
 
 public:
 	virtual ~Player() { delete block; }
-	Player& operator=(const Player& _player);
+	virtual Player& operator=(const Player& _player);
 	friend std::ostream& operator<<(std::ostream& out, const Player* _player);
 	void printScore() const;
-	void drawBoard() const {}
 	void move();
 	bool isLost();
-	void setCurrentBlockPos(const Point& pos) { block->pos = pos; }
+	void setCurrentBlockPos(const Point& pos)const { block->pos = pos; }
 	void clearGame();
 	string getName() const { return name; }
-	virtual bool isDown(const uchar& key) = 0;
-	virtual uchar getKey(const ushort& dir) const = 0;
 	virtual void setPlayerKeys(const string& arrowKeys) = 0;
 	virtual sint getDirection(const uchar& key) = 0;
 	virtual void setDirection(const uchar& key) = 0;
 	virtual void setName() = 0;
 	void showIndicateHit(const ushort& dir);
-	uint getScore() const { return score; }
+	size_t getScore() const { return score; }
 	bool checkSpeed(const int& accNum) const;
 	void setBoardPos(const Point& _pos) { boardPos = _pos; board.pos = _pos; }
 	void setBoxPos(const Point& _pos) { boxPos = _pos; box.setBoxPos(_pos); }

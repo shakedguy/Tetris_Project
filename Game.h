@@ -84,9 +84,8 @@ class Game
 	friend class Menu;
 
 private:
-	uchar avoidMultipleHits();
+	uchar avoidMultipleHits()const;
 	void move() { players[0]->move(); players[1]->move(); }
-	void drawBoards() const { players[0]->drawBoard();	players[1]->drawBoard(); }
 	void printScores() const { players[0]->printScore(); players[1]->printScore(); }
 	void clearGame() { players[0]->clearGame();	players[1]->clearGame(); }
 	bool isSomeoneLose();

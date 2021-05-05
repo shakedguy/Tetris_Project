@@ -1,7 +1,7 @@
 #include "HumanPlayer.h"
 
-
-HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) {
+HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos, const string& arrowKeys)
+{
 
 	Player::playerNum = _playerNum;
 	Player::setBoardPos(_boardPos);
@@ -18,10 +18,22 @@ HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const
 		block->pos = { RIGHT_BLOCK, BLOCKS_Y };
 		name = "Player 2";
 	}
-
+	setPlayerKeys(arrowKeys);
 	Player::setGameBoundaries();
 	Player::setKeysIndication();
 }
+
+HumanPlayer& HumanPlayer::operator=(const HumanPlayer& _player)
+{
+
+	if (this != &_player)
+	{
+		Player::operator=(_player);
+		keys = _player.keys;
+	}
+	return *this;
+}
+
 
 // Inserting characters and numbers into the step's representation map
 void HumanPlayer::setPlayerKeys(const string& arrowKeys) {
@@ -45,23 +57,6 @@ sint HumanPlayer::getDirection(const uchar& key) {
 		return keys.at(find->first);
 	}
 	return -1;
-}
-
-// Gets a key and returns if it represents the DEFAULT direction
-bool HumanPlayer::isDown(const uchar& key) {
-
-	if (keys[key] == DEFAULT)
-		return true;
-	return false;
-}
-
-// Gets a direction and returns the characters representation, if its the DEFAULT direction, returns 0
-uchar HumanPlayer::getKey(const ushort& dir) const {
-
-	for (auto const& pair : keys)
-		if (dir == pair.second)
-			return pair.first;
-	return 0;
 }
 
 void HumanPlayer::setDirection(const uchar& key)
