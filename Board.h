@@ -26,9 +26,10 @@ class Board
 	enum Sizes { LENGTH = 19, WIDTH = 14 };
 
 	Point pos;
-	uint length, width;
-	vector<vector<uchar>> board;
-	vector<Block> blocks;
+	size_t length, width;
+	Point endPos;
+	vector<vector<Point>> board;
+
 
 	friend class Game;
 	friend class Player;
@@ -38,59 +39,73 @@ class Board
 	friend class Box;
 
 private:
-	bool isFullRow(const size_t& row, const size_t& start, const size_t& end);
+	bool isFullRow(const size_t& row, const size_t& start, const size_t& end)const;
+	bool isEmptyRow(const size_t& row, const size_t& start, const size_t& end)const;
 	void dropRows(const size_t& startX, const size_t& endX, const size_t& startY);
 	int isFigureInRow(Block& block, const size_t& row) const;
-	void dropBlocks(const size_t& row);
 	void setTopBoundary();
 	void setBottomBoundary();
 	void setRightBoundary();
 	void setLeftBoundary();
 	void drawBoard() const;
-	void setSeparators(uint const& row);
+	size_t topRow()const;
 	bool moveLeftAboveBoard(const Block* block)const;
 	bool moveRightAboveBoard(const Block* block)const;
 	bool rotateAboveBoard(const Block& temp)const;
 	void DropBlock(Block& block);
 	void drawFillCells()const;
 	void drawEmptyCells()const;
-	uint checkBoardWithoutChanges();
 	void deleteBlock(const Block& block);
-	void freezeWithoutSave(Block& block);
-	Point findBestBombPos(Board* b, Block& temp)const;
-	size_t explosionCheck(const Block& block);
-	void returnBlocks();
-	void fixBoard();
+	Point findBestBombPos(Board* b, Block* temp)const;
+	size_t explosionCheck(const Block& block)const;
+	void cleanAndDeleteCalculation(Block* temp);
+	void checkMaxFullRows(vector<Block>& options, uint& fullRows, uint& maxFullRows, Point& bestPos, Point& lowestPos,
+	const Block* temp, short& bestSituation, short& situation)const;
+	size_t setLimit(const Block* block)const;
+	bool isWellConnected(const size_t& x, const size_t& y);
+	void fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY);
+	bool notDisturbing(const Block& block)const;
+	bool isBlocksAccess(const Block& block, const size_t& row)const;
+	size_t countEmptyCells(const size_t& row)const;
+	vector<Point> getEmptyCellsInRow(const size_t& row)const;
+	bool isThereAccess(const size_t& x, const size_t& y);
+	Point& preferNotInterfere(Board* b, vector<Block>& options)const;
+	
+	
 
 public:
+	void setSeparators(uint const& row);
 	Board() : Board({0, 0}, LENGTH, WIDTH) {}
 	Board(const Point& _pos) : Board(_pos, LENGTH, WIDTH) {}
 	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
-	~Board() { this->blocks.clear(); this->cleanBoard(); }
-	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); board.drawBlocksInBoard();	return out; }
+	~Board() = default;
+	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); return out; }
 	Board& operator=(const Board& _board);
 	void allocateSize();
 	void initialEmptyCells();
 	void setAllBoundaries();
-	void freezeBlock(Block& block);
+	void freezeBlock(const Block& block);
 	void resizeBoundaries(const int& x, const int& y);
 	uint checkBoard();
 	void cleanBoard();
-	void drawBoundaries();
-	void drawBlocksInBoard()const;
 	void fillAllBoard(const uchar& shape);
 	const uint& getLength() const { return length; }
 	const uint& getWidth() const { return width; }
-	const size_t& getNumberOfBlocks() const { return blocks.size(); }
 	void explosion(const Block& block);
 	bool clockwiseRotate(const Block* block)const;
 	bool counterClockwiseRotate(const Block* block)const;
 	bool moveLeft(const Block* block)const;
 	bool moveRight(const Block* block)const;
 	bool moveDown(const Block* block)const;
-	Point findBestPos(Block* block, short& situations)const;
+	Point findBestPos(Block* block, short& situations);
 	bool rotateCheck(Block* block, const ushort& dir)const;
+	void drawBoundaries()const;
+	void setBoardPos(const Point& newPos);
+	Point getPointByPosition(const Point& pos)const;
+	void drawBoard(const Color& color)const;
+	
+	
 };
 
 #endif

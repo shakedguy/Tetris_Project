@@ -28,6 +28,7 @@ void Game::setGameButtons() {
 bool Game::speedMode = false;
 bool Game::colorsMode = false;
 
+
 void Game::changeColorsMode() {
 
 	if (Game::colorsMode)
@@ -68,6 +69,7 @@ void Game::init(const ushort& option) {
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
+
 }
 
 bool Game::initializePlayers(const ushort& option)
@@ -144,7 +146,7 @@ void Game::printButtonsInfo() {
  * receiving the input from the keyboard, decoding it and sending
  * it to the functions that perform the required actions */
 void Game::run() {
-	
+
 	uchar key, temp, temp2; // use 2 to temps to prevent excessive steps (not DEFUALT steps) in one turn
 	key = temp = temp2 = DEFAULT;
 	
@@ -157,7 +159,7 @@ void Game::run() {
 		printScores();
 		
 		//Sleep(gameSpeed);
-		Sleep(20);
+		Sleep(10);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;

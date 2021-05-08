@@ -4,6 +4,8 @@
 #include "Point.h"
 #include "io_utils.h"
 
+Point::Point(const int& _x, const int& _y, const uchar& _shape, const Color& _color) :
+	x(_x), y(_y), shape(_shape), color(_color) {}
 
 Point& Point::operator=(const Point& _point) {
 	if (&_point != this) {
@@ -34,7 +36,7 @@ void Point::move(int direction) {
 	}
 }
 
-void Point::draw(uchar ch)const
+void Point::draw(const uchar& ch)const
 {
 	gotoxy(x, y);
 	cout << ch << endl;
@@ -53,4 +55,22 @@ int Point::compareY(const Point& _point)const
 		return 0;
 	return (this->y < _point.y) ? 1 : -1;
 }
+
+void Point::draw() const
+{
+	setTextColor(color);
+	gotoxy(x, y);
+     cout << shape;
+	setTextColor(WHITE);
+}
+
+void Point::draw(const Color& _color) const
+{
+	setTextColor(_color);
+	gotoxy(x, y);
+	cout << shape;
+	setTextColor(WHITE);
+}
+
+
 

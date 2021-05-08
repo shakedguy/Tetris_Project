@@ -7,19 +7,14 @@
 ***************************************/
 
 #include "Game.h"
+#include "Board.h"
+#include "Block.h"
 
-size_t test()
-{
-	size_t x = 0;
-	return x;
-}
 
 int main() {
 
 	hideCursor();
 	Game game;
 	game.startGame();
-	gotoxy(WINNING_MASSAGE);
-	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
 
 }

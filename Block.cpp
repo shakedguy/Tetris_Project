@@ -1,6 +1,8 @@
 ﻿#include "Block.h"
 
 Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
+
+	endPos = { pos.getX() + COLUMNS,pos.getY() + ROWS };
 	std::random_device rnd;
 	const std::uniform_int_distribution<> shapeRange(0, 6);
 	const std::uniform_int_distribution<> colorRange(1, 14);
@@ -187,8 +189,8 @@ void Block::pullFigureLeft() {
 // This function cleans the block (by reseting the matrix that holds the block's figure)
 void Block::cleanBlock() {
 
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
+	for (int i = 0; i < Block::COLUMNS; i++)
+		for (int j = 0; j < Block::ROWS; j++)
 			figure[i][j] = 0;
 }
 
@@ -282,21 +284,21 @@ void Block::drawBlock() const {
 void Block::moveDown() {
 	cleanPrint();
 	pos++;
-	drawBlock();
+	cout << *this;
 }
 
 // Reduction the x componente in the position data member of the block
 void Block::moveLeft() {
 	cleanPrint();
 	pos <<= 1;
-	drawBlock();
+	cout << *this;
 }
 
 // Raise the x componente in the position data member of the block
 void Block::moveRight() {
 	cleanPrint();
 	pos >>= 1;
-	drawBlock();
+	cout << *this;
 }
 
 void Block::changeColorsMode() {
@@ -314,6 +316,15 @@ bool Block::isCleanMatrix()
 				return false;
 	return true;
 }
+
+bool Block::isColEmpty(const ushort& col)const
+{
+	for (size_t i = 0; i < Block::ROWS; ++i)
+		if (figure[col][i])
+			return false;
+	return true;
+}
+
 
 
 

@@ -23,7 +23,10 @@ class Game
 			COLOR_MODE_ON = 5, COLOR_MODE_OF, NEW_GAME_X = 9, EXIT = 11,
 		};
 		static bool resumeGame;
-		enum GameOptions { H_VS_H, H_VS_C, C_VS_C, PRINT_C_C, PRINT_H_C, PRINT_H_H = 6, BACK  };
+		enum GameOptions {
+			H_VS_H, H_VS_C, C_VS_C, PRINT_C_C, PRINT_H_C, PRINT_H_H = 6, BACK, BEST = 0, GOOD, NOVICE,
+			PRINT_BEST = 8, PRINT_GOOD = 8, PRINT_NOVICE = 7
+		};
 		enum inputs {
 			NEW_GAME = 1, RESUME_GAME, SET_NAMES, COLOR_MODE, INSTRUCTIONS_AND_KEYS = 8, EXIT_GAME
 		};
@@ -31,33 +34,37 @@ class Game
 		Point pos;
 		Board menu;
 		Board newGameMenu;
+		Board levels;
 		array<Block, NUM_OF_BLOCKS> blocks;
 		friend class Game;
 
 	private:
 		void printMenuOptions() const;
-		void printMenuColor() const;
+		void printMenuColor(const Board& board) const;
 		void drawBlocksInMenu() const;
 		void drawMenu() const;
 		void drawNewGameMenu() const;
 		void setMenuBlock();
 		void pickColor(const int& row) const;
-		void keyAndInstructions();
+		void keyAndInstructions()const;
 		void setMenuBoard();
 		void setNewGameMenuBoard();
-		void inputErrorMassage();
-		void newGameOptions(Game& game);
+		void inputErrorMassage()const;
+		void newGameOptions(Game& game)const;
+		void levelsOptions(Game& game, const ushort& option)const;
 		void printNewGameMenuOptions()const;
+		void drawLevelsMenu()const;
+		void printLevelsOptions()const;
 
 	public:
 		Menu() : Menu({ 0, 0 }) {}
 		Menu(const Point& _pos);
 		~Menu() = default;
 		friend std::ostream& operator<<(std::ostream& out, const Menu& _menu) { _menu.drawMenu(); return out; }
-		static void possibleResumeGame(const bool& possible);
-		ushort getOption() { return _getch() - '0'; }
+		static void possibleResumeGame(const bool& possible) { Game::Menu::resumeGame = possible; }
+		ushort getOption()const { return _getch() - '0'; }
 		Point getLastBoxPos()const;
-		void menuPage(Game& game);
+		void menuPage(Game& game)const;
 		void updateMenuBoard();
 	};
 
@@ -106,7 +113,7 @@ private:
 
 public:
 	Game();
-	~Game() = default;
+	~Game() { gotoxy(WINNING_MASSAGE); cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl; }
 	static void changeSpeedMode();
 	void drawButtons();
 	void acceleration() { gameSpeed -= ACCELERATION; accNum++; }

@@ -73,13 +73,13 @@ void Player::setGameBoundaries() {
 	
 	board.setAllBoundaries();
 	for (size_t i = 0; i < board.width; ++i)
-		board.board[i][0] = EMPTY_CELL;
+		board.board[i][0].shape = EMPTY_CELL;
 }
 
 // check if the player losed
 bool Player::isLost() {
 	for (size_t i = 1; i < board.width - 1; ++i)
-		if (board.board[i][1] != EMPTY_CELL)
+		if (board.board[i][1].shape != EMPTY_CELL)
 			return true;
 	return false;
 }
@@ -139,7 +139,7 @@ void Player::getNewBlock() {
 
 	delete block;
 	std::random_device bombChances;
-	const std::uniform_int_distribution<> rnd(0, 4);
+	const std::uniform_int_distribution<> rnd(0, 19);
 	if (rnd(bombChances))
 	{
 		block = new Block();
@@ -172,12 +172,10 @@ void Player::move() {
 		     board.freezeBlock(*block);
 
           getNewBlock();
-		cout << box;
-		block->drawBlock();
+		cout << box << *block;
+		board.drawEmptyCells();
 	}
-	//board.drawFillCells();
-	board.drawBlocksInBoard();
-	board.drawBoundaries();
+	board.drawFillCells();
 	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
 	direction = DEFAULT;
 }
@@ -242,7 +240,7 @@ void Player::changeColorsMode() {
 // Check if game speed needs to be increased
 bool Player::checkSpeed(const int& accNum) const {
 
-	if (board.blocks.size() > accNum * BLOCKS_FOR_ACCELERATION || score > accNum * SCORE_FOR_ACCELERATION)
+	if (/*board.blocks.size() > accNum * BLOCKS_FOR_ACCELERATION ||*/ score > accNum * SCORE_FOR_ACCELERATION)
 		return true;
 	return false;
 }

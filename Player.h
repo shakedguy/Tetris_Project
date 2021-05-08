@@ -66,7 +66,7 @@ public:
 	void showIndicateHit(const ushort& dir);
 	size_t getScore() const { return score; }
 	bool checkSpeed(const int& accNum) const;
-	void setBoardPos(const Point& _pos) { boardPos = _pos; board.pos = _pos; }
+	void setBoardPos(const Point& _pos) { boardPos = _pos; board.setBoardPos(_pos); }
 	void setBoxPos(const Point& _pos) { boxPos = _pos; box.setBoxPos(_pos); }
 	static void changeColorsMode();
 	virtual void initializeCalculate() = 0;

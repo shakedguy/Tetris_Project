@@ -1,11 +1,14 @@
 #include "Computer_Player.h"
 
+#include "Game.h"
+
 
 ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) {
 
 	Player::playerNum = _playerNum;
 	Player::setBoardPos(_boardPos);
 	Player::setBoxPos(_boxPos);
+	box.box.setAllBoundaries();
 
 	Player::direction = DEFAULT;
 	score = 0;
@@ -23,6 +26,8 @@ ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos,
 	Player::setGameBoundaries();
 	Player::setKeysIndication();
 }
+
+ushort ComputerPlayer::level = 0;
 
 ComputerPlayer& ComputerPlayer::operator=(const ComputerPlayer& _player)
 {
@@ -140,8 +145,39 @@ void ComputerPlayer::calculateBestPos()
 		bestPos=threeRotateBlock();
 	if (typeid(*block) == typeid(Bomb))
 		bestPos = bomb();
+
+	checkLevel(bestPos);
 	steps = bestPos.getX() - Player::block->pos.getX();
 }
+
+void ComputerPlayer::checkLevel(Point& bestPos)const
+{
+	if (level == GOOD)
+	{
+		std::random_device rnd;
+		const std::uniform_int_distribution<> missRange(0, 39);
+		if (!missRange(rnd))
+		{
+			const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
+			int x = widthRange(rnd);
+			while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
+			bestPos.setX(board.pos.getX() + x);
+		}
+	}
+	else if (level == NOVICE)
+	{
+		std::random_device rnd;
+		const std::uniform_int_distribution<> missRange(0, 9);
+		if (!missRange(rnd))
+		{
+			const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
+			int x = widthRange(rnd);
+			while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
+			bestPos.setX(board.pos.getX() + x);
+		}
+	}
+}
+
 
 Point ComputerPlayer::noRotateBlock()
 {
@@ -167,8 +203,6 @@ Point ComputerPlayer::threeRotateBlock()
 	CounterClockWise = 4 - clockWise;
 	return bestPos;
 }
-
-
 
 Point ComputerPlayer::bomb()
 {

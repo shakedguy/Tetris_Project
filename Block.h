@@ -28,7 +28,7 @@ class Block
 
 protected:
 	enum Fillings { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
-	Point pos;
+	Point pos, endPos;
 	uchar shape;
 	array<array<ushort, COLUMNS>, ROWS> figure;
 
@@ -72,6 +72,7 @@ public:
 	void moveDown();
 	bool isCleanMatrix();
 	static void changeColorsMode();
+	bool isColEmpty(const ushort& col)const;
 };
 
 #endif

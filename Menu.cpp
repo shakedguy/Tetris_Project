@@ -1,10 +1,13 @@
 ﻿#include "Game.h"
 
-Game::Menu::Menu(const Point& _pos) : pos(_pos) {
-	menu.pos = _pos;
-	newGameMenu = _pos;
+Game::Menu::Menu(const Point& _pos) : pos(_pos), menu(pos), newGameMenu(pos), levels(pos) {
+
 	menu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
 	newGameMenu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
+	levels.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
+	menu.initialEmptyCells();
+	newGameMenu.initialEmptyCells();
+	levels.initialEmptyCells();
 	setMenuBoard();
 	setNewGameMenuBoard();
 	setMenuBlock();
@@ -12,17 +15,18 @@ Game::Menu::Menu(const Point& _pos) : pos(_pos) {
 
 bool Game::Menu::resumeGame = false;
 
-void Game::Menu::possibleResumeGame(const bool& possible)
-{
-	Game::Menu::resumeGame = possible;
-}
-
 void Game::Menu::setNewGameMenuBoard()
 {
 	newGameMenu.setAllBoundaries();
+	levels.setAllBoundaries();
 	for (int i = 1; i < newGameMenu.length - 1; i++)
-		if (i % 4 == 0)
+	{
+	     if (i % 4 == 0)
+	     {
 			newGameMenu.setSeparators(i);
+			levels.setSeparators(i);
+	     }     
+	}
 }
 void Game::Menu::setMenuBoard()
 {
@@ -37,12 +41,14 @@ void Game::Menu::updateMenuBoard()
 	if (Game::Menu::resumeGame && menu.length == MENU_BOARD_LENGTH)
 	{
 		menu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH + MENU_BLOCK_LENGTH - 1);
+		menu.initialEmptyCells();
 		setMenuBoard();
 
 	}
 	else if (!Game::Menu::resumeGame && menu.length > MENU_BOARD_LENGTH)
 	{
 		menu.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
+		menu.initialEmptyCells();
 		setMenuBoard();
 	}
 }
@@ -50,11 +56,11 @@ void Game::Menu::updateMenuBoard()
 void Game::Menu::drawMenu() const {
 
 	if (Game::colorsMode)
-		setTextColor(BROWN);
-	cout << menu;
-
+		menu.drawBoard(BROWN);
+	else
+		cout << menu;
 	if (Game::colorsMode)
-		printMenuColor();
+		printMenuColor(menu);
 	printMenuOptions();
 	drawBlocksInMenu();
 }
@@ -62,20 +68,32 @@ void Game::Menu::drawMenu() const {
 void Game::Menu::drawNewGameMenu() const {
 
 	if (Game::colorsMode)
-		setTextColor(BROWN);
-	cout << newGameMenu;
-
+		newGameMenu.drawBoard(BROWN);
+	else
+		cout << newGameMenu;
 	if (Game::colorsMode)
-		printMenuColor();
+		printMenuColor(newGameMenu);
 	printNewGameMenuOptions();
 	drawBlocksInMenu();
 }
 
-void Game::Menu::printMenuColor() const {
+void Game::Menu::drawLevelsMenu() const {
 
-	for (size_t i = 1; i < menu.width - 1; ++i) {
-		for (size_t j = 1; j < menu.length - 1; ++j) {
-			gotoxy(menu.pos.getX() + i, menu.pos.getY() + j);
+	if (Game::colorsMode)
+		levels.drawBoard(BROWN);
+	else
+		cout << newGameMenu;
+	if (Game::colorsMode)
+		printMenuColor(newGameMenu);
+	printLevelsOptions();
+	drawBlocksInMenu();
+}
+
+void Game::Menu::printMenuColor(const Board& board) const {
+
+	for (size_t i = 1; i < board.width - 1; ++i) {
+		for (size_t j = 1; j < board.length - 1; ++j) {
+			gotoxy(board.pos.getX() + i, board.pos.getY() + j);
 			if (j % 4 != 0) {
 				pickColor(j);
 				cout << static_cast<uchar>(Block::SHAPE_AFTER_FREEZE);
@@ -150,6 +168,27 @@ void Game::Menu::printNewGameMenuOptions() const {
 	cout << "For back to menu press - " << EXIT_GAME << endl;
 }
 
+void Game::Menu::printLevelsOptions() const {
+
+	ushort temp = 1;
+	gotoxy(newGameMenu.pos.getX() + PRINT_BEST, newGameMenu.pos.getY() + TEXT_Y);
+	cout << "For level BEST press - " << BEST << endl;
+	gotoxy(newGameMenu.pos.getX() + PRINT_GOOD, newGameMenu.pos.getY() + (MENU_BLOCK_LENGTH - 1) * (temp++) + TEXT_Y);
+	cout << "For level GOOD press - " << GOOD << endl;
+	gotoxy(newGameMenu.pos.getX() + PRINT_NOVICE, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	cout << "For level NOVICE press - " << NOVICE << endl;
+	if (Game::colorsMode) {
+		gotoxy(newGameMenu.pos.getX() + COLOR_MODE_ON, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+		cout << "For black and white press - " << COLOR_MODE << endl;
+	}
+	else {
+		gotoxy(newGameMenu.pos.getX() + COLOR_MODE_OF, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+		cout << "For colors mode press - " << COLOR_MODE << endl;
+	}
+	gotoxy(newGameMenu.pos.getX() + BACK, newGameMenu.pos.getY() + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	cout << "For back to menu press - " << EXIT_GAME << endl;
+}
+
 void Game::Menu::drawBlocksInMenu() const {
 	for (const Block& block : blocks)
 		cout << block;
@@ -177,7 +216,7 @@ Point Game::Menu::getLastBoxPos()const
 /* Print the menu page, check what option the users input and send to the right function
  * if the input is not valid prints a message.
  */
-void Game::Menu::menuPage(Game& game)
+void Game::Menu::menuPage(Game& game)const
 {
 	drawMenu();
 	switch (getOption()) {
@@ -223,7 +262,7 @@ void Game::Menu::menuPage(Game& game)
 	}
 }
 
-void Game::Menu::newGameOptions(Game& game)
+void Game::Menu::newGameOptions(Game& game)const
 {
 	drawNewGameMenu();
      switch (getOption())
@@ -234,11 +273,11 @@ void Game::Menu::newGameOptions(Game& game)
 		break;
 	case H_VS_C:
 		clrscr();
-		game.init(H_VS_C);
+		levelsOptions(game, H_VS_C);
 		break;
 	case C_VS_C:
 		clrscr();
-		game.init(C_VS_C);
+		levelsOptions(game, C_VS_C);
 		break;
 	case COLOR_MODE:
 		game.changeColorsMode();
@@ -257,8 +296,42 @@ void Game::Menu::newGameOptions(Game& game)
      }
 }
 
+void Game::Menu::levelsOptions(Game& game, const ushort& option)const
+{
+	drawLevelsMenu();
+	switch (getOption())
+	{
+	case BEST:
+		ComputerPlayer::setLevel(BEST);
+		break;
+	case GOOD:
+		ComputerPlayer::setLevel(GOOD);
+		break;
+	case NOVICE:
+		ComputerPlayer::setLevel(NOVICE);
+		break;
+	case COLOR_MODE:
+		game.changeColorsMode();
+		clrscr();
+		levelsOptions(game, option);
+		break;
+	case EXIT_GAME:
+		clrscr();
+		newGameOptions(game);
+		return;
 
-void Game::Menu::keyAndInstructions() {
+	default:
+		inputErrorMassage();
+		levelsOptions(game, option);
+		break;
+	}
+	clrscr();
+	game.init(option);
+}
+
+
+void Game::Menu::keyAndInstructions()const
+{
 	clrscr();
 	cout << "\tInstructions" << "\t\t\t\t\t     " << "Left player" << "  |  " << "Right player" << endl;
 	cout << "\t----------------------------------------------------------------------------------" << endl;
@@ -273,8 +346,8 @@ void Game::Menu::keyAndInstructions() {
 	clrscr();
 }
 
-void Game::Menu::inputErrorMassage() {
-
+void Game::Menu::inputErrorMassage()const
+{
 	gotoxy(pos.getX() + 2, pos.getY() + menu.length);
 	cout << "Not in the options, please try again" << endl;
 }
