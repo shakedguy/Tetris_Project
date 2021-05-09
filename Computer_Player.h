@@ -8,7 +8,7 @@
 
 class ComputerPlayer : public Player
 {
-     enum Constants { INITIALIZE_STEPS = -Board::WIDTH, INITIALIZE_ROTATES = -1, DIRECTION_CHECK = 1 };
+     enum Constants { INITIALIZE_STEPS = -Board::WIDTH, INITIALIZE_ROTATES = -1, DIRECTION_CHECK = 2 };
      enum Levels { BEST, GOOD, NOVICE };
      int steps = INITIALIZE_STEPS;
      short clockWise = INITIALIZE_ROTATES;
@@ -26,6 +26,15 @@ private:
      void makeRotateMove();
      bool checkLastDirections(const ushort& dir);
      void insertCurrentDirection();
+     void cleanAndDeleteCalculation(Board* b, Block* temp)const;
+     Point findBestBombPosition(Board* b, Block* temp)const;
+     Point findBestPosition(Block* block, short& situations)const;
+     size_t getPositionData(Board* b, Block* temp, size_t& oneToGo)const;
+     Point getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const;
+     size_t setLimit(const Block* block)const;
+     Point preferNotInterfere(Board* b, vector<Block>& options)const;
+     void positionsPriorities(const Board* b, vector<Block>& options, size_t& oneToGo, size_t& maxOneToGo,
+          size_t& fullRows, size_t& maxFullRows, Point& bestPos, Point& lowestPos, const Block* temp, short& bestSituation, short& situation)const;
 
 
 public:
@@ -39,6 +48,7 @@ public:
      void setPlayerKeys(const string& arrowKeys)override { return; }
      void initializeCalculate()override { steps = INITIALIZE_STEPS; clockWise = CounterClockWise = INITIALIZE_ROTATES; }
      static void setLevel(const ushort& _level) { level = _level; }
+
      
     
 

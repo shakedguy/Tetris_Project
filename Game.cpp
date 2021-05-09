@@ -160,8 +160,8 @@ void Game::run() {
 		move();
 		printScores();
 		
-		Sleep(gameSpeed);
-		//Sleep(20);
+		//Sleep(gameSpeed);
+		Sleep(20);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;

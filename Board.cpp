@@ -99,7 +99,8 @@ void Board::drawEmptyCells() const
 }
 
 // drowing only the boundaries of the boards
-void Board::drawBoundaries()const {
+void Board::drawBoundaries()const
+{
 
 	for (size_t i = 0; i < width; i++) 
 		for (size_t j = 0; j < length; j++) 
@@ -112,7 +113,6 @@ void Board::cleanBoard() {
 	for (int i = 1; i < width-1; i++) 
 		for (int j = 1; j < length-1; j++) 
 			board[i][j].shape = EMPTY_CELL;
-	drawEmptyCells();
 }
 
 // Alocating the board rows and columns size 
@@ -228,10 +228,10 @@ void Board::explosion(const Block& block)
 	for (size_t i = startX; i <= endX; ++i)
 		for (size_t j = startY; j <= endY; ++j)
 			board[i][j].shape = EMPTY_CELL;
-	fixBoard(1, width - 2, endY, startY);
+	fixBoard(1, width-1, endY, 1, endY - startY);
 }
 
-void Board::fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY)
+void Board::fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height)
 {
 	for (size_t i = startY; i >= endY; --i)
 	{
@@ -239,21 +239,24 @@ void Board::fixBoard(const size_t& startX, const size_t& endX, const size_t& sta
 		{
 			if (board[j][i].shape != EMPTY_CELL && board[j][i + 1].shape == EMPTY_CELL && (!isWellConnected(j, i)))
 			{
-				size_t n = i + 1;
-				while (board[j][n++].shape == EMPTY_CELL && n < length - 1) {}
+				size_t n = i + 1, counter = 0;
+
+				while (board[j][n].shape == EMPTY_CELL &&
+					n++ < length - 1 &&
+					counter++ < height) {}
+
 				board[j][n - 1].shape = board[j][i].shape;
 				board[j][i].shape = EMPTY_CELL;
 			}
 		}
 	}
-	drawEmptyCells();
 }
 
 bool Board::isWellConnected(const size_t& x, const size_t& y)
 {
 	const size_t right = x + 1, left = x - 1, down = y + 1;
 	if (down >= length - 1)
-		return false;
+		return true;
 	if (board[x][down].shape != EMPTY_CELL)
 		return true;
 	if (right < width - 1)
@@ -310,9 +313,26 @@ uint Board::checkBoard() {
 		if (isFullRow(i, 1, width - 2)) {
 			for (size_t j = 1; j < width - 1; ++j)
 				board[j][i].shape = EMPTY_CELL;
-			fixBoard(1, width - 2, i, 1);
+			fixBoard(1, width - 2, i, 1,1);
+			drawEmptyCells();
 			count++;
 			return count + checkBoard();
+		}
+	}
+
+	return count;
+}
+
+uint Board::checkBoardNoDraw()
+{
+	ushort count = 0;
+	for (size_t i = 1; i < length - 1; i++) {
+		if (isFullRow(i, 1, width - 2)) {
+			for (size_t j = 1; j < width - 1; ++j)
+				board[j][i].shape = EMPTY_CELL;
+			fixBoard(1, width - 2, i, 1, 1);
+			count++;
+			return count + checkBoardNoDraw();
 		}
 	}
 	return count;
@@ -338,7 +358,7 @@ bool Board::isEmptyRow(const size_t& row, const size_t& start, const size_t& end
 
 
 // Loop of moving the block down until it comes across another block or the board border
-void Board::DropBlock(Block& block) {
+void Board::DropBlock(Block& block)const {
 
 	while (moveDown(&block))
 		block.pos++;
@@ -509,7 +529,7 @@ size_t Board::countEmptyCells(const size_t& row)const
 	return count;
 }
 
-size_t Board::topRow()const
+size_t Board::getTopRow()const
 {
 	size_t count = 0, i = 1;
 
@@ -533,13 +553,13 @@ bool Board::isThereAccess(const size_t& x, const size_t& y)
 
 bool Board::notDisturbing(const Block& block)const
 {
-	size_t row = topRow();
+	size_t row = getTopRow();
+	row = (row - 2 > 0) ? row - 2 : 1;
 	for (size_t i = 0; i < Block::ROWS && row < length - 1; ++i)
 	{
-		if (countEmptyCells(row) == 1 && isBlocksAccess(block, row))
+		if (countEmptyCells(row) > 0 && countEmptyCells(row) <= 2 && isBlocksAccess(block, row))
 			return false;
-
-		row++;
+		++row;
 	}
 	return true;
 }
@@ -565,12 +585,9 @@ bool Board::isBlocksAccess(const Block& block, const size_t& row)const
 	          if(block.figure[i][j])
 	          {
 				const Point& temp = getPointByPosition({ block.pos.x + i,block.pos.y + j });
-	               for(Point& p:empty)
-	               {
-					
+				for (Point& p : empty)
 					if ((!temp.compareX(p)) && temp.compareY(p) > 0)
 						return true;
-	               }
 	          }      
 	     }
 	}
@@ -585,170 +602,3 @@ size_t Board::oneToGoRowsCounter() const
 			++counter;
 	return counter;
 }
-
-size_t Board::holesCounter() const
-{
-	size_t counter = 0;
-	for (size_t i = 1; i < width - 1; ++i)
-	{
-		for (size_t j = 1; j < length - 1; ++j)
-		{
-			if (board[i][j].shape == EMPTY_CELL)
-			{
-				if (i == 1 && board[i + 1][j].shape != EMPTY_CELL && board[i][j + 1].shape != EMPTY_CELL)
-					++counter;
-				else if (i == width - 2 && board[i - 1][j].shape != EMPTY_CELL && board[i][j + 1].shape != EMPTY_CELL)
-					++counter;
-				else if (board[i + 1][j].shape != EMPTY_CELL && board[i - 1][j].shape != EMPTY_CELL && board[i][j + 1].shape != EMPTY_CELL)
-					++counter;
-			}
-		}
-	}
-	return counter;
-}
-
-Point Board::findBestPos(Block* block, short& situations)const
-{
-	vector<Block> options;
-	Board* b = new Board;
-	Block* temp = new Block;
-	*b = *this;
-	*temp = *block;
-	temp->pos = pos;
-	if (typeid(*block) == typeid(Bomb))
-		return findBestBombPos(b,temp);
-	short bestSituation = situations;
-	size_t maxFullRows, fullRows, oneToGo, maxOneToGo;
-	size_t holes = maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
-	Point bestPos, oneToGoPos;
-	Point lowestPos = oneToGoPos = bestPos = block->pos;
-	options.push_back(*block);
-	for (short i = 0; i < situations; ++i)
-	{
-		size_t limit = setLimit(temp);
-		for (short j = 1; j <limit && b->moveRight(temp); ++j)
-		{
-			temp->pos >>= 1;
-			temp->cleanPrint();
-			oneToGo = b->oneToGoRowsCounter();
-			holes = b->holesCounter();
-			b->DropBlock(*temp);
-			b->freezeBlock(*temp);
-			fullRows = b->checkBoard();
-			b->checkMaxFullRows(options,holes, oneToGo,maxOneToGo, fullRows, maxFullRows, bestPos, lowestPos, oneToGoPos,
-				temp, bestSituation, i);
-			b->deleteBlock(*temp);
-			temp->pos.setY(pos.getY());
-
-		}
-		b->deleteBlock(*temp);
-		temp->pos = pos;
-		temp->clockwiseRotate();
-	}
-	situations = bestSituation;
-
-	if (!maxFullRows)
-		bestPos = preferNotInterfere(b, options);
-
-	cleanAndDeleteCalculation(b, temp);
-	return bestPos;
-}
-
-Point& Board::preferNotInterfere(Board* b, vector<Block>& options) const
-{
-	int i = options.size() - 1;
-	size_t temp = holesCounter();
-	while (i >= 0)
-	{
-		if (notDisturbing(options[i]))
-			return options[i].pos;
-		b->freezeBlock(options[i]);
-		if(temp>=b->holesCounter())
-		{
-			b->deleteBlock(options[i]);
-			return options[i].pos;
-		}
-		b->deleteBlock(options[i]);
-		i--;
-	}
-	return options[options.size() - 1].pos;
-}
-
-size_t Board::setLimit(const Block* block)const
-{
-	size_t limit = width - 3;
-	if (block->isColEmpty(Block::COLUMNS - 1) && block->isColEmpty(Block::COLUMNS - 2) && block->isColEmpty(Block::COLUMNS - 3))
-		limit = width - 1;
-	else if (block->isColEmpty(Block::COLUMNS - 1) && block->isColEmpty(Block::COLUMNS - 2))
-		limit = width - 2;
-	return limit;
-}
-
-
-Point Board::findBestBombPos(Board* b, Block* temp)const
-{
-	Point bestPos = temp->pos;
-	int counter;
-	int max = counter = -1;
-
-	for (size_t j = 1; j < width - 1 && b->moveRight(temp); ++j)
-	{
-		temp->pos >>= 1;
-		b->DropBlock(*temp);
-		counter = b->explosionCheck(*temp);
-		if (counter > max)
-		{
-			max = counter;
-			bestPos = temp->pos;
-		}
-		else if (counter == max && bestPos.compareY(temp->pos) < 0)
-			bestPos = temp->pos;
-		b->deleteBlock(*temp);
-		temp->pos.setY(pos.getY());
-	}
-	cleanAndDeleteCalculation(b, temp);
-	return bestPos;
-}
-
-void Board::cleanAndDeleteCalculation(Board* b, Block* temp)const
-{
-	temp->cleanPrint();
-	b->cleanBoard();
-	delete temp;
-	delete b;
-}
-
-void Board::checkMaxFullRows(vector<Block>& options, size_t& holes, size_t& oneToGo, size_t& maxOneToGo, size_t& fullRows, size_t& maxFullRows, Point& bestPos,
-	Point& lowestPos, Point& oneToGoPos, const Block* temp, short& bestSituation, short& situation) const
-{
-	if (fullRows > maxFullRows)
-	{
-		maxFullRows = fullRows;
-		bestPos = temp->pos;
-		bestSituation = situation;
-		options.push_back(*temp);
-	}
-	else if (fullRows == maxFullRows && bestPos.compareY(temp->pos) > 0)
-	{
-		bestPos = temp->pos;
-		bestSituation = situation;
-		options.push_back(*temp);
-	}
-	const size_t after = oneToGoRowsCounter();
-	if (!maxFullRows && oneToGo < after && maxOneToGo < after)
-	{
-		maxOneToGo = after;
-		bestPos = temp->pos;
-		bestSituation = situation;
-		options.push_back(*temp);
-	}
-	if (!maxFullRows && lowestPos.compareY(temp->pos) > 0)
-	{
-
-		lowestPos = temp->pos;
-		bestSituation = situation;
-		options.push_back(*temp);
-	}
-
-}
-

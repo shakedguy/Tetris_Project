@@ -51,7 +51,6 @@ void ComputerPlayer::setDirection(const uchar& key)
 {
 	if (steps == INITIALIZE_STEPS && clockWise == INITIALIZE_ROTATES && CounterClockWise == INITIALIZE_ROTATES)
 		calculateBestPos();
-
 	if (!steps && (!clockWise || !CounterClockWise))
 		direction = DEFAULT;
 	else if (steps > 0 && board.moveRight(block))
@@ -183,7 +182,7 @@ void ComputerPlayer::checkLevel(Point& bestPos)const
 Point ComputerPlayer::noRotateBlock()
 {
 	short numOfRotates = 1;
-	const Point& bestPos = board.findBestPos(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = CounterClockWise = 0;
 	return bestPos;
 }
@@ -191,7 +190,7 @@ Point ComputerPlayer::noRotateBlock()
 Point ComputerPlayer::oneRotateBlock()
 {
 	short numOfRotates = 2;
-	const Point& bestPos = board.findBestPos(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = CounterClockWise = numOfRotates;
 	return bestPos;
 }
@@ -199,7 +198,7 @@ Point ComputerPlayer::oneRotateBlock()
 Point ComputerPlayer::threeRotateBlock()
 {
 	short numOfRotates = 4;
-	const Point& bestPos = board.findBestPos(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = numOfRotates;
 	CounterClockWise = 4 - clockWise;
 	return bestPos;
@@ -208,8 +207,149 @@ Point ComputerPlayer::threeRotateBlock()
 Point ComputerPlayer::bomb()
 {
 	short numOfRotates = 1;
-	const Point& bestPos = board.findBestPos(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = CounterClockWise = 0;
 	return bestPos;
 }
 
+
+Point ComputerPlayer::findBestPosition(Block* block, short& situations)const
+{
+	vector<Block> options;
+	Board* b = new Board;
+	Block* temp = new Block;
+	*b = board;
+	*temp = *block;
+	temp->pos = board.pos;
+	if (typeid(*block) == typeid(Bomb))
+		return findBestBombPosition(b, temp);
+	short bestSituation = situations;
+	size_t maxFullRows, fullRows, oneToGo, maxOneToGo;
+	size_t holes = maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
+	Point bestPos;
+	Point lowestPos = bestPos = block->pos;
+	options.push_back(*block);
+	for (short i = 0; i < situations; ++i)
+	{
+		size_t limit = setLimit(temp);
+		for (short j = 1; j < limit && b->moveRight(temp); ++j)
+		{
+			temp->pos >>= 1;
+			fullRows = getPositionData(b, temp, oneToGo);
+			positionsPriorities(b, options, oneToGo, maxOneToGo, fullRows, maxFullRows,
+				bestPos, lowestPos, temp, bestSituation, i);
+			b->deleteBlock(*temp);
+			temp->pos.setY(b->pos.getY());
+		}
+		temp->pos = b->pos;
+		temp->clockwiseRotate();
+	}
+	situations = bestSituation;
+
+	if (!maxFullRows)
+		bestPos = preferNotInterfere(b, options);
+
+	cleanAndDeleteCalculation(b, temp);
+	return bestPos;
+}
+
+Point ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
+{
+	Point bestPos = temp->pos;
+	size_t explosionCounter;
+	size_t max = explosionCounter = 0;
+
+	for (size_t j = 1; j < b->width - 1 && b->moveRight(temp); ++j)
+	{
+		temp->pos >>= 1;
+		b->DropBlock(*temp);
+		explosionCounter = b->explosionCheck(*temp);
+		bestPos = getMaxDamagedPosition(max, explosionCounter, bestPos, temp->pos);
+		b->deleteBlock(*temp);
+		temp->pos.setY(b->pos.getY());
+	}
+	cleanAndDeleteCalculation(b, temp);
+	return bestPos;
+}
+
+size_t ComputerPlayer::getPositionData(Board* b, Block* temp, size_t& oneToGo) const
+{
+	temp->cleanPrint();
+	oneToGo = b->oneToGoRowsCounter();
+	b->DropBlock(*temp);
+	b->freezeBlock(*temp);
+	return b->checkBoardNoDraw();
+}
+
+void ComputerPlayer::cleanAndDeleteCalculation(Board* b, Block* temp)const
+{
+	temp->cleanPrint();
+	b->cleanBoard();
+	delete temp;
+	delete b;
+}
+
+Point ComputerPlayer::getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const
+{
+	if (max > current)
+		return bestPos;
+	if (max == current && bestPos.compareY(tempPos) < 0)
+		return tempPos;
+	max = current;
+	return tempPos;
+}
+
+size_t ComputerPlayer::setLimit(const Block* block)const
+{
+	size_t limit = board.width - 3;
+	if (block->isColEmpty(Block::COLUMNS - 1) && block->isColEmpty(Block::COLUMNS - 2) && block->isColEmpty(Block::COLUMNS - 3))
+		limit = board.width - 1;
+	else if (block->isColEmpty(Block::COLUMNS - 1) && block->isColEmpty(Block::COLUMNS - 2))
+		limit = board.width - 2;
+	return limit;
+}
+
+Point ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options) const
+{
+	int i = options.size() - 1;
+	while (i >= 0)
+	{
+		if (b->notDisturbing(options[i]))
+			return options[i].pos;
+		--i;
+	}
+	return options[options.size() - 1].pos;
+}
+
+void ComputerPlayer::positionsPriorities(const Board* b, vector<Block>& options, size_t& oneToGo, size_t& maxOneToGo, size_t& fullRows, size_t& maxFullRows, Point& bestPos,
+	Point& lowestPos, const Block* temp, short& bestSituation, short& situation) const
+{
+	if (fullRows > maxFullRows)
+	{
+		maxFullRows = fullRows;
+		bestPos = temp->pos;
+		bestSituation = situation;
+		options.push_back(*temp);
+	}
+	else if (fullRows == maxFullRows && bestPos.compareY(temp->pos) > 0)
+	{
+		bestPos = temp->pos;
+		bestSituation = situation;
+		options.push_back(*temp);
+	}
+	const size_t after = b->oneToGoRowsCounter();
+	if (!maxFullRows && lowestPos.compareY(temp->pos) > 0)
+	{
+
+		lowestPos = temp->pos;
+		bestSituation = situation;
+		options.push_back(*temp);
+	}
+	if (!maxFullRows && oneToGo < after && maxOneToGo < after)
+	{
+		maxOneToGo = after;
+		bestPos = temp->pos;
+		bestSituation = situation;
+		options.push_back(*temp);
+	}
+}

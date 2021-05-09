@@ -47,33 +47,23 @@ private:
 	void setRightBoundary();
 	void setLeftBoundary();
 	void drawBoard() const;
-	size_t topRow()const;
+	size_t getTopRow()const;
 	bool moveLeftAboveBoard(const Block* block)const;
 	bool moveRightAboveBoard(const Block* block)const;
 	bool rotateAboveBoard(const Block& temp)const;
-	void DropBlock(Block& block);
+	void DropBlock(Block& block)const;
 	void drawFillCells()const;
 	void drawEmptyCells()const;
 	void deleteBlock(const Block& block);
-	Point findBestBombPos(Board* b, Block* temp)const;
 	size_t explosionCheck(const Block& block)const;
-	void cleanAndDeleteCalculation(Board* b, Block* temp)const;
-	void checkMaxFullRows(vector<Block>& options, size_t& holes, size_t& oneToGo, size_t& maxOneToGo, size_t& fullRows, size_t& maxFullRows, Point& bestPos, Point& lowestPos,
-		Point& oneToGoPos, const Block* temp, short& bestSituation, short& situation)const;
-	size_t setLimit(const Block* block)const;
 	bool isWellConnected(const size_t& x, const size_t& y);
-	void fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY);
+	void fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height);
 	bool notDisturbing(const Block& block)const;
 	bool isBlocksAccess(const Block& block, const size_t& row)const;
 	size_t countEmptyCells(const size_t& row)const;
 	vector<Point> getEmptyCellsInRow(const size_t& row)const;
 	bool isThereAccess(const size_t& x, const size_t& y);
-	Point& preferNotInterfere(Board* b, vector<Block>& options)const;
 	size_t oneToGoRowsCounter()const;
-	size_t holesCounter()const;
-
-	
-	
 
 public:
 	void setSeparators(uint const& row);
@@ -90,6 +80,7 @@ public:
 	void freezeBlock(const Block& block);
 	void resizeBoundaries(const int& x, const int& y);
 	uint checkBoard();
+	uint checkBoardNoDraw();
 	void cleanBoard();
 	void fillAllBoard(const uchar& shape);
 	const uint& getLength() const { return length; }
@@ -100,7 +91,6 @@ public:
 	bool moveLeft(const Block* block)const;
 	bool moveRight(const Block* block)const;
 	bool moveDown(const Block* block)const;
-	Point findBestPos(Block* block, short& situations)const;
 	bool rotateCheck(Block* block, const ushort& dir)const;
 	void drawBoundaries()const;
 	void setBoardPos(const Point& newPos);

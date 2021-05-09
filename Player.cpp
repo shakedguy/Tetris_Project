@@ -173,10 +173,10 @@ void Player::move() {
 		     board.freezeBlock(*block);
 
           getNewBlock();
-		cout << box << *block;
-		board.drawEmptyCells();
+		cout << board << box;
 	}
 	board.drawFillCells();
+	board.drawBoundaries();
 	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
 	direction = DEFAULT;
 }
