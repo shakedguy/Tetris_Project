@@ -20,7 +20,7 @@ protected:
 	};
 	enum Constants
 	{
-	     POINTS_FOR_FULL_ROW = 100, BLOCKS_FOR_ACCELERATION = 5, SCORE_FOR_ACCELERATION = 20,
+	     POINTS_FOR_FULL_ROW = 100, CELLS_FOR_ACCELERATION = 20, SCORE_FOR_ACCELERATION = 20,
 		INDIVATORS_WIDTH =3, INDIVATORS_LENGTH =2, NUM_OF_KEYS = 5
 	};
 	static bool colorsMode;
@@ -65,7 +65,7 @@ public:
 	virtual void setName() = 0;
 	void showIndicateHit(const ushort& dir);
 	size_t getScore() const { return score; }
-	bool checkSpeed(const int& accNum) const;
+	virtual bool checkSpeed(const size_t& accNum)const;
 	void setBoardPos(const Point& _pos) { boardPos = _pos; board.setBoardPos(_pos); }
 	void setBoxPos(const Point& _pos) { boxPos = _pos; box.setBoxPos(_pos); }
 	static void changeColorsMode();

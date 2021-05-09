@@ -37,17 +37,21 @@ std::ostream& operator<<(std::ostream& out, const Player* _player) {
 // Sets the map of keys indicators
 void Player::setKeysIndication() {
 	
-	for (auto i = 0; i < keyIndicators.size(); i++) {
-		
+	for (auto i = 0; i < keyIndicators.size(); ++i) {
+
 		keyIndicators[i].resizeBoundaries(INDIVATORS_WIDTH, INDIVATORS_LENGTH);
-		keyIndicators[i].setAllBoundaries();
+
 		if (i < keyIndicators.size() - 2)
-			keyIndicators[i].pos = {boardPos.getX() + 4, boardPos.getY() + Board::LENGTH + (i * INDIVATORS_LENGTH)};
+			keyIndicators[i].setBoardPos({ boardPos.getX() + 4, boardPos.getY() + Board::LENGTH + (i * INDIVATORS_LENGTH) });
+		else if (i == keyIndicators.size() - 2)
+			keyIndicators[i].setBoardPos({
+			keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY() });
+		else if (i == keyIndicators.size() - 1)
+			keyIndicators[i].setBoardPos({
+		     static_cast<int>(keyIndicators[1].width) + keyIndicators[1].pos.getX(), keyIndicators[1].pos.getY() });
+		keyIndicators[i].initialEmptyCells();
+		keyIndicators[i].setAllBoundaries();
 	}
-	keyIndicators[keyIndicators.size() - 2].pos = {
-			keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY()};
-	keyIndicators[keyIndicators.size() - 1].pos = {
-			static_cast<int>(keyIndicators[1].width) + keyIndicators[1].pos.getX(), keyIndicators[1].pos.getY()};
 }
 
 void Player::drawKeysIndication() const {
@@ -120,11 +124,8 @@ void Player::showIndicateHit(const ushort& dir) {
 	drawKeysIndication();
 	if(dir!=DEFAULT)
 	{
-	     if (Player::colorsMode) {
-	          setTextColor(RED);
-	          cout << keyIndicators[dir];
-	          setTextColor(WHITE);
-	     }
+	     if (Player::colorsMode)
+	          keyIndicators[dir].drawBoard(RED);
 	     else {
 	          keyIndicators[dir].fillAllBoard('#');
 	          cout << keyIndicators[dir];
@@ -238,9 +239,11 @@ void Player::changeColorsMode() {
 }
 
 // Check if game speed needs to be increased
-bool Player::checkSpeed(const int& accNum) const {
+bool Player::checkSpeed(const size_t& accNum)const {
 
-	if (/*board.blocks.size() > accNum * BLOCKS_FOR_ACCELERATION ||*/ score > accNum * SCORE_FOR_ACCELERATION)
+	if (board.numOfFillCells() > accNum * CELLS_FOR_ACCELERATION || score > accNum * SCORE_FOR_ACCELERATION)
 		return true;
 	return false;
 }
+
+

@@ -76,6 +76,7 @@ void ComputerPlayer::setDirection(const uchar& key)
 	}
 	else
 		makeRotateMove();
+	showIndicateHit(direction);
 	insertCurrentDirection();
 }
 
@@ -211,3 +212,4 @@ Point ComputerPlayer::bomb()
 	clockWise = CounterClockWise = 0;
 	return bestPos;
 }
+

@@ -41,7 +41,6 @@ class Board
 private:
 	bool isFullRow(const size_t& row, const size_t& start, const size_t& end)const;
 	bool isEmptyRow(const size_t& row, const size_t& start, const size_t& end)const;
-	void dropRows(const size_t& startX, const size_t& endX, const size_t& startY);
 	int isFigureInRow(Block& block, const size_t& row) const;
 	void setTopBoundary();
 	void setBottomBoundary();
@@ -58,9 +57,9 @@ private:
 	void deleteBlock(const Block& block);
 	Point findBestBombPos(Board* b, Block* temp)const;
 	size_t explosionCheck(const Block& block)const;
-	void cleanAndDeleteCalculation(Block* temp);
-	void checkMaxFullRows(vector<Block>& options, uint& fullRows, uint& maxFullRows, Point& bestPos, Point& lowestPos,
-	const Block* temp, short& bestSituation, short& situation)const;
+	void cleanAndDeleteCalculation(Board* b, Block* temp)const;
+	void checkMaxFullRows(vector<Block>& options, size_t& holes, size_t& oneToGo, size_t& maxOneToGo, size_t& fullRows, size_t& maxFullRows, Point& bestPos, Point& lowestPos,
+		Point& oneToGoPos, const Block* temp, short& bestSituation, short& situation)const;
 	size_t setLimit(const Block* block)const;
 	bool isWellConnected(const size_t& x, const size_t& y);
 	void fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY);
@@ -70,6 +69,9 @@ private:
 	vector<Point> getEmptyCellsInRow(const size_t& row)const;
 	bool isThereAccess(const size_t& x, const size_t& y);
 	Point& preferNotInterfere(Board* b, vector<Block>& options)const;
+	size_t oneToGoRowsCounter()const;
+	size_t holesCounter()const;
+
 	
 	
 
@@ -98,12 +100,14 @@ public:
 	bool moveLeft(const Block* block)const;
 	bool moveRight(const Block* block)const;
 	bool moveDown(const Block* block)const;
-	Point findBestPos(Block* block, short& situations);
+	Point findBestPos(Block* block, short& situations)const;
 	bool rotateCheck(Block* block, const ushort& dir)const;
 	void drawBoundaries()const;
 	void setBoardPos(const Point& newPos);
 	Point getPointByPosition(const Point& pos)const;
+	void getIndexByPosition(const Point& pos, size_t& x, size_t& y)const;
 	void drawBoard(const Color& color)const;
+	size_t numOfFillCells()const;
 	
 	
 };

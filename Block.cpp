@@ -162,16 +162,6 @@ bool Block::isColumnZeroEmpty() {
 	return true;
 }
 
-void Block::DropRows(const size_t& row) {
-	if (row) {
-		for (int i = 0; i < figure.size(); i++)
-			for (int j = row; j > 0; j--)
-				std::swap(figure[i][j], figure[i][j - 1]);
-	}
-	for (int i = 0; i < figure.size(); i++)
-		figure[i][0] = 0;
-}
-
 /* Swap rows so that the block shape starts with row 0 of the matrix */
 void Block::pullFigureUp() {
 	for (int i = 0; i < figure.size(); i++)

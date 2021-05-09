@@ -9,6 +9,7 @@ Game::Game() : menu({Menu::MENU_X,Menu::MENU_Y}),
 	     computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
 				     ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
 {
+	gameSpeed = GAME_SPEED;
 	setGameButtons();
 }
 
@@ -19,8 +20,9 @@ void Game::setGameButtons() {
 	for (int i = 0; i < buttons.size(); ++i) {
 
 		buttons[i].resizeBoundaries(GAME_BUTTON_WIDTH, GAME_BUTTON_LENGTH);
+		buttons[i].setBoardPos({ temp.getX(), temp.getY() + (static_cast<int>(buttons[i].length) * i) + y++ });
+		buttons[i].initialEmptyCells();
 		buttons[i].setAllBoundaries();
-		buttons[i].pos = {temp.getX(), temp.getY() + (static_cast<int>(buttons[i].length) * i) + y++};
 	}
 }
 
@@ -158,8 +160,8 @@ void Game::run() {
 		move();
 		printScores();
 		
-		//Sleep(gameSpeed);
-		Sleep(10);
+		Sleep(gameSpeed);
+		//Sleep(20);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;
@@ -198,7 +200,6 @@ void Game::checkGameModes(const uchar& key) {
 	}
 	else if (key - '0' == Game::Menu::COLOR_MODE)
 		changeColorsMode();
-	
 	drawButtons();
 }
 
@@ -296,7 +297,7 @@ void Game::returnLastSpeed() {
 
 void Game::checkSpeedStatus() {
 
-	if (players[0]->checkSpeed(accNum) || players[1]->checkSpeed(accNum))
+	if ((players[0]->checkSpeed(accNum) || players[1]->checkSpeed(accNum)) && gameSpeed > 20)
 		acceleration();
 }
 

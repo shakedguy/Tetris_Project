@@ -70,7 +70,7 @@ class Game
 
 /********************************** End of Menu class *****************************************/
 	enum Constants {
-		NUM_OF_PLAYERS = 2, HITS_LIMIT = 10, GAME_SPEED = 200, ACCELERATION = 30,
+		NUM_OF_PLAYERS = 2, HITS_LIMIT = 10, GAME_SPEED = 100, ACCELERATION = 10,
 		NUM_OF_BUTTONS = 2, GAME_BUTTON_WIDTH = 11, GAME_BUTTON_LENGTH = 5, TIE_GAME_CODE = 2
 	};
 	enum objectsPositions {
@@ -79,9 +79,9 @@ class Game
 	};
 	static bool colorsMode;
 	static bool speedMode;
-	ushort accNum = 1;
+	size_t accNum = 1;
 	array<Board, NUM_OF_BUTTONS> buttons;
-	ushort gameSpeed = GAME_SPEED;
+	size_t gameSpeed;
 	Menu menu;
 	array<Player*, NUM_OF_PLAYERS>players;
 	array<HumanPlayer, NUM_OF_PLAYERS>humanPlayers;
