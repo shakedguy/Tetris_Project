@@ -7,8 +7,6 @@
 ***************************************/
 
 #include "Game.h"
-#include "Board.h"
-#include "Block.h"
 
 
 int main() {

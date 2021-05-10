@@ -6,7 +6,7 @@ HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const
 	Player::playerNum = _playerNum;
 	Player::setBoardPos(_boardPos);
 	Player::setBoxPos(_boxPos);
-	box.box.setAllBoundaries();
+	box.setAllBoundaries();
 
 	Player::direction = DEFAULT;
 	score = 0;

@@ -10,9 +10,13 @@
 #include "HumanPlayer.h"
 #include "Computer_Player.h"
 
+
+
 class Game
 {
-/********************************** Menu class *****************************************/
+
+	/********************************** Menu class *****************************************/
+	/**************************************************************************************/
 	class Menu
 	{
 		enum objectsPositions
@@ -30,45 +34,49 @@ class Game
 		enum inputs {
 			NEW_GAME = 1, RESUME_GAME, SET_NAMES, COLOR_MODE, INSTRUCTIONS_AND_KEYS = 8, EXIT_GAME
 		};
-		enum Constants { NUM_OF_BLOCKS = 8, MENU_BLOCK_LENGTH = 5, MENU_BOARD_WIDTH = 40, MENU_BOARD_LENGTH = 21, NUM_OF_OPTIONS = 4 };
+		enum Constants {
+			MAIN_MENU_PAGE, NEW_GAME_PAGE, LEVELS_PAGE, NUM_OF_PAGES, NUM_OF_BLOCKS = 8, MENU_BLOCK_LENGTH = 5,
+			MENU_BOARD_WIDTH = 40, MENU_BOARD_LENGTH = 21, NUM_OF_OPTIONS = 4
+		};
 		Point pos;
-		Board menu;
-		Board newGameMenu;
-		Board levels;
+		array<Board, NUM_OF_PAGES> menuPages;
 		array<Block, NUM_OF_BLOCKS> blocks;
+
 		friend class Game;
 
 	private:
-		void printMenuOptions() const;
-		void printMenuColor(const Board& board) const;
+		void printOptions(const ushort& pageNumber)const;
+		void printMainMenuOptions() const;
+		void printNewGamePageOptions()const;
+		void printLevelsPageOptions()const;
+		void paintBoxes(const ushort& pageNumber) const;
 		void drawBlocksInMenu() const;
-		void drawMenu() const;
-		void drawNewGameMenu() const;
+		void drawPage(const ushort& pageNumber) const;
 		void setMenuBlock();
-		void pickColor(const int& row) const;
+		void pickColor(const size_t& row) const;
 		void keyAndInstructions()const;
 		void setMenuBoard();
-		void setNewGameMenuBoard();
+		void setNewGameAndLevelsMenus();
 		void inputErrorMassage()const;
-		void newGameOptions(Game& game)const;
-		void levelsOptions(Game& game, const ushort& option)const;
-		void printNewGameMenuOptions()const;
-		void drawLevelsMenu()const;
-		void printLevelsOptions()const;
+		void newGamePage(Game& game)const;
+		void levelsPage(Game& game, const ushort& option)const;
+
 
 	public:
 		Menu() : Menu({ 0, 0 }) {}
 		Menu(const Point& _pos);
 		~Menu() = default;
-		friend std::ostream& operator<<(std::ostream& out, const Menu& _menu) { _menu.drawMenu(); return out; }
-		static void possibleResumeGame(const bool& possible) { Game::Menu::resumeGame = possible; }
+		friend std::ostream& operator<<(std::ostream& out, const Menu& _menu) { _menu.drawPage(MAIN_MENU_PAGE); return out; }
+		static void possibleResumeGame(const bool& possible) { Menu::resumeGame = possible; }
 		ushort getOption()const { return _getch() - '0'; }
-		Point getLastBoxPos()const;
-		void menuPage(Game& game)const;
+		void mainMenuPage(Game& game)const;
 		void updateMenuBoard();
 	};
 
-/********************************** End of Menu class *****************************************/
+	 /**********************************************************************************************/
+     /********************************** End of Menu class *****************************************/
+
+
 	enum Constants {
 		NUM_OF_PLAYERS = 2, HITS_LIMIT = 10, GAME_SPEED = 100, ACCELERATION = 10,
 		NUM_OF_BUTTONS = 2, GAME_BUTTON_WIDTH = 11, GAME_BUTTON_LENGTH = 5, TIE_GAME_CODE = 2
@@ -77,39 +85,37 @@ class Game
 		LEFT_BOARD = 30, RIGHT_BOARD = 50, BOARDS_Y = 0,
 		LEFT_BOX = 18, RIGHT_BOX = 68, BOXES_Y = 11, SPEED_X = 0, SPEED_Y = 0
 	};
-	static bool colorsMode;
-	static bool speedMode;
-	size_t accNum = 1;
-	array<Board, NUM_OF_BUTTONS> buttons;
-	size_t gameSpeed;
-	Menu menu;
-	array<Player*, NUM_OF_PLAYERS>players;
-	array<HumanPlayer, NUM_OF_PLAYERS>humanPlayers;
-	array<ComputerPlayer, NUM_OF_PLAYERS>computerPlayers;
-	ushort gameNumber = 0;
+		static bool colorsMode;
+		static bool speedMode;
+		size_t accNum = 1;
+		array<Board, NUM_OF_BUTTONS> buttons;
+		size_t gameSpeed;
+		Menu menu;
+		array<Player*, NUM_OF_PLAYERS>players;
+		array<HumanPlayer, NUM_OF_PLAYERS>humanPlayers;
+		array<ComputerPlayer, NUM_OF_PLAYERS>computerPlayers;
+		ushort gameNumber = 0;
 
-	friend class Menu;
 
 private:
-	uchar avoidMultipleHits()const;
-	void move() { players[0]->move(); players[1]->move(); }
-	void printScores() const { players[0]->printScore(); players[1]->printScore(); }
-	void clearGame() { players[0]->clearGame();	players[1]->clearGame(); }
-	bool isSomeoneLose();
-	bool resumeGame();
-	void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
-	void setNames();
-	void changeColorsMode();
-	void winningMassage(const ushort& flag) const;
-	void checkSpeedStatus();
-	void setGameButtons();
-	void printButtonsInfo();
-	void checkGameModes(const uchar& key);
-	void directions(const uchar& key);
-	void returnLastSpeed();
-	void resetCurrentBlocksPos();
-	void resetIndicators();
-	bool initializePlayers(const ushort& option);
+		uchar avoidMultipleHits()const;
+		void move() { players[0]->move(); players[1]->move(); }
+		void printScores() const { players[0]->printScore(); players[1]->printScore(); }
+		void clearGame() { players[0]->clearGame();	players[1]->clearGame(); }
+		bool isSomeoneLose();
+		void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
+		void setNames();
+		static void changeColorsMode();
+		void winningMassage(const ushort& flag) const;
+		void checkSpeedStatus();
+		void setGameButtons();
+		void printButtonsInfo();
+		void checkGameModes(const uchar& key);
+		void directions(const uchar& key);
+		void returnLastSpeed();
+		void resetCurrentBlocksPos();
+		void resetIndicators();
+		bool initializePlayers(const ushort& option);
 
 public:
 	Game();
@@ -117,11 +123,12 @@ public:
 	static void changeSpeedMode();
 	void drawButtons();
 	void acceleration() { gameSpeed -= ACCELERATION; accNum++; }
-	void startGame() { menu.menuPage(*this); }
+	void startGame() { menu.mainMenuPage(*this); }
 	void init(const ushort& option);
 	void run();
-
-	
 };
+
+
+
 
 #endif

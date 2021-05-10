@@ -1,8 +1,8 @@
 ﻿  Board.cpp
-C:\Users\shake\source\repos\Tetris_Project\Board.h(86,32): warning C4267: 'return': conversion from 'size_t' to 'const uint', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Board.h(87,31): warning C4267: 'return': conversion from 'size_t' to 'const uint', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Board.cpp(50,42): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Board.cpp(76,33): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Board.cpp(294,19): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\Tetris_Project\Board.cpp(294,35): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(51,42): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(87,33): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(298,19): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Tetris_Project\Board.cpp(298,35): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Main.cpp
+  Generating Code...
   Tetris_Project.vcxproj -> C:\Users\shake\source\repos\Tetris_Project\x64\Debug\Tetris_Project.exe

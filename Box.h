@@ -9,16 +9,12 @@
 #include "Board.h"
 #include "Point.h"
 
-class Box
+class Box : public Board
 {
 	enum Constants { LENGTH = 8, WIDTH = 8, NUM_OF_BLOCKS = 2 };
-	Point pos;
-	Board box;
 	array<Block, NUM_OF_BLOCKS> blocks;
 
 	friend class Player;
-	friend class HumanPlayer;
-	friend class ComputerPlayer;
 	friend class Game;
 
 private:
@@ -31,7 +27,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& out, const Box& _box) { _box.drawBox(); return out; }
 	Box& operator=(const Box& _box);
 	void clearBox();
-	void setBoxPos(const Point& _pos) { pos = _pos; box.setBoardPos(_pos);  setBlocks(); }
+	void setBoxPos(const Point& _pos) { pos = _pos; setBoardPos(_pos);  setBlocks(); }
 };
 
 #endif

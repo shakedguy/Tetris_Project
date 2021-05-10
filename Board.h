@@ -7,41 +7,34 @@
 #include "Public_const_and_structs.h"
 #include "Block.h"
 #include "Point.h"
-#include "Bomb.h"
+
 
 class Board
 {
+	static bool colorsMode;
+
 	enum Boundaries
 	{
-		WALL = 186,
-		FLOOR = 205,
-		UP_LEFT = 201,
-		UP_RIGHT = 187,
-		DOWN_LEFT = 200,
-		DOWN_RIGHT = 188,
-		RIGHT_CONNECTOR = 185,
-		LEFT_CONNECTOR = 204
+		WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200,
+		DOWN_RIGHT = 188, RIGHT_CONNECTOR = 185, LEFT_CONNECTOR = 204
 	};
 
 	enum Sizes { LENGTH = 19, WIDTH = 14 };
 
 	Point pos;
 	size_t length, width;
-	Point endPos;
 	vector<vector<Point>> board;
 
-
-	friend class Game;
 	friend class Player;
 	friend class HumanPlayer;
 	friend class ComputerPlayer;
+	friend class Game;
 	friend class Menu;
 	friend class Box;
 
 private:
 	bool isFullRow(const size_t& row, const size_t& start, const size_t& end)const;
 	bool isEmptyRow(const size_t& row, const size_t& start, const size_t& end)const;
-	int isFigureInRow(Block& block, const size_t& row) const;
 	void setTopBoundary();
 	void setBottomBoundary();
 	void setRightBoundary();
@@ -55,9 +48,9 @@ private:
 	void drawFillCells()const;
 	void drawEmptyCells()const;
 	void deleteBlock(const Block& block);
-	size_t explosionCheck(const Block& block)const;
+	size_t damageCounter(const Block& block)const;
 	bool isWellConnected(const size_t& x, const size_t& y);
-	void fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height);
+	void dropFloatingBricks(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height);
 	bool notDisturbing(const Block& block)const;
 	bool isBlocksAccess(const Block& block, const size_t& row)const;
 	size_t countEmptyCells(const size_t& row)const;
@@ -67,24 +60,25 @@ private:
 
 public:
 	void setSeparators(uint const& row);
-	Board() : Board({0, 0}, LENGTH, WIDTH) {}
+	Board() : Board({ 0, 0 }, LENGTH, WIDTH) {}
 	Board(const Point& _pos) : Board(_pos, LENGTH, WIDTH) {}
-	Board(uint _len, uint _width) : Board({0, 0}, _len, _width) {}
+	Board(uint _len, uint _width) : Board({ 0, 0 }, _len, _width) {}
 	Board(const Point& _pos, uint _len, uint _width);
-	~Board() = default;
+	virtual ~Board() = default;
+	static void changeColorsMode();
 	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); return out; }
-	Board& operator=(const Board& _board);
+	virtual Board& operator=(const Board& _board);
+	const Point& getPos()const { return pos; }
+	const size_t& getLength() const { return length; }
+	const size_t& getWidth() const { return width; }
 	void allocateSize();
 	void initialEmptyCells();
 	void setAllBoundaries();
 	void freezeBlock(const Block& block);
 	void resizeBoundaries(const int& x, const int& y);
-	uint checkBoard();
-	uint checkBoardNoDraw();
+	uint checkBoard(bool draw);
 	void cleanBoard();
 	void fillAllBoard(const uchar& shape);
-	const uint& getLength() const { return length; }
-	const uint& getWidth() const { return width; }
 	void explosion(const Block& block);
 	bool clockwiseRotate(const Block* block)const;
 	bool counterClockwiseRotate(const Block* block)const;
@@ -98,8 +92,7 @@ public:
 	void getIndexByPosition(const Point& pos, size_t& x, size_t& y)const;
 	void drawBoard(const Color& color)const;
 	size_t numOfFillCells()const;
-	
-	
+	void cleanArea(size_t startX, size_t endX, size_t startY, size_t endY);
 };
 
 #endif

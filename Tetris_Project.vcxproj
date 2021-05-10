@@ -141,7 +141,6 @@
   <ItemGroup>
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Computer_Player.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -155,7 +154,6 @@
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="Board.h" />
-    <ClInclude Include="Bomb.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Computer_Player.h" />
@@ -163,7 +161,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="HumanPlayer.h" />
     <ClInclude Include="io_utils.h" />
-    <ClInclude Include="Menu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Public_const_and_structs.h" />

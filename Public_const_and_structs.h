@@ -26,6 +26,7 @@ using std::vector;
 using std::string;
 using std::map;
 
+
 #define WINNING_MASSAGE 30,10
 #define EMPTY_CELL ' '// Define the character of the empty cell in the board
 #define PLAYER_ONE_KEYS "wsxad" // Const of game characters for player 1

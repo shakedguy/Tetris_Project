@@ -16,12 +16,7 @@ class Point
 
 	friend class Board;
 	friend class Player;
-	friend class ComputerPlayer;
-	friend class HumanPlayer;
-	friend class Menu;
-	friend class Game;
-	friend class Block;
-
+	friend class Box;
 
 private:
 	void draw()const; 
@@ -29,10 +24,12 @@ private:
 
 public:
 	Point() : Point(0, 0, EMPTY_CELL) {}
-	Point(int _x, int _y) : Point(_x, _y, EMPTY_CELL) {}
-	Point(size_t _x, size_t _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
-	Point(const int& _x, const int& _y, const uchar& _shape, const Color& _color = WHITE); 
+	Point(const int& _x, const int& _y) : Point(_x, _y, EMPTY_CELL) {}
+	Point(const size_t& _x, const size_t& _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
+	Point(const size_t& _x, const int& _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
+	Point(const int& _x, const size_t& _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
 	Point(const Point& _point) { x = _point.x; y = _point.y; shape = _point.shape; color = _point.color; }
+	Point(const int& _x, const int& _y, const uchar& _shape, const Color& _color = WHITE);
 	~Point() = default;
 	Point& operator=(const Point& _point);
 	Point& operator++(int) { y++; return *this; }

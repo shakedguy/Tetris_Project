@@ -7,7 +7,6 @@
 #include "Public_const_and_structs.h"
 #include "Point.h"
 #include "Board.h"
-#include "Bomb.h"
 #include "Box.h"
 
 class Player
@@ -37,18 +36,15 @@ protected:
 
 	friend class Game;
 
-
-
-	void setGameBoundaries();
-	void setKeysIndication();
-
 private:
 	bool drop();
 	void getNewBlock();
 	bool makeTheMove();
 	void drawKeysIndication() const;
 
-
+protected:
+	void setGameBoundaries();
+	void setKeysIndication();
 public:
 	virtual ~Player() { delete block; }
 	virtual Player& operator=(const Player& _player);

@@ -22,6 +22,8 @@ private:
      Point oneRotateBlock();
      Point threeRotateBlock();
      void checkLevel(Point& bestPos)const;
+     void levelGood(Point& bestPos)const;
+     void levelNovice(Point& bestPos)const;
      Point bomb();
      void makeRotateMove();
      bool checkLastDirections(const ushort& dir);
@@ -48,10 +50,6 @@ public:
      void setPlayerKeys(const string& arrowKeys)override { return; }
      void initializeCalculate()override { steps = INITIALIZE_STEPS; clockWise = CounterClockWise = INITIALIZE_ROTATES; }
      static void setLevel(const ushort& _level) { level = _level; }
-
-     
-    
-
 };
 
 #endif

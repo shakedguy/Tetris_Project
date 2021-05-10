@@ -1,14 +1,12 @@
 #include "Computer_Player.h"
 
-#include "Game.h"
-
 
 ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) {
 
 	Player::playerNum = _playerNum;
 	Player::setBoardPos(_boardPos);
 	Player::setBoxPos(_boxPos);
-	box.box.setAllBoundaries();
+	box.setAllBoundaries();
 
 	Player::direction = DEFAULT;
 	score = 0;
@@ -18,7 +16,7 @@ ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos,
 	}
 	else {
 		block->pos = { RIGHT_BLOCK, BLOCKS_Y };
-		name = "Computer";
+		name = "Computer 2";
 	}
 	for (ushort& i : directionCheck)
 		i = DEFAULT;
@@ -152,32 +150,45 @@ void ComputerPlayer::calculateBestPos()
 
 void ComputerPlayer::checkLevel(Point& bestPos)const
 {
+	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
+	std::random_device rnd;
 	if (level == GOOD)
-	{
-		std::random_device rnd;
-		const std::uniform_int_distribution<> missRange(0, 39);
-		if (!missRange(rnd))
-		{
-			const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
-			int x = widthRange(rnd);
-			while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
-			bestPos.setX(board.pos.getX() + x);
-		}
-	}
+		levelGood(bestPos);
 	else if (level == NOVICE)
+		levelNovice(bestPos);
+}
+
+void ComputerPlayer::levelGood(Point& bestPos) const
+{
+	std::random_device rnd;
+	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
+	const std::uniform_int_distribution<> missRange(0, 39);
+	if (typeid(*block) == typeid(Bomb))
+		bestPos.setX(board.pos.getX() + widthRange(rnd));
+	else if (!missRange(rnd))
 	{
-		std::random_device rnd;
-		const std::uniform_int_distribution<> missRange(0, 9);
-		if (!missRange(rnd))
-		{
-			const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
-			int x = widthRange(rnd);
-			while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
-			bestPos.setX(board.pos.getX() + x);
-		}
+
+		int x = widthRange(rnd);
+		while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
+		bestPos.setX(board.pos.getX() + x);
 	}
 }
 
+void ComputerPlayer::levelNovice(Point& bestPos) const
+{
+	std::random_device rnd;
+	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
+	const std::uniform_int_distribution<> missRange(0, 9);
+	if (typeid(*block) == typeid(Bomb))
+		bestPos.setX(board.pos.getX() + widthRange(rnd));
+	else if (!missRange(rnd))
+	{
+		int x = widthRange(rnd);
+		while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
+		bestPos.setX(board.pos.getX() + x);
+	}
+     
+}
 
 Point ComputerPlayer::noRotateBlock()
 {
@@ -224,15 +235,15 @@ Point ComputerPlayer::findBestPosition(Block* block, short& situations)const
 	if (typeid(*block) == typeid(Bomb))
 		return findBestBombPosition(b, temp);
 	short bestSituation = situations;
-	size_t maxFullRows, fullRows, oneToGo, maxOneToGo;
-	size_t holes = maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
+	size_t maxFullRows, fullRows, oneToGo;
+	size_t maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
 	Point bestPos;
 	Point lowestPos = bestPos = block->pos;
 	options.push_back(*block);
 	for (short i = 0; i < situations; ++i)
 	{
 		size_t limit = setLimit(temp);
-		for (short j = 1; j < limit && b->moveRight(temp); ++j)
+		for (size_t j = 1; j < limit && b->moveRight(temp); ++j)
 		{
 			temp->pos >>= 1;
 			fullRows = getPositionData(b, temp, oneToGo);
@@ -263,7 +274,7 @@ Point ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
 	{
 		temp->pos >>= 1;
 		b->DropBlock(*temp);
-		explosionCounter = b->explosionCheck(*temp);
+		explosionCounter = b->damageCounter(*temp);
 		bestPos = getMaxDamagedPosition(max, explosionCounter, bestPos, temp->pos);
 		b->deleteBlock(*temp);
 		temp->pos.setY(b->pos.getY());
@@ -278,7 +289,7 @@ size_t ComputerPlayer::getPositionData(Board* b, Block* temp, size_t& oneToGo) c
 	oneToGo = b->oneToGoRowsCounter();
 	b->DropBlock(*temp);
 	b->freezeBlock(*temp);
-	return b->checkBoardNoDraw();
+	return b->checkBoard(false);
 }
 
 void ComputerPlayer::cleanAndDeleteCalculation(Board* b, Block* temp)const

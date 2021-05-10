@@ -1,8 +1,12 @@
 ﻿#include "Box.h"
 
-Box::Box(const Point& _pos) : pos(_pos), box({pos}, LENGTH,WIDTH) {
-	
-	box.setAllBoundaries();
+Box::Box(const Point& _pos) {
+
+	pos = _pos;
+	setBoxPos(pos);
+	resizeBoundaries(LENGTH, WIDTH);
+	initialEmptyCells();
+	setAllBoundaries();
 	setBlocks();
 }
 
@@ -10,13 +14,10 @@ Box& Box::operator=(const Box& _box)
 {
 	if (this != &_box)
 	{
-		pos = _box.pos;
-		box = _box.box;
+		Board::operator=(_box);
 		if (blocks.size() == _box.blocks.size())
-		{
 			for (size_t i = 0; i < blocks.size(); ++i)
 				blocks[i] = _box.blocks[i];
-		}
 	}
 	return *this;
 }
@@ -33,16 +34,15 @@ void Box::setBlocks() {
 
 void Box::drawBox() const {
 	
-	gotoxy((box.pos.getX()), box.pos.getY() - 1);
+	gotoxy((pos.getX()), pos.getY() - 1);
 	cout << "Next blocks";
-	cout << box;
-	box.drawBoard();
+	drawBoard();
 	for (const Block& i : blocks)
 		i.drawBlock();
 }
 
-void Box::clearBox() {
-
+void Box::clearBox()
+{
 	for (Block& i : blocks)
 		i.createNewBlock();
 }

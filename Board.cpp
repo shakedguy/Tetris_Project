@@ -1,10 +1,20 @@
 ﻿#include "Board.h"
 
-#include "Player.h"
+#include "Game.h"
 
 Board::Board(const Point& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width) {
 	allocateSize();
 	initialEmptyCells();
+}
+
+bool Board::colorsMode = false;
+
+void Board::changeColorsMode() {
+
+	if (Board::colorsMode)
+		Board::colorsMode = false;
+	else
+		Board::colorsMode = true;
 }
 
 Point Board::getPointByPosition(const Point& pos)const
@@ -19,18 +29,9 @@ Point Board::getPointByPosition(const Point& pos)const
 void Board::getIndexByPosition(const Point& pos, size_t& x, size_t& y) const
 {
 	for (size_t i = 0; i < width; ++i)
-	{
 	     for (size_t j = 0; j < length; ++j)
-	     {
-	          if (board[i][j] == pos)
-	          {
-				x = i;
-				y = j;
-	          }
-	     }
-	}
+			if (board[i][j] == pos) { x = i; y = j; }
 }
-
 
 size_t Board::numOfFillCells()const
 {
@@ -53,9 +54,9 @@ void Board::setBoardPos(const Point& newPos)
 
 void Board::drawBoard() const {
 
-	for (int i = 0; i < width; i++) 
-		for (int j = 0; j < length; j++) 
-			cout << board[i][j];
+	for (size_t i = 0; i < width; ++i)
+		for (size_t j = 0; j < length; ++j)
+			(Board::colorsMode) ? board[i][j].draw() : board[i][j].draw(WHITE);
 }
 
 void Board::drawBoard(const Color& color) const
@@ -65,6 +66,16 @@ void Board::drawBoard(const Color& color) const
 			board[i][j].draw(color);
 }
 
+void Board::cleanArea(size_t startX, size_t endX, size_t startY, size_t endY)
+{
+	if (startX > endX || startY > endY)
+		return;
+	endX = (endX < width) ? endX : width - 1;
+	endX = (endY < length) ? endX : length - 1;
+	for (size_t i = startX; i <= endX; ++i)
+		for (size_t j = startY; j <= endY; ++j)
+			board[i][j].setShape(EMPTY_CELL);
+}
 
 Board& Board::operator=(const Board& _board)
 {
@@ -74,6 +85,7 @@ Board& Board::operator=(const Board& _board)
 		width = _board.width;
 		length = _board.length;
 		resizeBoundaries(width, length);
+		initialEmptyCells();
 		for (size_t i = 0; i < width; ++i)
 			for (size_t j = 0; j < length; ++j)
 				board[i][j] = _board.board[i][j];
@@ -81,13 +93,12 @@ Board& Board::operator=(const Board& _board)
 	return *this;
 }
 
-
 void Board::drawFillCells() const {
 
-	for (int i = 0; i < width; i++) 
-		for (int j = 0; j < length; j++) 
+	for (int i = 0; i < width; i++)
+		for (int j = 0; j < length; j++)
 			if (board[i][j].shape != EMPTY_CELL)
-				cout << board[i][j];
+				(Board::colorsMode) ? board[i][j].draw() : board[i][j].draw(WHITE);		
 }
 
 void Board::drawEmptyCells() const
@@ -204,7 +215,6 @@ void Board::freezeBlock(const Block& block)
 	}
 }
 
-
 void Board::deleteBlock(const Block& block)
 {
 	for (int i = 0; i < block.figure.size(); i++) {
@@ -214,7 +224,6 @@ void Board::deleteBlock(const Block& block)
 		}
 	}
 }
-
 
 void Board::explosion(const Block& block)
 {
@@ -228,10 +237,26 @@ void Board::explosion(const Block& block)
 	for (size_t i = startX; i <= endX; ++i)
 		for (size_t j = startY; j <= endY; ++j)
 			board[i][j].shape = EMPTY_CELL;
-	fixBoard(1, width-1, endY, 1, endY - startY);
+	dropFloatingBricks(1, width-1, endY, 1, endY - startY);
 }
 
-void Board::fixBoard(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height)
+size_t Board::damageCounter(const Block& block)const
+{
+	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
+	size_t startX = (x - Bomb::EXPLOSION_RANGE > 0) ? x - Bomb::EXPLOSION_RANGE : 1;
+	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
+	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
+	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
+	size_t counter = 0;
+
+	for (size_t i = startX; i <= endX; ++i)
+		for (size_t j = startY; j <= endY; ++j)
+			if (board[i][j].shape != EMPTY_CELL)
+				counter++;
+	return counter;
+}
+
+void Board::dropFloatingBricks(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height)
 {
 	for (size_t i = startY; i >= endY; --i)
 	{
@@ -260,33 +285,12 @@ bool Board::isWellConnected(const size_t& x, const size_t& y)
 	if (board[x][down].shape != EMPTY_CELL)
 		return true;
 	if (right < width - 1)
-	{
 		if (board[right][y].shape != EMPTY_CELL && board[right][down].shape != EMPTY_CELL)
 			return true;
-	}
 	if (left)
-	{
 		if (board[left][y].shape != EMPTY_CELL && board[left][down].shape != EMPTY_CELL)
 			return true;
-	}
 	return false;
-}
-
-
-size_t Board::explosionCheck(const Block& block)const
-{
-	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
-	size_t startX = (x - Bomb::EXPLOSION_RANGE > 0) ? x - Bomb::EXPLOSION_RANGE : 1;
-	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
-	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
-	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
-	size_t counter = 0;
-
-	for (size_t i = startX; i <= endX; ++i)
-		for (size_t j = startY; j <= endY; ++j)
-			if (board[i][j].shape != EMPTY_CELL)
-				counter++;
-	return counter;
 }
 
 void Board::resizeBoundaries(const int& x, const int& y) {
@@ -306,38 +310,22 @@ void Board::resizeBoundaries(const int& x, const int& y) {
 }
 
 // Checks if there are full lines that need to be deleted 
-uint Board::checkBoard() {
+uint Board::checkBoard(bool draw) {
 
 	ushort count = 0;
 	for (size_t i = 1; i < length - 1; i++) {
 		if (isFullRow(i, 1, width - 2)) {
 			for (size_t j = 1; j < width - 1; ++j)
 				board[j][i].shape = EMPTY_CELL;
-			fixBoard(1, width - 2, i, 1,1);
-			drawEmptyCells();
+			dropFloatingBricks(1, width - 2, i, 1,1);
+			if (draw)
+				drawEmptyCells();
 			count++;
-			return count + checkBoard();
-		}
-	}
-
-	return count;
-}
-
-uint Board::checkBoardNoDraw()
-{
-	ushort count = 0;
-	for (size_t i = 1; i < length - 1; i++) {
-		if (isFullRow(i, 1, width - 2)) {
-			for (size_t j = 1; j < width - 1; ++j)
-				board[j][i].shape = EMPTY_CELL;
-			fixBoard(1, width - 2, i, 1, 1);
-			count++;
-			return count + checkBoardNoDraw();
+			return count + checkBoard(draw);
 		}
 	}
 	return count;
 }
-
 
 bool Board::isFullRow(const size_t& row, const size_t& start, const size_t& end)const {
 
@@ -355,24 +343,11 @@ bool Board::isEmptyRow(const size_t& row, const size_t& start, const size_t& end
 	return true;
 }
 
-
-
 // Loop of moving the block down until it comes across another block or the board border
 void Board::DropBlock(Block& block)const {
 
 	while (moveDown(&block))
 		block.pos++;
-}
-
-int Board::isFigureInRow(Block& block, const size_t& row) const {
-
-	if (block.pos.getY() + block.figure[0].size() < row + pos.getY())
-		return -1;
-	for (int i = 0; i < block.figure[0].size(); ++i) {
-		if ((block.pos.getY() + i == pos.getY() + row))
-			return i;
-	}
-	return -2;
 }
 
 void Board::fillAllBoard(const uchar& shape) {

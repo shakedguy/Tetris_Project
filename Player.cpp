@@ -76,14 +76,13 @@ void Player::clearGame() {
 void Player::setGameBoundaries() {
 	
 	board.setAllBoundaries();
-	for (size_t i = 0; i < board.width; ++i)
-		board.board[i][0].shape = EMPTY_CELL;
+	board.cleanArea(0, board.width-1, 0, 0);
 }
 
 // check if the player losed
 bool Player::isLost() {
 	for (size_t i = 1; i < board.width - 1; ++i)
-		if (board.board[i][1].shape != EMPTY_CELL)
+		if (board.board[i][0].getShape() != EMPTY_CELL)
 			return true;
 	return false;
 }
@@ -177,7 +176,7 @@ void Player::move() {
 	}
 	board.drawFillCells();
 	board.drawBoundaries();
-	score += ((pow(board.checkBoard(), 2)) * POINTS_FOR_FULL_ROW);
+	score += ((pow(board.checkBoard(true), 2)) * POINTS_FOR_FULL_ROW);
 	direction = DEFAULT;
 }
 

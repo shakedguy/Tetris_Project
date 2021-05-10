@@ -7,7 +7,6 @@
 #include "Public_const_and_structs.h"
 #include "Point.h"
 
-
 class Block
 {			/*	    #
 	                   #
@@ -28,7 +27,7 @@ class Block
 
 protected:
 	enum Fillings { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
-	Point pos, endPos;
+	Point pos;
 	uchar shape;
 	array<array<ushort, COLUMNS>, ROWS> figure;
 
@@ -72,6 +71,21 @@ public:
 	bool isCleanMatrix();
 	static void changeColorsMode();
 	bool isColEmpty(const ushort& col)const;
+};
+
+class Bomb : public Block
+{
+	enum Constants { BOMB = 149, EXPLOSION_RANGE = 4 };
+
+	friend class Board;
+
+public:
+	Bomb(const uchar& _shape = BOMB) : Bomb(_shape, { 0,0 }) {}
+	Bomb(const Point& _pos) :Bomb(BOMB, { 0,0 }) {}
+	Bomb(const uchar& _shape, const Point& _pos);
+	~Bomb()override = default;
+	Bomb& operator=(const Bomb& _bomb) { if (this != &_bomb) { Block::operator=(_bomb); return *this; } }
+	void setFigure()override { figure[0][0] = shape; }
 };
 
 #endif

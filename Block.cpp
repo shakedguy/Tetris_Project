@@ -2,7 +2,6 @@
 
 Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
 
-	endPos = { pos.getX() + COLUMNS,pos.getY() + ROWS };
 	std::random_device rnd;
 	const std::uniform_int_distribution<> shapeRange(0, 6);
 	const std::uniform_int_distribution<> colorRange(1, 14);
@@ -10,6 +9,14 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
 	color = static_cast<Color>(colorRange(rnd));
 	cleanBlock();
 	setFigure();
+}
+
+Bomb::Bomb(const uchar& _shape, const Point& _pos)
+{
+	pos = _pos;
+	shape = _shape;
+	cleanBlock();
+	figure[0][0] = 1;
 }
 
 bool Block::colorsMode = false;
@@ -73,62 +80,64 @@ void Block::setFigure() {
 	}
 }
 
-void Block::setShapeI() {
-	
-	for (int i = 0; i < figure.size(); i++)
-		figure[i][0]++;
+void Block::setShapeI()
+{
+	for (array<ushort, COLUMNS>& row : figure)
+		++row[0];
 }
 
 void Block::setShapeL() {
 	
-	for (int i = 0; i < figure.size() - 1; i++) {
-		for (int j = 0; j < figure[i].size() - 2; j++) {
+	for (size_t i = 0; i < figure.size() - 1; ++i) 
+	{
+		for (size_t j = 0; j < figure[i].size() - 2; ++j) 
+		{
 			if (!(i + j))
-				figure[i][j]++;
+				++figure[i][j];
 			else if (j)
-				figure[i][j]++;
+				++figure[i][j];
 		}
 	}
 }
 
 void Block::setShapeJ() {
 	
-	for (int i = 0; i < figure.size() - 1; i++)
-		for (int j = 0; j < figure[i].size() - 2; j++)
+	for (size_t i = 0; i < figure.size() - 1; ++i)
+		for (size_t j = 0; j < figure[i].size() - 2; ++j)
 			if ((!j && i > 1) || j)
-				figure[i][j]++;
+				++figure[i][j];
 }
 
 void Block::setShapeO() {
 	
-	for (int i = 0; i < figure.size() - 2; i++)
-		for (int j = 0; j < figure[i].size() - 2; j++)
-			figure[i][j]++;
+	for (size_t i = 0; i < figure.size() - 2; ++i)
+		for (size_t j = 0; j < figure[i].size() - 2; ++j)
+			++figure[i][j];
 }
 
 void Block::setShapeS() {
 	
-	for (int i = 0; i < figure.size() - 1; i++)
-		for (int j = 0; j < figure[i].size() - 2; j++)
+	for (size_t i = 0; i < figure.size() - 1; ++i)
+		for (size_t j = 0; j < figure[i].size() - 2; ++j)
 			if ((!j && i) || (j && i < 2))
-				figure[i][j]++;
+				++figure[i][j];
 }
 
 
 void Block::setShapeT() {
 	
-	for (int i = 0; i < figure.size() - 1; i++)
-		for (int j = 0; j < figure[i].size() - 2; j++)
+	for (size_t i = 0; i < figure.size() - 1; ++i)
+		for (size_t j = 0; j < figure[i].size() - 2; ++j)
 			if ((!j && i == 1) || j)
-				figure[i][j]++;
+				++figure[i][j];
 }
 
 void Block::setShapeZ() {
 	
-	for (int i = 0; i < figure.size() - 1; i++)
-		for (int j = 0; j < figure[i].size() - 2; j++)
+	for (size_t i = 0; i < figure.size() - 1; ++i)
+		for (size_t j = 0; j < figure[i].size() - 2; ++j)
 			if ((!j && i < 2) || (j && i))
-				figure[i][j]++;
+				++figure[i][j];
 }
 
 /********** End set figures ***********/
@@ -147,25 +156,28 @@ void Block::arrangeMatrix() {
 }
 
 // This function checks if the first row is empty
-bool Block::isRowZeroEmpty() {
-	for (int i = 0; i < ROWS; i++)
-		if (figure[i][0])
+bool Block::isRowZeroEmpty()
+{
+	for (array<ushort, COLUMNS>& row : figure)
+		if (row[0])
 			return false;
 	return true;
 }
 
 //This function checks if the first collumn is empty
-bool Block::isColumnZeroEmpty() {
-	for (int i = 0; i < figure[0].size(); i++)
+bool Block::isColumnZeroEmpty()
+{
+	for (size_t i = 0; i < ROWS; ++i)
 		if (figure[0][i])
 			return false;
 	return true;
 }
 
 /* Swap rows so that the block shape starts with row 0 of the matrix */
-void Block::pullFigureUp() {
-	for (int i = 0; i < figure.size(); i++)
-		for (int j = 0; j < figure[i].size() - 1; j++)
+void Block::pullFigureUp()
+{
+	for (size_t i = 0; i < figure.size(); i++)
+		for (size_t j = 0; j < figure[i].size() - 1; j++)
 			std::swap(figure[i][j], figure[i][j + 1]);
 }
 

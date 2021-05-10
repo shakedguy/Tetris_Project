@@ -3,11 +3,13 @@
 ***************************************/
 #include "Game.h"
 
-Game::Game() : menu({Menu::MENU_X,Menu::MENU_Y}),
-     humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y},PLAYER_ONE_KEYS},
-			     HumanPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y},PLAYER_TWO_KEYS} },
-	     computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
-				     ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
+
+
+Game::Game() : menu({ Game::Menu::MENU_X,Game::Menu::MENU_Y }),
+humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y},PLAYER_ONE_KEYS},
+			HumanPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y},PLAYER_TWO_KEYS} },
+	computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
+				ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
 {
 	gameSpeed = GAME_SPEED;
 	setGameButtons();
@@ -20,7 +22,7 @@ void Game::setGameButtons() {
 	for (int i = 0; i < buttons.size(); ++i) {
 
 		buttons[i].resizeBoundaries(GAME_BUTTON_WIDTH, GAME_BUTTON_LENGTH);
-		buttons[i].setBoardPos({ temp.getX(), temp.getY() + (static_cast<int>(buttons[i].length) * i) + y++ });
+		buttons[i].setBoardPos({ temp.getX(), temp.getY() + (buttons[i].getLength() * i) + y++ });
 		buttons[i].initialEmptyCells();
 		buttons[i].setAllBoundaries();
 	}
@@ -38,28 +40,8 @@ void Game::changeColorsMode() {
 	else
 		Game::colorsMode = true;
 	Player::changeColorsMode();
+	Board::changeColorsMode();
 	Block::changeColorsMode();
-}
-
-/* Checks if there is a game to return to */
-bool Game::resumeGame() {
-	
-	clrscr();
-	cout << menu;
-	if (players[0]->isLost() || players[1]->isLost()) {
-		gotoxy(menu.pos.getX() + 4, menu.pos.getY() + static_cast<int>(menu.menu.getLength()));
-		cout << "The game ended, please try again" << endl;
-		Sleep(1500);
-		return false;
-	}
-	if (!gameNumber) {
-		gotoxy(menu.pos.getX() + (menu.menu.getWidth() / 4) - 1,
-			   menu.pos.getY() + static_cast<int>(menu.menu.getLength()));
-		cout << "There is no open game" << endl;
-		Sleep(1500);
-		return false;
-	}
-	return true;
 }
 
 /* initialization new game and printing players boards */
@@ -91,7 +73,7 @@ bool Game::initializePlayers(const ushort& option)
 	case Menu::C_VS_C:
 		players[0] = &computerPlayers[0];
 		players[1] = &computerPlayers[1];
-		players[1]->name = "Computer 2";
+		//players[1]->name = "Computer 2";
 		return true;
 		break;
 
@@ -116,7 +98,7 @@ void Game::drawButtons() {
 
 void Game::printButtonsInfo() {
 
-	Point& temp = buttons[0].pos;
+	const Point& temp = buttons[0].getPos();
 	gotoxy(temp.getX() + 2, temp.getY() + 1);
 	cout << "Speed";
 	gotoxy(temp.getX() + 2, temp.getY() + 2);
@@ -172,7 +154,7 @@ void Game::run() {
 	if (isSomeoneLose())
 		clrscr();
 	menu.updateMenuBoard();
-	menu.menuPage(*this);
+	menu.mainMenuPage(*this);
 	clrscr();
 }
 
@@ -198,7 +180,7 @@ void Game::checkGameModes(const uchar& key) {
 		changeSpeedMode();
 		returnLastSpeed();
 	}
-	else if (key - '0' == Game::Menu::COLOR_MODE)
+	else if (key - '0' == Menu::COLOR_MODE)
 		changeColorsMode();
 	drawButtons();
 }
@@ -246,21 +228,21 @@ bool Game::isSomeoneLose() {
 			winningMassage(0);
 		else
 			winningMassage(1);
-		menu.possibleResumeGame(false);
+		Game::Menu::possibleResumeGame(false);
 		return true;
 	}
 	if (p1) {
 
 		winningMassage(1);
-		menu.possibleResumeGame(false);
+		Game::Menu::possibleResumeGame(false);
 		return true;
 	}
 	if (p2) {
 		winningMassage(static_cast<ushort>(0));
-		menu.possibleResumeGame(false);
+		Game::Menu::possibleResumeGame(false);
 		return true;
 	}
-	menu.possibleResumeGame(true);
+     Game::Menu::possibleResumeGame(true);
 	return false;
 }
 
@@ -275,7 +257,7 @@ void Game::winningMassage(const ushort& flag) const {
 		cout << " point! Congratulations!!!";
 	}
 	gotoxy(temp.getX() + 7, temp.getY() + 1);
-	cout << "Press any key to return to the menu";
+	cout << "Press any key to return to the menuPages";
 	_getch();
 }
 
