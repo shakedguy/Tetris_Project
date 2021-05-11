@@ -18,10 +18,7 @@ Player& Player::operator=(const Player& _player)
 		*block = *_player.block;
 		score = _player.score;
 		if (keyIndicators.size() == _player.keyIndicators.size())
-		{
-			for (size_t i = 0; i < keyIndicators.size(); ++i)
-				keyIndicators[i] = _player.keyIndicators[i];
-		}
+			keyIndicators = _player.keyIndicators;
 	}
 	return *this;
 }
@@ -108,15 +105,6 @@ void Player::printScore() const {
 		setTextColor(WHITE);
 }
 
-// Loop of moving the block down until it comes across another block or the board border
-bool Player::drop() {
-	
-	while (board.moveDown(block))
-	     block->moveDown();
-	direction = DEFAULT;
-	return false;
-}
-
 // Draw an indication of a step click
 void Player::showIndicateHit(const ushort& dir) {
 
@@ -186,47 +174,85 @@ bool Player::makeTheMove() {
 	
 	switch (direction) {
 	case COUNTER_CLOCKWISE:
-		if(board.rotateCheck(block, COUNTER_CLOCKWISE))
-		{
-			block->counterClockwiseRotate();
-			return true;
-		}
-		direction = DEFAULT;
-		return makeTheMove();
+		return counterClockwise();
 	case CLOCKWISE:
-		if (board.rotateCheck(block, CLOCKWISE))
-		{
-			block->clockwiseRotate();
-			return true;
-		}
-		direction = DEFAULT;
-		return makeTheMove();
+		return clockwise();
 	case DROP:
 		return drop();
 	case MOVE_LEFT:
-		if(board.moveLeft(block))
-		{
-			block->moveLeft();
-			return true;
-		}
-		direction = DEFAULT;
-		return makeTheMove();
+		return left();
 	case MOVE_RIGHT:
-		if (board.moveRight(block))
-		{
-			block->moveRight();
-			return true;
-		}
-		direction = DEFAULT;
-		return makeTheMove();
+		return right();
 	default:
-		if (board.moveDown(block))
-		{
-			block->moveDown();
-			return true;
-		}
-		return false;
+		return down();
 	}
+}
+
+bool Player::clockwise()
+{
+	direction = DEFAULT;
+	if (typeid(*block) == typeid(Bomb) || block->shapeNum == Block::O)
+		return makeTheMove();
+	if (board.rotateCheck(block, CLOCKWISE))
+	{
+		block->clockwiseRotate();
+		return true;
+	}
+	return makeTheMove();
+}
+
+bool Player::counterClockwise()
+{
+	direction = DEFAULT;
+	if (typeid(*block) == typeid(Bomb) || block->shapeNum == Block::O)
+		return makeTheMove();
+	if (board.rotateCheck(block, COUNTER_CLOCKWISE))
+	{
+		block->counterClockwiseRotate();
+		return true;
+	}
+	return makeTheMove();
+}
+
+bool Player::down()
+{
+	if (board.moveDown(block))
+	{
+		block->moveDown();
+		return true;
+	}
+	return false;
+}
+
+bool Player::left()
+{
+	if (board.moveLeft(block))
+	{
+		block->moveLeft();
+		return true;
+	}
+	direction = DEFAULT;
+	return makeTheMove();
+}
+
+bool Player::right()
+{
+	if (board.moveRight(block))
+	{
+		block->moveRight();
+		return true;
+	}
+	direction = DEFAULT;
+	return makeTheMove();
+}
+
+// Loop of moving the block down until it comes across another block or the board border
+bool Player::drop() {
+
+	while (board.moveDown(block))
+		block->moveDown();
+	direction = DEFAULT;
+	return false;
 }
 
 void Player::changeColorsMode() {

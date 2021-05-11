@@ -28,17 +28,20 @@ public:
 	Point(const size_t& _x, const size_t& _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
 	Point(const size_t& _x, const int& _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
 	Point(const int& _x, const size_t& _y) : Point(static_cast<int>(_x), static_cast<int>(_y), EMPTY_CELL) {}
-	Point(const Point& _point) { x = _point.x; y = _point.y; shape = _point.shape; color = _point.color; }
+	Point(const Point& _point) { *this = _point; }
 	Point(const int& _x, const int& _y, const uchar& _shape, const Color& _color = WHITE);
 	~Point() = default;
 	Point& operator=(const Point& _point);
-	Point& operator++(int) { y++; return *this; }
+	Point& operator++() { *this += 1; return *this; }
+	Point operator++(int) { Point p = *this; *this += 1; return p; }
 	Point& operator+=(const int& _y) { y += _y; return *this; }
-	Point& operator--(int) { y--; return *this; }
+	Point& operator--() { *this -= 1; return *this; }
+	Point operator--(int) { Point p = *this; *this -= 1; return p; }
 	Point& operator-=(const int& _y) { y -= _y; return *this; }
 	Point& operator>>=(const int& _x) { x += _x; return *this; }
 	Point& operator<<=(const int& _x) { x -= _x; return *this; }
 	bool operator==(const Point& position)const { return (x == position.x && y == position.y) ? true : false; }
+	bool operator!=(const Point& position)const { return (!(position == *this)); }
 	friend std::ostream& operator<<(std::ostream& out, const Point& _point) { _point.draw(); return out; }
 	void draw(const uchar& ch)const;
 	void draw(const Color& _color)const;

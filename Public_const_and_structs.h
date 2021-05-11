@@ -42,4 +42,5 @@ using uchar = unsigned char;
 enum Keys { COUNTER_CLOCKWISE, CLOCKWISE, DROP, MOVE_LEFT, MOVE_RIGHT, DEFAULT, SPEED_MODE = 42, ESC = 27 };
 
 
+
 #endif

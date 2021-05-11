@@ -77,19 +77,21 @@ void Board::cleanArea(size_t startX, size_t endX, size_t startY, size_t endY)
 			board[i][j].setShape(EMPTY_CELL);
 }
 
+void Board::assign(const Board& _board)
+{
+	pos = _board.pos;
+	width = _board.width;
+	length = _board.length;
+	resizeBoundaries(width, length);
+	initialEmptyCells();
+	board = _board.board;
+}
+
+
 Board& Board::operator=(const Board& _board)
 {
 	if (this != &_board)
-	{
-		pos = _board.pos;
-		width = _board.width;
-		length = _board.length;
-		resizeBoundaries(width, length);
-		initialEmptyCells();
-		for (size_t i = 0; i < width; ++i)
-			for (size_t j = 0; j < length; ++j)
-				board[i][j] = _board.board[i][j];
-	}
+		this->assign(_board);
 	return *this;
 }
 
@@ -347,7 +349,7 @@ bool Board::isEmptyRow(const size_t& row, const size_t& start, const size_t& end
 void Board::DropBlock(Block& block)const {
 
 	while (moveDown(&block))
-		block.pos++;
+		++block.pos;
 }
 
 void Board::fillAllBoard(const uchar& shape) {
@@ -506,7 +508,7 @@ size_t Board::countEmptyCells(const size_t& row)const
 
 size_t Board::getTopRow()const
 {
-	size_t count = 0, i = 1;
+	size_t i = 1;
 
 	while (i < length - 1)
 	{
@@ -526,11 +528,10 @@ bool Board::isThereAccess(const size_t& x, const size_t& y)
 }
 
 
-bool Board::notDisturbing(const Block& block)const
+bool Board::notDisturbing(const Block& block)
 {
 	size_t row = getTopRow();
-	row = (row - 2 > 0) ? row - 2 : 1;
-	for (size_t i = 0; i < Block::ROWS && row < length - 1; ++i)
+	for (size_t i = 0; i < Block::ROWS - 2 && row < length - 1; ++i)
 	{
 		if (countEmptyCells(row) > 0 && countEmptyCells(row) <= 2 && isBlocksAccess(block, row))
 			return false;
@@ -571,9 +572,26 @@ bool Board::isBlocksAccess(const Block& block, const size_t& row)const
 
 size_t Board::oneToGoRowsCounter() const
 {
-	size_t counter = 0;
-	for (size_t i = 1; i < length - 1; ++i)
+	size_t counter = 0, start, top = getTopRow();
+	start = (top - 2 >= 1) ? top - 2 : 1;
+	top = (top + 2 < length - 1) ? top + 2 : length - 2;
+	
+	for (size_t i = start; i <= top; ++i)
 		if (countEmptyCells(i) == 1)
 			++counter;
 	return counter;
+}
+
+bool Board::oneCellHole(const size_t& x, const size_t& y)
+{
+	if (board[x][y].shape != EMPTY_CELL || board[x][y - 1].shape != EMPTY_CELL)
+		return false;
+	if (x == 1 && board[x + 1][y].shape == EMPTY_CELL)
+		return false;
+	if (x == width - 2 && board[x - 1][y].shape == EMPTY_CELL)
+		return false;
+	if (x > 1 && x < width - 2)
+		if (board[x - 1][y].shape == EMPTY_CELL || board[x + 1][y].shape == EMPTY_CELL)
+			return false;
+	return true;
 }

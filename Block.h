@@ -32,6 +32,7 @@ protected:
 	array<array<ushort, COLUMNS>, ROWS> figure;
 
 private:
+	void assign(const Block& _block);
 	void setShapeI();
 	void setShapeL();
 	void setShapeJ();
@@ -55,11 +56,11 @@ public:
 	Block& operator=(const Block& b);
 	virtual ~Block() = default;
 	friend std::ostream& operator<<(std::ostream& out, const Block& _block) { _block.drawBlock(); return out; }
-	Block& operator=(const Block* _block) { *this = *_block; return *this; }
+	Block& operator*() { return *this; }
+	Block* operator->() { return this; }
 	void createNewBlock();
 	void drawBlock() const;
 	const uchar& getShape() const { return shape; }
-	void move(int dir);
 	void cleanBlock();
 	virtual void setFigure();
 	void cleanPrint() const;
@@ -71,6 +72,7 @@ public:
 	bool isCleanMatrix();
 	static void changeColorsMode();
 	bool isColEmpty(const ushort& col)const;
+	size_t getLowestRow()const;
 };
 
 class Bomb : public Block

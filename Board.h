@@ -33,6 +33,7 @@ class Board
 	friend class Box;
 
 private:
+	void assign(const Board& _board);
 	bool isFullRow(const size_t& row, const size_t& start, const size_t& end)const;
 	bool isEmptyRow(const size_t& row, const size_t& start, const size_t& end)const;
 	void setTopBoundary();
@@ -51,12 +52,15 @@ private:
 	size_t damageCounter(const Block& block)const;
 	bool isWellConnected(const size_t& x, const size_t& y);
 	void dropFloatingBricks(const size_t& startX, const size_t& endX, const size_t& startY, const size_t& endY, const size_t& height);
-	bool notDisturbing(const Block& block)const;
+	bool notDisturbing(const Block& block);
 	bool isBlocksAccess(const Block& block, const size_t& row)const;
 	size_t countEmptyCells(const size_t& row)const;
 	vector<Point> getEmptyCellsInRow(const size_t& row)const;
 	bool isThereAccess(const size_t& x, const size_t& y);
 	size_t oneToGoRowsCounter()const;
+	size_t holesInRow( size_t& row);
+	bool oneCellHole(const size_t& x, const size_t& y);
+	bool towCellHole(const size_t& x, const size_t& y);
 
 public:
 	void setSeparators(uint const& row);
@@ -67,7 +71,7 @@ public:
 	virtual ~Board() = default;
 	static void changeColorsMode();
 	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); return out; }
-	virtual Board& operator=(const Board& _board);
+	Board& operator=(const Board& _board);
 	const Point& getPos()const { return pos; }
 	const size_t& getLength() const { return length; }
 	const size_t& getWidth() const { return width; }
@@ -93,6 +97,7 @@ public:
 	void drawBoard(const Color& color)const;
 	size_t numOfFillCells()const;
 	void cleanArea(size_t startX, size_t endX, size_t startY, size_t endY);
+	bool isCloseHole(const Block& block);
 };
 
 #endif

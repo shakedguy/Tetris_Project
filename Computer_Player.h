@@ -30,13 +30,21 @@ private:
      void insertCurrentDirection();
      void cleanAndDeleteCalculation(Board* b, Block* temp)const;
      Point findBestBombPosition(Board* b, Block* temp)const;
-     Point findBestPosition(Block* block, short& situations)const;
+     Point findBestPosition(Block* block, ushort& situations);
      size_t getPositionData(Board* b, Block* temp, size_t& oneToGo)const;
      Point getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const;
      size_t setLimit(const Block* block)const;
-     Point preferNotInterfere(Board* b, vector<Block>& options)const;
-     void positionsPriorities(const Board* b, vector<Block>& options, size_t& oneToGo, size_t& maxOneToGo,
-          size_t& fullRows, size_t& maxFullRows, Point& bestPos, Point& lowestPos, const Block* temp, short& bestSituation, short& situation)const;
+     const short& preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Point& bestPos)const;
+    
+
+
+     void checkFillRows(const Block& temp, Point& bestPos, size_t& fullRows, size_t& maxFullRows,
+          ushort& bestSituation, const ushort& situation);
+     void checkOneToGo(Board* b, const Block& temp,
+          const Point& lowestPos, Point& oneToGoPos, size_t& oneToGo, size_t& maxOneToGo,
+          ushort& bestSituation, const ushort& situation, bool& flag);
+     void checkLowest(vector<Block>& options, vector<ushort>& optionStatus, const Block& temp, Point& lowestPos,
+          const ushort& situation);
 
 
 public:

@@ -64,22 +64,19 @@ bool Game::initializePlayers(const ushort& option)
 		players[0] = &humanPlayers[0];
 		players[1] = &humanPlayers[1];
 		return true;
-		break;
+
 	case Menu::H_VS_C:
 		players[0] = &humanPlayers[0];
 		players[1] = &computerPlayers[1];
 		return true;
-		break;
+
 	case Menu::C_VS_C:
 		players[0] = &computerPlayers[0];
 		players[1] = &computerPlayers[1];
-		//players[1]->name = "Computer 2";
 		return true;
-		break;
 
 		default:
 			return false;
-			break;
      }
 }
 
@@ -143,7 +140,7 @@ void Game::run() {
 		printScores();
 		
 		//Sleep(gameSpeed);
-		Sleep(20);
+		Sleep(10);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;

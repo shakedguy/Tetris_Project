@@ -192,7 +192,7 @@ void ComputerPlayer::levelNovice(Point& bestPos) const
 
 Point ComputerPlayer::noRotateBlock()
 {
-	short numOfRotates = 1;
+	ushort numOfRotates = 1;
 	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = CounterClockWise = 0;
 	return bestPos;
@@ -200,7 +200,7 @@ Point ComputerPlayer::noRotateBlock()
 
 Point ComputerPlayer::oneRotateBlock()
 {
-	short numOfRotates = 2;
+	ushort numOfRotates = 2;
 	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = CounterClockWise = numOfRotates;
 	return bestPos;
@@ -208,7 +208,7 @@ Point ComputerPlayer::oneRotateBlock()
 
 Point ComputerPlayer::threeRotateBlock()
 {
-	short numOfRotates = 4;
+	ushort numOfRotates = 4;
 	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = numOfRotates;
 	CounterClockWise = 4 - clockWise;
@@ -217,16 +217,16 @@ Point ComputerPlayer::threeRotateBlock()
 
 Point ComputerPlayer::bomb()
 {
-	short numOfRotates = 1;
+	ushort numOfRotates = 1;
 	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockWise = CounterClockWise = 0;
 	return bestPos;
 }
 
 
-Point ComputerPlayer::findBestPosition(Block* block, short& situations)const
+Point ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 {
-	vector<Block> options;
+
 	Board* b = new Board;
 	Block* temp = new Block;
 	*b = board;
@@ -234,12 +234,17 @@ Point ComputerPlayer::findBestPosition(Block* block, short& situations)const
 	temp->pos = board.pos;
 	if (typeid(*block) == typeid(Bomb))
 		return findBestBombPosition(b, temp);
-	short bestSituation = situations;
+
+	vector<Block> options;
+	vector<ushort> optionStatus;
+	options.push_back(*block);
+	optionStatus.push_back(0);
+	ushort bestSituation = situations;
 	size_t maxFullRows, fullRows, oneToGo;
 	size_t maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
-	Point bestPos;
-	Point lowestPos = bestPos = block->pos;
-	options.push_back(*block);
+	Point bestPos, lowestPos;
+	Point oneToGoPos = lowestPos = bestPos = block->pos;
+	bool flag = false;
 	for (short i = 0; i < situations; ++i)
 	{
 		size_t limit = setLimit(temp);
@@ -247,18 +252,24 @@ Point ComputerPlayer::findBestPosition(Block* block, short& situations)const
 		{
 			temp->pos >>= 1;
 			fullRows = getPositionData(b, temp, oneToGo);
-			positionsPriorities(b, options, oneToGo, maxOneToGo, fullRows, maxFullRows,
-				bestPos, lowestPos, temp, bestSituation, i);
+			checkFillRows(*temp, bestPos, fullRows, maxFullRows, bestSituation, i);
+			if (!maxFullRows)
+			{
+				checkOneToGo(b, *temp, lowestPos, oneToGoPos, oneToGo, maxOneToGo, bestSituation, i, flag);
+			     checkLowest(options, optionStatus, *temp, lowestPos, i);
+			}
 			b->deleteBlock(*temp);
 			temp->pos.setY(b->pos.getY());
 		}
 		temp->pos = b->pos;
 		temp->clockwiseRotate();
 	}
-	situations = bestSituation;
 
-	if (!maxFullRows)
-		bestPos = preferNotInterfere(b, options);
+	if (!maxFullRows && !flag)
+		bestSituation = preferNotInterfere(b, options, optionStatus, bestPos);
+	else if (flag)
+		bestPos = oneToGoPos;
+     situations = bestSituation;
 
 	cleanAndDeleteCalculation(b, temp);
 	return bestPos;
@@ -320,47 +331,78 @@ size_t ComputerPlayer::setLimit(const Block* block)const
 	return limit;
 }
 
-Point ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options) const
+const short& ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Point& bestPos) const
 {
+	bestPos = options.back().pos;
 	int i = options.size() - 1;
 	while (i >= 0)
 	{
-		if (b->notDisturbing(options[i]))
-			return options[i].pos;
+		if (b->notDisturbing(options[i]) && options[i].pos.getY() >= bestPos.getY() - 4)
+		{
+			bestPos = options[i].pos;
+			return optionStatus[i];
+		}
 		--i;
 	}
-	return options[options.size() - 1].pos;
+	Block temp = options.back();
+	for (size_t i = 0; i < options.size(); ++i)
+	{
+		if (options[i].pos.compareY(bestPos) == 0 && options[i].getLowestRow() >= temp.getLowestRow())
+		{
+			bestPos = options[i].pos;
+			return optionStatus[i];
+		}
+	}
+	bestPos = options[options.size() - 1].pos;
+	return optionStatus[optionStatus.size() - 1];
 }
 
-void ComputerPlayer::positionsPriorities(const Board* b, vector<Block>& options, size_t& oneToGo, size_t& maxOneToGo, size_t& fullRows, size_t& maxFullRows, Point& bestPos,
-	Point& lowestPos, const Block* temp, short& bestSituation, short& situation) const
+void ComputerPlayer::checkFillRows(const Block& temp, Point& bestPos, size_t& fullRows, size_t& maxFullRows,
+	ushort& bestSituation, const ushort& situation)
 {
 	if (fullRows > maxFullRows)
 	{
 		maxFullRows = fullRows;
-		bestPos = temp->pos;
+		bestPos = temp.pos;
 		bestSituation = situation;
-		options.push_back(*temp);
-	}
-	else if (fullRows == maxFullRows && bestPos.compareY(temp->pos) > 0)
-	{
-		bestPos = temp->pos;
-		bestSituation = situation;
-		options.push_back(*temp);
-	}
-	const size_t after = b->oneToGoRowsCounter();
-	if (!maxFullRows && lowestPos.compareY(temp->pos) > 0)
-	{
 
-		lowestPos = temp->pos;
-		bestSituation = situation;
-		options.push_back(*temp);
 	}
-	if (!maxFullRows && oneToGo < after && maxOneToGo < after)
+	if (fullRows == maxFullRows && bestPos.compareY(temp.pos) > 0)
+	{
+		bestPos = temp.pos;
+		bestSituation = situation;
+	}
+
+}
+
+void ComputerPlayer::checkOneToGo(Board* b, const Block& temp, const Point& lowestPos, Point& oneToGoPos, size_t& oneToGo,
+	size_t& maxOneToGo, ushort& bestSituation, const ushort& situation, bool& flag)
+{
+
+	const size_t after = b->oneToGoRowsCounter();
+	if (oneToGo < after && maxOneToGo < after && b->notDisturbing(temp))
 	{
 		maxOneToGo = after;
-		bestPos = temp->pos;
+		oneToGoPos = temp.pos;
 		bestSituation = situation;
-		options.push_back(*temp);
+		flag = true;
 	}
 }
+
+void ComputerPlayer::checkLowest(vector<Block>& options, vector<ushort>& optionStatus, const Block& temp,
+	Point& lowestPos, const ushort& situation)
+{
+	if (lowestPos.compareY(temp.pos) > 0)
+	{
+		lowestPos = temp.pos;
+		options.push_back(temp);
+		optionStatus.push_back(situation);
+	}
+	if (lowestPos.compareY(temp.pos) == 0 && options.back().getLowestRow()<temp.getLowestRow())
+	{
+		lowestPos = temp.pos;
+		options.push_back(temp);
+		optionStatus.push_back(situation);
+	}
+}
+

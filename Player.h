@@ -41,6 +41,12 @@ private:
 	void getNewBlock();
 	bool makeTheMove();
 	void drawKeysIndication() const;
+	bool clockwise();
+	bool counterClockwise();
+	bool left();
+	bool right();
+	bool down();
+
 
 protected:
 	void setGameBoundaries();

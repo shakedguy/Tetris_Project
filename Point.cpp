@@ -8,9 +8,8 @@ Point::Point(const int& _x, const int& _y, const uchar& _shape, const Color& _co
 	x(_x), y(_y), shape(_shape), color(_color) {}
 
 Point& Point::operator=(const Point& _point) {
-	if (&_point != this) {
+	if (&_point != this)
 		assign(_point);
-	}
 	return *this;
 }
 

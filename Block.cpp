@@ -21,19 +21,24 @@ Bomb::Bomb(const uchar& _shape, const Point& _pos)
 
 bool Block::colorsMode = false;
 
-Block& Block::operator=(const Block& b) {
-	if (&b != this) {
-		cleanBlock();
-		for (int i = 0; i < figure.size(); i++)
-			for (int j = 0; j < figure[i].size(); j++)
-				figure[i][j] = b.figure[i][j];
+void Block::assign(const Block& _block)
+{
+	cleanBlock();
+	for (int i = 0; i < figure.size(); i++)
+		for (int j = 0; j < figure[i].size(); j++)
+			figure[i][j] = _block.figure[i][j];
 
-		pos = b.pos;
-		shape = b.shape;
-		color = b.color;
-		shapeNum = b.shapeNum;
-		color = b.color;
-	}
+	pos = _block.pos;
+	shape = _block.shape;
+	color = _block.color;
+	shapeNum = _block.shapeNum;
+	color = _block.color;
+}
+
+
+Block& Block::operator=(const Block& b) {
+	if (&b != this)
+		this->assign(b);
 	return *this;
 }
 
@@ -326,6 +331,17 @@ bool Block::isColEmpty(const ushort& col)const
 			return false;
 	return true;
 }
+
+size_t Block::getLowestRow()const
+{
+	size_t max = 0;
+	for (size_t i = 0; i < figure.size(); ++i)
+		for (size_t j = 0; j < figure[i].size(); ++j)
+			if (figure[i][j] && j > max)
+				max = j;
+	return max;
+}
+
 
 
 
