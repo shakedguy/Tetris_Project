@@ -139,8 +139,7 @@ void Game::run() {
 		move();
 		printScores();
 		
-		//Sleep(gameSpeed);
-		Sleep(10);
+		Sleep(gameSpeed);
 		if (speedMode)
 			checkSpeedStatus();
 		temp2 = temp;

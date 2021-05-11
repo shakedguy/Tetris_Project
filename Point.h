@@ -31,6 +31,8 @@ public:
 	Point(const Point& _point) { *this = _point; }
 	Point(const int& _x, const int& _y, const uchar& _shape, const Color& _color = WHITE);
 	~Point() = default;
+	Point& operator*() { return *this; }
+	Point* operator->() { return this; }
 	Point& operator=(const Point& _point);
 	Point& operator++() { *this += 1; return *this; }
 	Point operator++(int) { Point p = *this; *this += 1; return p; }

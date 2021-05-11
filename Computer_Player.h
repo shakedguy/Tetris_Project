@@ -35,9 +35,6 @@ private:
      Point getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const;
      size_t setLimit(const Block* block)const;
      const short& preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Point& bestPos)const;
-    
-
-
      void checkFillRows(const Block& temp, Point& bestPos, size_t& fullRows, size_t& maxFullRows,
           ushort& bestSituation, const ushort& situation);
      void checkOneToGo(Board* b, const Block& temp,
@@ -52,6 +49,8 @@ public:
      ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos);
      ComputerPlayer(const ComputerPlayer& _ComputerPlayer) { *this = _ComputerPlayer; }
      ComputerPlayer& operator=(const ComputerPlayer& _player);
+     ComputerPlayer* operator->() override { return this; }
+     ComputerPlayer& operator*() { return *this; }
      sint getDirection(const uchar& key)override { return 0; }
      void setDirection(const uchar& key)override;
      void setName()override { return; }

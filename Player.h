@@ -55,6 +55,8 @@ public:
 	virtual ~Player() { delete block; }
 	virtual Player& operator=(const Player& _player);
 	friend std::ostream& operator<<(std::ostream& out, const Player* _player);
+	virtual Player& operator*() = 0;
+	virtual Player* operator->() = 0;
 	void printScore() const;
 	void move();
 	bool isLost();
