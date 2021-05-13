@@ -11,17 +11,16 @@
 
 class Board
 {
-	static bool colorsMode;
-
 	enum Boundaries
 	{
 		WALL = 186, FLOOR = 205, UP_LEFT = 201, UP_RIGHT = 187, DOWN_LEFT = 200,
 		DOWN_RIGHT = 188, RIGHT_CONNECTOR = 185, LEFT_CONNECTOR = 204
 	};
 
-	enum Sizes { LENGTH = 19, WIDTH = 14 };
+	static constexpr size_t LENGTH = 19, WIDTH = 14;
+	static bool colorsMode;
 
-	Point pos;
+	Coordinate pos;
 	size_t length, width;
 	vector<vector<Point>> board;
 
@@ -55,23 +54,23 @@ private:
 	bool notDisturbing(const Block& block)const;
 	bool isBlocksAccess(const Block& block, const size_t& row)const;
 	size_t countEmptyCells(const size_t& row)const;
-	vector<Point> getEmptyCellsInRow(const size_t& row)const;
+	vector<Coordinate> getEmptyCellsInRow(const size_t& row)const;
 	bool isThereAccess(const size_t& x, const size_t& y);
 	size_t oneToGoRowsCounter()const;
 
 public:
 	void setSeparators(uint const& row);
 	Board() : Board({ 0, 0 }, LENGTH, WIDTH) {}
-	Board(const Point& _pos) : Board(_pos, LENGTH, WIDTH) {}
+	Board(const Coordinate& _pos) : Board(_pos, LENGTH, WIDTH) {}
 	Board(uint _len, uint _width) : Board({ 0, 0 }, _len, _width) {}
-	Board(const Point& _pos, uint _len, uint _width);
+	Board(const Coordinate& _pos, uint _len, uint _width);
 	virtual ~Board() = default;
 	static void changeColorsMode();
 	friend std::ostream& operator<<(std::ostream& out, const Board& board) { board.drawBoard(); return out; }
 	Board& operator*() { return *this; }
 	Board* operator->() { return this; }
 	Board& operator=(const Board& _board);
-	const Point& getPos()const { return pos; }
+	const Coordinate& getPos()const { return pos; }
 	const size_t& getLength() const { return length; }
 	const size_t& getWidth() const { return width; }
 	void allocateSize();
@@ -90,7 +89,7 @@ public:
 	bool moveDown(const Block* block)const;
 	bool rotateCheck(Block* block, const ushort& dir)const;
 	void drawBoundaries()const;
-	void setBoardPos(const Point& newPos);
+	void setBoardPos(const Coordinate& newPos);
 	Point getPointByPosition(const Point& pos)const;
 	void getIndexByPosition(const Point& pos, size_t& x, size_t& y)const;
 	void drawBoard(const Color& color)const;

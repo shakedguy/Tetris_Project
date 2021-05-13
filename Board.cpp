@@ -2,7 +2,7 @@
 
 #include "Game.h"
 
-Board::Board(const Point& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width) {
+Board::Board(const Coordinate& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width) {
 	allocateSize();
 	initialEmptyCells();
 }
@@ -43,7 +43,7 @@ size_t Board::numOfFillCells()const
 	return counter;
 }
 
-void Board::setBoardPos(const Point& newPos)
+void Board::setBoardPos(const Coordinate& newPos)
 {
 	pos = newPos;
 	for (size_t i = 0; i < width; ++i)
@@ -540,9 +540,9 @@ bool Board::notDisturbing(const Block& block)const
 	return true;
 }
 
-vector<Point> Board::getEmptyCellsInRow(const size_t& row)const
+vector<Coordinate> Board::getEmptyCellsInRow(const size_t& row)const
 {
-	vector<Point> empty;
+	vector<Coordinate> empty;
 	for (size_t i = width - 2; i > 0; --i)
 		if (board[i][row].shape == EMPTY_CELL)
 			empty.push_back(board[i][row]);
@@ -551,15 +551,15 @@ vector<Point> Board::getEmptyCellsInRow(const size_t& row)const
 
 bool Board::isBlocksAccess(const Block& block, const size_t& row)const
 {
-	vector<Point> empty = getEmptyCellsInRow(row);
+	vector<Coordinate> empty = getEmptyCellsInRow(row);
 	for (size_t i = 0; i < Block::COLUMNS; ++i)
 	{
 	     for (size_t j = 0; j < Block::ROWS; ++j)
 	     {
 	          if(block.figure[i][j])
 	          {
-				const Point& temp = getPointByPosition({ block.pos.x + i,block.pos.y + j });
-				for (Point& p : empty)
+				const Coordinate& temp = getPointByPosition({ block.pos.x + i,block.pos.y + j });
+				for (Coordinate& p : empty)
 					if ((!temp.compareX(p)) && temp.compareY(p) > 0)
 						return true;
 	          }      

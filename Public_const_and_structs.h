@@ -27,10 +27,8 @@ using std::string;
 using std::map;
 
 
-#define WINNING_MASSAGE 30,10
 #define EMPTY_CELL ' '// Define the character of the empty cell in the board
-#define PLAYER_ONE_KEYS "wsxad" // Const of game characters for player 1
-#define PLAYER_TWO_KEYS "ikmjl" // Const of game characters for player 2
+
 
 using ushort = unsigned short int;
 using uint = unsigned int;

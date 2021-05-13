@@ -19,6 +19,12 @@ class Game
 	/**************************************************************************************/
 	class Menu
 	{
+
+		static constexpr char humanVShuman[] = "humanVScomputer";
+		static constexpr char humanVScomputer[] = "humanVScomputer";
+		static constexpr char computerVScomputer[] = "computerVScomputer";
+		static constexpr size_t NUM_OF_BLOCKS = 8, MENU_BLOCK_LENGTH = 5,
+			MENU_BOARD_WIDTH = 40, MENU_BOARD_LENGTH = 21, NUM_OF_OPTIONS = 4;
 		enum objectsPositions
 		{
 			MENU_X = 15, MENU_Y = 0,
@@ -27,6 +33,7 @@ class Game
 			COLOR_MODE_ON = 5, COLOR_MODE_OF, NEW_GAME_X = 9, EXIT = 11,
 		};
 		static bool resumeGame;
+		
 		enum GameOptions {
 			H_VS_H, H_VS_C, C_VS_C, PRINT_C_C, PRINT_H_C, PRINT_H_H = 6, BACK, BEST = 0, GOOD, NOVICE,
 			PRINT_BEST = 8, PRINT_GOOD = 8, PRINT_NOVICE = 7
@@ -34,11 +41,8 @@ class Game
 		enum inputs {
 			NEW_GAME = 1, RESUME_GAME, SET_NAMES, COLOR_MODE, INSTRUCTIONS_AND_KEYS = 8, EXIT_GAME
 		};
-		enum Constants {
-			MAIN_MENU_PAGE, NEW_GAME_PAGE, LEVELS_PAGE, NUM_OF_PAGES, NUM_OF_BLOCKS = 8, MENU_BLOCK_LENGTH = 5,
-			MENU_BOARD_WIDTH = 40, MENU_BOARD_LENGTH = 21, NUM_OF_OPTIONS = 4
-		};
-		Point pos;
+		enum Constants { MAIN_MENU_PAGE, NEW_GAME_PAGE, LEVELS_PAGE, NUM_OF_PAGES };
+		Coordinate pos;
 		array<Board, NUM_OF_PAGES> menuPages;
 		array<Block, NUM_OF_BLOCKS> blocks;
 
@@ -59,12 +63,12 @@ class Game
 		void setNewGameAndLevelsMenus();
 		void inputErrorMassage()const;
 		void newGamePage(Game& game)const;
-		void levelsPage(Game& game, const ushort& option)const;
+		void levelsPage(Game& game, const string& option)const;
 
 
 	public:
 		Menu() : Menu({ 0, 0 }) {}
-		Menu(const Point& _pos);
+		Menu(const Coordinate& _pos);
 		~Menu() = default;
 		friend std::ostream& operator<<(std::ostream& out, const Menu& _menu) { _menu.drawPage(MAIN_MENU_PAGE); return out; }
 		static void possibleResumeGame(const bool& possible) { Menu::resumeGame = possible; }
@@ -76,15 +80,16 @@ class Game
 	 /**********************************************************************************************/
      /********************************** End of Menu class *****************************************/
 
-
+	static constexpr size_t NUM_OF_PLAYERS = 2, NUM_OF_BUTTONS = 2, HITS_LIMIT = 10,
+		LEFT_BOARD = 30, RIGHT_BOARD = 50, BOARDS_Y = 0, LEFT_BOX = 18, RIGHT_BOX = 68, BOXES_Y = 11,
+		WINNING_MASSAGE_X = 30, WINNING_MASSAGE_Y = 20, SPEED_X = 0, SPEED_Y = 0, GAME_BUTTON_LENGTH = 5;
+	static constexpr char PLAYER_ONE_KEYS[] = "wsxad"; // Const of game characters for player 1
+	static constexpr char PLAYER_TWO_KEYS[] = "ikmjl";// Const of game characters for player 2
+	
 	enum Constants {
-		NUM_OF_PLAYERS = 2, HITS_LIMIT = 10, GAME_SPEED = 60, ACCELERATION = 10,
-		NUM_OF_BUTTONS = 2, GAME_BUTTON_WIDTH = 11, GAME_BUTTON_LENGTH = 5, TIE_GAME_CODE = 2
+		GAME_SPEED = 60, ACCELERATION = 10, GAME_BUTTON_WIDTH = 11, TIE_GAME_CODE = 2
 	};
-	enum objectsPositions {
-		LEFT_BOARD = 30, RIGHT_BOARD = 50, BOARDS_Y = 0,
-		LEFT_BOX = 18, RIGHT_BOX = 68, BOXES_Y = 11, SPEED_X = 0, SPEED_Y = 0
-	};
+
 		static bool colorsMode;
 		static bool speedMode;
 		size_t accNum = 1;
@@ -95,6 +100,7 @@ class Game
 		array<HumanPlayer, NUM_OF_PLAYERS>humanPlayers;
 		array<ComputerPlayer, NUM_OF_PLAYERS>computerPlayers;
 		ushort gameNumber = 0;
+	
 
 
 private:
@@ -115,16 +121,16 @@ private:
 		void returnLastSpeed();
 		void resetCurrentBlocksPos();
 		void resetIndicators();
-		bool initializePlayers(const ushort& option);
+		bool initializePlayers(const string& option);
 
 public:
 	Game();
-	~Game() { gotoxy(WINNING_MASSAGE); cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl; }
+	~Game(); 
 	static void changeSpeedMode();
 	void drawButtons();
 	void acceleration() { gameSpeed -= ACCELERATION; accNum++; }
 	void startGame() { menu.mainMenuPage(*this); }
-	void init(const ushort& option);
+	void init(const string& option);
 	void run();
 };
 

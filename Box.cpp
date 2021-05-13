@@ -1,6 +1,6 @@
 ﻿#include "Box.h"
 
-Box::Box(const Point& _pos) {
+Box::Box(const Coordinate& _pos) {
 
 	pos = _pos;
 	setBoxPos(pos);

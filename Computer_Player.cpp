@@ -1,7 +1,7 @@
 #include "Computer_Player.h"
 
 
-ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) {
+ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Coordinate& _boardPos, const Coordinate& _boxPos) {
 
 	Player::playerNum = _playerNum;
 	Player::setBoardPos(_boardPos);
@@ -33,8 +33,8 @@ ComputerPlayer& ComputerPlayer::operator=(const ComputerPlayer& _player)
 	{
 	     Player::operator=(_player);
 	     steps = _player.steps;
-	     clockWise = _player.clockWise;
-	     CounterClockWise = _player.clockWise;
+		 clockwise = _player.clockwise;
+	     CounterClockwise = _player.CounterClockwise;
 	     if(directionCheck.size()==_player.directionCheck.size())
 	     {
 	          for (size_t i = 0; i < directionCheck.size(); ++i)
@@ -47,9 +47,10 @@ ComputerPlayer& ComputerPlayer::operator=(const ComputerPlayer& _player)
 
 void ComputerPlayer::setDirection(const uchar& key)
 {
-	if (steps == INITIALIZE_STEPS && clockWise == INITIALIZE_ROTATES && CounterClockWise == INITIALIZE_ROTATES)
+	if (block->pos == Coordinate{ Player::LEFT_BLOCK, BLOCKS_Y } ||
+		block->pos == Coordinate{ Player::RIGHT_BLOCK, BLOCKS_Y })
 		calculateBestPos();
-	if (!steps && (!clockWise || !CounterClockWise))
+	if (!steps && (!clockwise || !CounterClockwise))
 		direction = DEFAULT;
 	else if (steps > 0 && board.moveRight(block))
 	{
@@ -80,7 +81,7 @@ void ComputerPlayer::setDirection(const uchar& key)
 void ComputerPlayer::makeRotateMove()
 {
 	const ushort& shape = Player::block->shapeNum;
-	if (clockWise <= CounterClockWise && Player::board.clockwiseRotate(Player::block))
+	if (clockwise <= CounterClockwise && Player::board.clockwiseRotate(Player::block))
 	{
 		if (checkLastDirections(CLOCKWISE))
 			direction = CLOCKWISE;
@@ -103,15 +104,15 @@ void ComputerPlayer::makeRotateMove()
 		if (shape == Block::L || shape == Block::J || shape == Block::T)
 		{
 			if (direction == CLOCKWISE)
-				clockWise--;
+				clockwise--;
 			else
-				clockWise++;
-			CounterClockWise = 4 - clockWise;
+				clockwise++;
+			CounterClockwise = 4 - clockwise;
 		}
 		else
 		{
-			clockWise--;
-			CounterClockWise--;
+			clockwise--;
+			CounterClockwise--;
 		}
 	}
 }
@@ -133,7 +134,7 @@ void ComputerPlayer::insertCurrentDirection()
 
 void ComputerPlayer::calculateBestPos()
 {
-	Point bestPos;
+	Coordinate bestPos;
 	const ushort& shape = Player::block->shapeNum;
 	if (shape == Block::O)
 		bestPos = noRotateBlock();
@@ -148,7 +149,7 @@ void ComputerPlayer::calculateBestPos()
 	steps = bestPos.getX() - Player::block->pos.getX();
 }
 
-void ComputerPlayer::checkLevel(Point& bestPos)const
+void ComputerPlayer::checkLevel(Coordinate& bestPos)const
 {
 	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
 	std::random_device rnd;
@@ -158,7 +159,7 @@ void ComputerPlayer::checkLevel(Point& bestPos)const
 		levelNovice(bestPos);
 }
 
-void ComputerPlayer::levelGood(Point& bestPos) const
+void ComputerPlayer::levelGood(Coordinate& bestPos) const
 {
 	std::random_device rnd;
 	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
@@ -174,7 +175,7 @@ void ComputerPlayer::levelGood(Point& bestPos) const
 	}
 }
 
-void ComputerPlayer::levelNovice(Point& bestPos) const
+void ComputerPlayer::levelNovice(Coordinate& bestPos) const
 {
 	std::random_device rnd;
 	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
@@ -190,41 +191,41 @@ void ComputerPlayer::levelNovice(Point& bestPos) const
      
 }
 
-Point ComputerPlayer::noRotateBlock()
+Coordinate ComputerPlayer::noRotateBlock()
 {
 	ushort numOfRotates = 1;
-	const Point& bestPos = findBestPosition(block, numOfRotates);
-	clockWise = CounterClockWise = 0;
+	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	clockwise = CounterClockwise = 0;
 	return bestPos;
 }
 
-Point ComputerPlayer::oneRotateBlock()
+Coordinate ComputerPlayer::oneRotateBlock()
 {
 	ushort numOfRotates = 2;
-	const Point& bestPos = findBestPosition(block, numOfRotates);
-	clockWise = CounterClockWise = numOfRotates;
+	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	clockwise = CounterClockwise = numOfRotates;
 	return bestPos;
 }
 
-Point ComputerPlayer::threeRotateBlock()
+Coordinate ComputerPlayer::threeRotateBlock()
 {
 	ushort numOfRotates = 4;
-	const Point& bestPos = findBestPosition(block, numOfRotates);
-	clockWise = numOfRotates;
-	CounterClockWise = 4 - clockWise;
+	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	clockwise = numOfRotates;
+	CounterClockwise = 4 - clockwise;
 	return bestPos;
 }
 
-Point ComputerPlayer::bomb()
+Coordinate ComputerPlayer::bomb()
 {
 	ushort numOfRotates = 1;
-	const Point& bestPos = findBestPosition(block, numOfRotates);
-	clockWise = CounterClockWise = 0;
+	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	clockwise = CounterClockwise = 0;
 	return bestPos;
 }
 
 
-Point ComputerPlayer::findBestPosition(Block* block, ushort& situations)
+Coordinate ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 {
 
 	Board* b = new Board;
@@ -242,8 +243,8 @@ Point ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 	ushort bestSituation = situations;
 	size_t maxFullRows, fullRows, oneToGo;
 	size_t maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
-	Point bestPos, lowestPos;
-	Point oneToGoPos = lowestPos = bestPos = block->pos;
+	Coordinate bestPos, lowestPos;
+	Coordinate oneToGoPos = lowestPos = bestPos = block->pos;
 	bool flag = false;
 	for (short i = 0; i < situations; ++i)
 	{
@@ -275,9 +276,9 @@ Point ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 	return bestPos;
 }
 
-Point ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
+Coordinate ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
 {
-	Point bestPos = temp->pos;
+	Coordinate bestPos = temp->pos;
 	size_t explosionCounter;
 	size_t max = explosionCounter = 0;
 
@@ -311,7 +312,7 @@ void ComputerPlayer::cleanAndDeleteCalculation(Board* b, Block* temp)const
 	delete b;
 }
 
-Point ComputerPlayer::getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const
+Coordinate ComputerPlayer::getMaxDamagedPosition(size_t& max, const size_t& current, const Coordinate& bestPos, const Coordinate& tempPos)const
 {
 	if (max > current)
 		return bestPos;
@@ -331,7 +332,7 @@ size_t ComputerPlayer::setLimit(const Block* block)const
 	return limit;
 }
 
-const short& ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Point& bestPos) const
+const short& ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Coordinate& bestPos) const
 {
 	bestPos = options.back().pos;
 	int i = options.size() - 1;
@@ -357,7 +358,7 @@ const short& ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options
 	return optionStatus[optionStatus.size() - 1];
 }
 
-void ComputerPlayer::checkFillRows(const Block& temp, Point& bestPos, size_t& fullRows, size_t& maxFullRows,
+void ComputerPlayer::checkFillRows(const Block& temp, Coordinate& bestPos, size_t& fullRows, size_t& maxFullRows,
 	ushort& bestSituation, const ushort& situation)
 {
 	if (fullRows > maxFullRows)
@@ -375,7 +376,7 @@ void ComputerPlayer::checkFillRows(const Block& temp, Point& bestPos, size_t& fu
 
 }
 
-void ComputerPlayer::checkOneToGo(Board* b, const Block& temp, const Point& lowestPos, Point& oneToGoPos, size_t& oneToGo,
+void ComputerPlayer::checkOneToGo(Board* b, const Block& temp, const Coordinate& lowestPos, Coordinate& oneToGoPos, size_t& oneToGo,
 	size_t& maxOneToGo, ushort& bestSituation, const ushort& situation, bool& flag)
 {
 
@@ -390,7 +391,7 @@ void ComputerPlayer::checkOneToGo(Board* b, const Block& temp, const Point& lowe
 }
 
 void ComputerPlayer::checkLowest(vector<Block>& options, vector<ushort>& optionStatus, const Block& temp,
-	Point& lowestPos, const ushort& situation)
+	Coordinate& lowestPos, const ushort& situation)
 {
 	if (lowestPos.compareY(temp.pos) > 0)
 	{

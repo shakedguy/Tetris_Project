@@ -1,6 +1,6 @@
 ﻿#include "Block.h"
 
-Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
+Block::Block(const Coordinate& _pos) : pos(_pos), shape(SHAPE) {
 
 	std::random_device rnd;
 	const std::uniform_int_distribution<> shapeRange(0, 6);
@@ -11,7 +11,7 @@ Block::Block(Point _pos) : pos(_pos), shape(SHAPE) {
 	setFigure();
 }
 
-Bomb::Bomb(const uchar& _shape, const Point& _pos)
+Bomb::Bomb(const Coordinate& _pos, const uchar& _shape)
 {
 	pos = _pos;
 	shape = _shape;

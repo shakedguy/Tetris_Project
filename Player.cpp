@@ -3,6 +3,7 @@
 
 bool Player::colorsMode = false;
 
+
 Player& Player::operator=(const Player& _player)
 {
 
@@ -89,7 +90,7 @@ void Player::printScore() const {
 	if (Player::colorsMode)
 		setTextColor(LIGHTCYAN);
 
-	Point pos;
+	Coordinate pos;
 	if (playerNum == 1)
 		pos = {LEFT_SCORE,SCORES_Y};
 	else
@@ -132,7 +133,7 @@ void Player::getNewBlock() {
 	{
 		block = new Block();
 		*block = box.blocks[0];
-		const Point temp = box.blocks[0].pos;
+		const Coordinate temp = box.blocks[0].pos;
 		box.blocks[0] = box.blocks[1];
 		box.blocks[0].pos = temp;
 		box.blocks[1].createNewBlock();

@@ -8,12 +8,13 @@
 #include "Point.h"
 
 class Block
-{			/*	    #
+{		 	/*	       #
 	                   #
-                        #   #      #    ##    ##   #    ## 
-                        #   ###  ###    ##   ##	###    ##		*/
+                       #   #      #    ##    ##   #    ## 
+                       #   ###  ###    ##   ##	###    ##		*/
 	enum TetrisParts { I,   L,   J,    O,   S,    T,    Z };
-	enum Matrix { COLUMNS = 4, ROWS = 4 };
+	
+	static constexpr size_t COLUMNS = 4, ROWS = 4;
 
 	static bool colorsMode;
 	ushort shapeNum;
@@ -26,8 +27,8 @@ class Block
 	friend class Game;
 
 protected:
-	enum Fillings { SHAPE = 178, SHAPE_AFTER_FREEZE = 219 };
-	Point pos;
+	static constexpr uchar SHAPE = 178, SHAPE_AFTER_FREEZE = 219;
+	Coordinate pos;
 	uchar shape;
 	array<array<ushort, COLUMNS>, ROWS> figure;
 
@@ -51,7 +52,7 @@ private:
 
 public:
 	Block() : Block({0, 0}) {}
-	Block(Point _pos);
+	Block(const Coordinate& _pos);
 	Block(const Block& _block) { *this = _block; }
 	Block& operator=(const Block& b);
 	virtual ~Block() = default;
@@ -77,14 +78,15 @@ public:
 
 class Bomb : public Block
 {
-	enum Constants { BOMB = 149, EXPLOSION_RANGE = 4 };
+	static constexpr  uchar BOMB = 149;
+	static constexpr size_t EXPLOSION_RANGE = 4;
 
 	friend class Board;
 
 public:
-	Bomb(const uchar& _shape = BOMB) : Bomb(_shape, { 0,0 }) {}
-	Bomb(const Point& _pos) :Bomb(BOMB, { 0,0 }) {}
-	Bomb(const uchar& _shape, const Point& _pos);
+	Bomb(const uchar& _shape = BOMB) : Bomb( { 0,0 }, _shape) {}
+	Bomb(const Coordinate& _pos) :Bomb({ 0,0 }, BOMB) {}
+	Bomb(const Coordinate& _pos, const uchar& _shape);
 	~Bomb()override = default;
 	Bomb& operator=(const Bomb& _bomb) { if (this != &_bomb) { Block::operator=(_bomb); return *this; } }
 	void setFigure()override { figure[0][0] = shape; }

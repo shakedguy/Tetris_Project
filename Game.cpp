@@ -15,9 +15,15 @@ humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y},PLAYER_ON
 	setGameButtons();
 }
 
+Game::~Game() 
+{	
+	gotoxy(Game::WINNING_MASSAGE_X, Game::WINNING_MASSAGE_Y);
+	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
+}
+
 void Game::setGameButtons() {
 
-	const Point& temp = {SPEED_X,SPEED_Y};
+	const Coordinate& temp = {SPEED_X,SPEED_Y};
 	int y = 0;
 	for (int i = 0; i < buttons.size(); ++i) {
 
@@ -45,7 +51,7 @@ void Game::changeColorsMode() {
 }
 
 /* initialization new game and printing players boards */
-void Game::init(const ushort& option) {
+void Game::init(const string& option) {
 
 	if (!initializePlayers(option))
 		return;
@@ -56,28 +62,27 @@ void Game::init(const ushort& option) {
 
 }
 
-bool Game::initializePlayers(const ushort& option)
+bool Game::initializePlayers(const string& option)
 {
-     switch (option)
-     {
-	case Menu::H_VS_H:
+
+	if (!option.compare(Menu::humanVShuman))
+	{
 		players[0] = &humanPlayers[0];
 		players[1] = &humanPlayers[1];
-		return true;
-
-	case Menu::H_VS_C:
+	}
+	else if (!option.compare(Menu::humanVScomputer))
+	{
 		players[0] = &humanPlayers[0];
 		players[1] = &computerPlayers[1];
-		return true;
-
-	case Menu::C_VS_C:
+	}
+	else if (!option.compare(Menu::computerVScomputer))
+	{
 		players[0] = &computerPlayers[0];
 		players[1] = &computerPlayers[1];
-		return true;
-
-		default:
-			return false;
-     }
+	}
+	else
+		return false;
+	return true;
 }
 
 
@@ -95,7 +100,7 @@ void Game::drawButtons() {
 
 void Game::printButtonsInfo() {
 
-	const Point& temp = buttons[0].getPos();
+	const Coordinate& temp = buttons[0].getPos();
 	gotoxy(temp.getX() + 2, temp.getY() + 1);
 	cout << "Speed";
 	gotoxy(temp.getX() + 2, temp.getY() + 2);
@@ -244,7 +249,7 @@ bool Game::isSomeoneLose() {
 
 void Game::winningMassage(const ushort& flag) const {
 
-	const Point temp = {WINNING_MASSAGE};
+	const Coordinate temp = { Game::WINNING_MASSAGE_X,Game::WINNING_MASSAGE_Y };
 	gotoxy(temp.getX(), temp.getY());
 	if (flag == TIE_GAME_CODE)
 		cout << "\t\t\t\tTie game";

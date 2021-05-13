@@ -11,7 +11,9 @@
 
 class Player
 {
+	
 protected:
+
 	enum objectsPositions
 	{
 	     LEFT_SCORE = 18, RIGHT_SCORE = 68, SCORES_Y = 2,
@@ -22,13 +24,13 @@ protected:
 	     POINTS_FOR_FULL_ROW = 100, CELLS_FOR_ACCELERATION = 20, SCORE_FOR_ACCELERATION = 20,
 		INDIVATORS_WIDTH =3, INDIVATORS_LENGTH =2, NUM_OF_KEYS = 5
 	};
+	static constexpr size_t NAME_MASSAGE_X = 30, NAME_MASSAGE_Y = 10;
 	static bool colorsMode;
 	string name;
 	ushort playerNum;
 	ushort direction;
 	array<Board, NUM_OF_KEYS> keyIndicators;
-	Point boardPos;
-	Point boxPos;
+	Coordinate boardPos, boxPos;
 	Board board;
 	Box box;
 	Block* block = new Block;
@@ -60,7 +62,7 @@ public:
 	void printScore() const;
 	void move();
 	bool isLost();
-	void setCurrentBlockPos(const Point& pos)const { block->pos = pos; }
+	void setCurrentBlockPos(const Coordinate& pos)const { block->pos = pos; }
 	void clearGame();
 	string getName() const { return name; }
 	virtual void setPlayerKeys(const string& arrowKeys) = 0;
@@ -70,8 +72,8 @@ public:
 	void showIndicateHit(const ushort& dir);
 	size_t getScore() const { return score; }
 	virtual bool checkSpeed(const size_t& accNum)const;
-	void setBoardPos(const Point& _pos) { boardPos = _pos; board.setBoardPos(_pos); }
-	void setBoxPos(const Point& _pos) { boxPos = _pos; box.setBoxPos(_pos); }
+	void setBoardPos(const Coordinate& _pos) { boardPos = _pos; board.setBoardPos(_pos); }
+	void setBoxPos(const Coordinate& _pos) { boxPos = _pos; box.setBoxPos(_pos); }
 	static void changeColorsMode();
 	virtual void initializeCalculate() = 0;
 };

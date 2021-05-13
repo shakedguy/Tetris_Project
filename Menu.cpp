@@ -1,8 +1,6 @@
 ﻿#include "Game.h"
 
-
-
-Game::Menu::Menu(const Point& _pos) : pos(_pos), menuPages{ pos,pos,pos } {
+Game::Menu::Menu(const Coordinate& _pos) : pos(_pos), menuPages{ pos,pos,pos } {
 
 	for (Board& page : menuPages)
 	{
@@ -253,15 +251,15 @@ void Game::Menu::newGamePage(Game& game)const
      {
 	case H_VS_H:
 		clrscr();
-		game.init(H_VS_H);
+		game.init(Menu::humanVShuman);
 		break;
 	case H_VS_C:
 		clrscr();
-		levelsPage(game, H_VS_C);
+		levelsPage(game, Menu::humanVShuman);
 		break;
 	case C_VS_C:
 		clrscr();
-		levelsPage(game, C_VS_C);
+		levelsPage(game, Menu::computerVScomputer);
 		break;
 	case COLOR_MODE:
 		game.changeColorsMode();
@@ -280,7 +278,7 @@ void Game::Menu::newGamePage(Game& game)const
 }
 
 
-void Game::Menu::levelsPage(Game& game, const ushort& option)const
+void Game::Menu::levelsPage(Game& game, const string& option)const
 {
 	drawPage(LEVELS_PAGE);
 	switch (getOption())
