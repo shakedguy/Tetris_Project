@@ -1,11 +1,12 @@
 ﻿#include "Game.h"
 
-Game::Menu::Menu(const Coordinate& _pos) : pos(_pos), menuPages{ pos,pos,pos } {
+Game::Menu::Menu(const Point& _pos) : pos(_pos), menuPages{ pos,pos,pos } {
 
 	for (Board& page : menuPages)
 	{
 		page.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
 		page.initialEmptyCells();
+		page.setColor(BROWN);
 	}
 	setMenuBoard();
 	setNewGameAndLevelsMenus();
@@ -16,12 +17,12 @@ bool Game::Menu::resumeGame = false;
 
 void Game::Menu::setNewGameAndLevelsMenus()
 {
-	for (size_t i = 1; i < menuPages.size(); ++i)
+	for (Board& page : menuPages)
 	{
-		menuPages[i].setAllBoundaries();
-	     for (int j = 1; j < menuPages[i].length - 1; ++j)
-	          if (j % 4 == 0)
-	               menuPages[i].setSeparators(j);
+		page.setAllBoundaries();
+		for (size_t i = 1; i < page.length - 1; ++i)
+			if (i % 4 == 0)
+				page.setSeparators(i);
 	}
 }
 void Game::Menu::setMenuBoard()
@@ -51,10 +52,7 @@ void Game::Menu::updateMenuBoard()
 
 void Game::Menu::drawPage(const ushort& pageNumber) const {
 
-	if (Game::colorsMode)
-		menuPages[pageNumber].drawBoard(BROWN);
-	else
-		menuPages[pageNumber].drawBoard();
+	cout << menuPages[pageNumber];
 	if (Game::colorsMode)
 		paintBoxes(pageNumber);
 	drawBlocksInMenu();
@@ -75,9 +73,10 @@ void Game::Menu::paintBoxes(const ushort& pageNumber) const {
 	{
 		for (size_t j = 1; j < menuPages[pageNumber].length - 1; ++j)
 		{
-			gotoxy(menuPages[pageNumber].pos.getX() + i, menuPages[pageNumber].pos.getY() + j);
+			
 			if (j % 4 != 0) 
 			{
+				gotoxy(menuPages[pageNumber].pos.getX() + i, menuPages[pageNumber].pos.getY() + j);
 				pickColor(j);
 				cout << static_cast<uchar>(Block::SHAPE_AFTER_FREEZE);
 			}
@@ -251,15 +250,15 @@ void Game::Menu::newGamePage(Game& game)const
      {
 	case H_VS_H:
 		clrscr();
-		game.init(Menu::humanVShuman);
+		game.init(Menu::HUMAN_VS_HUMAN);
 		break;
 	case H_VS_C:
 		clrscr();
-		levelsPage(game, Menu::humanVShuman);
+		levelsPage(game, Menu::HUMAN_VS_COMPUTER);
 		break;
 	case C_VS_C:
 		clrscr();
-		levelsPage(game, Menu::computerVScomputer);
+		levelsPage(game, Menu::COMPUTER_VS_COMPUTER);
 		break;
 	case COLOR_MODE:
 		game.changeColorsMode();

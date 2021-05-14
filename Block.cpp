@@ -1,17 +1,18 @@
 ﻿#include "Block.h"
 
-Block::Block(const Coordinate& _pos) : pos(_pos), shape(SHAPE) {
+Block::Block(const Point& _pos) : pos(_pos), shape(SHAPE) {
 
 	std::random_device rnd;
 	const std::uniform_int_distribution<> shapeRange(0, 6);
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
+	//shapeNum = O;
 	cleanBlock();
 	setFigure();
 }
 
-Bomb::Bomb(const Coordinate& _pos, const uchar& _shape)
+Bomb::Bomb(const Point& _pos, const uchar& _shape)
 {
 	pos = _pos;
 	shape = _shape;
@@ -50,6 +51,7 @@ void Block::createNewBlock() {
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
+	//shapeNum = O;
 	setFigure();
 }
 

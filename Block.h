@@ -28,7 +28,7 @@ class Block
 
 protected:
 	static constexpr uchar SHAPE = 178, SHAPE_AFTER_FREEZE = 219;
-	Coordinate pos;
+	Point pos;
 	uchar shape;
 	array<array<ushort, COLUMNS>, ROWS> figure;
 
@@ -52,7 +52,7 @@ private:
 
 public:
 	Block() : Block({0, 0}) {}
-	Block(const Coordinate& _pos);
+	Block(const Point& _pos);
 	Block(const Block& _block) { *this = _block; }
 	Block& operator=(const Block& b);
 	virtual ~Block() = default;
@@ -85,8 +85,8 @@ class Bomb : public Block
 
 public:
 	Bomb(const uchar& _shape = BOMB) : Bomb( { 0,0 }, _shape) {}
-	Bomb(const Coordinate& _pos) :Bomb({ 0,0 }, BOMB) {}
-	Bomb(const Coordinate& _pos, const uchar& _shape);
+	Bomb(const Point& _pos) :Bomb({ 0,0 }, BOMB) {}
+	Bomb(const Point& _pos, const uchar& _shape);
 	~Bomb()override = default;
 	Bomb& operator=(const Bomb& _bomb) { if (this != &_bomb) { Block::operator=(_bomb); return *this; } }
 	void setFigure()override { figure[0][0] = shape; }

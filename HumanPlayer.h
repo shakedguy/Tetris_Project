@@ -14,7 +14,7 @@ class HumanPlayer : public Player
 
 public:
      HumanPlayer() : HumanPlayer(0, { 0, 0 }, { 0, 0 }) {}
-     HumanPlayer(const ushort& _playerNum, const Coordinate& _boardPos, const Coordinate& _boxPos, const string& arrowKeys = "");
+     HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos, const string& arrowKeys = "");
      HumanPlayer(const HumanPlayer& _humanPlayer) { *this = _humanPlayer; }
      HumanPlayer& operator=(const HumanPlayer& _player);
      HumanPlayer& operator*() { return *this; }

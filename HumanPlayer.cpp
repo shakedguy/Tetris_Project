@@ -1,6 +1,6 @@
 #include "HumanPlayer.h"
 
-HumanPlayer::HumanPlayer(const ushort& _playerNum, const Coordinate& _boardPos, const Coordinate& _boxPos, const string& arrowKeys)
+HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos, const string& arrowKeys)
 {
 
 	Player::playerNum = _playerNum;

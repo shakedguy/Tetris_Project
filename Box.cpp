@@ -1,9 +1,9 @@
 ﻿#include "Box.h"
 
-Box::Box(const Coordinate& _pos) {
+Box::Box(const Point& _pos) {
 
-	pos = _pos;
-	setBoxPos(pos);
+
+	setPos(_pos);
 	resizeBoundaries(LENGTH, WIDTH);
 	initialEmptyCells();
 	setAllBoundaries();
@@ -16,8 +16,7 @@ Box& Box::operator=(const Box& _box)
 	{
 		Board::operator=(_box);
 		if (blocks.size() == _box.blocks.size())
-			for (size_t i = 0; i < blocks.size(); ++i)
-				blocks[i] = _box.blocks[i];
+			blocks = _box.blocks;
 	}
 	return *this;
 }
@@ -36,7 +35,7 @@ void Box::drawBox() const {
 	
 	gotoxy((pos.getX()), pos.getY() - 1);
 	cout << "Next blocks";
-	drawBoard();
+	Board::drawBoard();
 	for (const Block& i : blocks)
 		i.drawBlock();
 }

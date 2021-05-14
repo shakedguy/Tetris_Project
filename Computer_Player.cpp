@@ -1,7 +1,7 @@
 #include "Computer_Player.h"
 
 
-ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Coordinate& _boardPos, const Coordinate& _boxPos) {
+ComputerPlayer::ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) {
 
 	Player::playerNum = _playerNum;
 	Player::setBoardPos(_boardPos);
@@ -47,73 +47,86 @@ ComputerPlayer& ComputerPlayer::operator=(const ComputerPlayer& _player)
 
 void ComputerPlayer::setDirection(const uchar& key)
 {
-	if (block->pos == Coordinate{ Player::LEFT_BLOCK, BLOCKS_Y } ||
-		block->pos == Coordinate{ Player::RIGHT_BLOCK, BLOCKS_Y })
+	if (block->pos == Point{ Player::LEFT_BLOCK, BLOCKS_Y } ||
+		block->pos == Point{ Player::RIGHT_BLOCK, BLOCKS_Y })
 		calculateBestPos();
 	if (!steps && (!clockwise || !CounterClockwise))
 		direction = DEFAULT;
 	else if (steps > 0 && board.moveRight(block))
-	{
-		if (checkLastDirections(MOVE_RIGHT))
-		{
-			direction = MOVE_RIGHT;
-			steps--;
-		}
-		else
-			direction = DEFAULT;
-	}
+		moveRight();
 	else if (steps < 0 && board.moveLeft(block))
-	{
-		if(checkLastDirections(MOVE_LEFT))
-		{
-		     direction = MOVE_LEFT;
-		     steps++;
-		}
-		else
-			direction = DEFAULT;
-	}
+		moveLeft();
 	else
 		makeRotateMove();
 	showIndicateHit(direction);
 	insertCurrentDirection();
 }
-
-void ComputerPlayer::makeRotateMove()
+void ComputerPlayer::moveRight()
 {
-	const ushort& shape = Player::block->shapeNum;
-	if (clockwise <= CounterClockwise && Player::board.clockwiseRotate(Player::block))
+	if (checkLastDirections(MOVE_RIGHT))
 	{
-		if (checkLastDirections(CLOCKWISE))
-			direction = CLOCKWISE;
-		else
-			direction = DEFAULT;
-	}
-		
-	else if (Player::board.counterClockwiseRotate(Player::block))
-	{
-		if (checkLastDirections(COUNTER_CLOCKWISE))
-			direction = COUNTER_CLOCKWISE;
-		else
-			direction = DEFAULT;
+		direction = MOVE_RIGHT;
+		steps--;
 	}
 	else
 		direction = DEFAULT;
+}
 
-	if (direction != DEFAULT)
+void ComputerPlayer::moveLeft()
+{
+	if (checkLastDirections(MOVE_LEFT))
 	{
-		if (shape == Block::L || shape == Block::J || shape == Block::T)
+		direction = MOVE_LEFT;
+		steps++;
+	}
+	else
+		direction = DEFAULT;
+}
+
+void ComputerPlayer::clockwiseRotate()
+{
+	if (checkLastDirections(CLOCKWISE))
+		direction = CLOCKWISE;
+	else
+		direction = DEFAULT;
+	calculateRotates(block->shapeNum);
+}
+void ComputerPlayer::counterClockwiseRotate()
+{
+	if (checkLastDirections(COUNTER_CLOCKWISE))
+		direction = COUNTER_CLOCKWISE;
+	else
+		direction = DEFAULT;
+	calculateRotates(block->shapeNum);
+}
+
+void ComputerPlayer::makeRotateMove()
+{
+	if (clockwise <= CounterClockwise && Player::board.clockwiseRotate(Player::block))
+		clockwiseRotate();
+	else if (Player::board.counterClockwiseRotate(Player::block))
+		counterClockwiseRotate();
+}
+
+void ComputerPlayer::calculateRotates(const ushort& shape)
+{
+	if (shape == Block::L || shape == Block::J || shape == Block::T)
+	{
+		if (direction == CLOCKWISE)
 		{
-			if (direction == CLOCKWISE)
-				clockwise--;
-			else
-				clockwise++;
+			--clockwise;
 			CounterClockwise = 4 - clockwise;
 		}
 		else
 		{
-			clockwise--;
-			CounterClockwise--;
+			--CounterClockwise;
+			clockwise = 4 - CounterClockwise;
 		}
+	}
+	else
+	{
+		clockwise--;
+		CounterClockwise--;
 	}
 }
 
@@ -134,7 +147,7 @@ void ComputerPlayer::insertCurrentDirection()
 
 void ComputerPlayer::calculateBestPos()
 {
-	Coordinate bestPos;
+	Point bestPos;
 	const ushort& shape = Player::block->shapeNum;
 	if (shape == Block::O)
 		bestPos = noRotateBlock();
@@ -149,7 +162,7 @@ void ComputerPlayer::calculateBestPos()
 	steps = bestPos.getX() - Player::block->pos.getX();
 }
 
-void ComputerPlayer::checkLevel(Coordinate& bestPos)const
+void ComputerPlayer::checkLevel(Point& bestPos)const
 {
 	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
 	std::random_device rnd;
@@ -159,7 +172,7 @@ void ComputerPlayer::checkLevel(Coordinate& bestPos)const
 		levelNovice(bestPos);
 }
 
-void ComputerPlayer::levelGood(Coordinate& bestPos) const
+void ComputerPlayer::levelGood(Point& bestPos) const
 {
 	std::random_device rnd;
 	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
@@ -175,7 +188,7 @@ void ComputerPlayer::levelGood(Coordinate& bestPos) const
 	}
 }
 
-void ComputerPlayer::levelNovice(Coordinate& bestPos) const
+void ComputerPlayer::levelNovice(Point& bestPos) const
 {
 	std::random_device rnd;
 	const std::uniform_int_distribution<> widthRange(1, Board::WIDTH - 2);
@@ -187,45 +200,43 @@ void ComputerPlayer::levelNovice(Coordinate& bestPos) const
 		int x = widthRange(rnd);
 		while ((board.pos.getX() + x != bestPos.getX())) { x = widthRange(rnd); }
 		bestPos.setX(board.pos.getX() + x);
-	}
-     
+	} 
 }
 
-Coordinate ComputerPlayer::noRotateBlock()
+Point ComputerPlayer::noRotateBlock()
 {
 	ushort numOfRotates = 1;
-	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockwise = CounterClockwise = 0;
 	return bestPos;
 }
 
-Coordinate ComputerPlayer::oneRotateBlock()
+Point ComputerPlayer::oneRotateBlock()
 {
 	ushort numOfRotates = 2;
-	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockwise = CounterClockwise = numOfRotates;
 	return bestPos;
 }
 
-Coordinate ComputerPlayer::threeRotateBlock()
+Point ComputerPlayer::threeRotateBlock()
 {
 	ushort numOfRotates = 4;
-	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockwise = numOfRotates;
 	CounterClockwise = 4 - clockwise;
 	return bestPos;
 }
 
-Coordinate ComputerPlayer::bomb()
+Point ComputerPlayer::bomb()
 {
 	ushort numOfRotates = 1;
-	const Coordinate& bestPos = findBestPosition(block, numOfRotates);
+	const Point& bestPos = findBestPosition(block, numOfRotates);
 	clockwise = CounterClockwise = 0;
 	return bestPos;
 }
 
-
-Coordinate ComputerPlayer::findBestPosition(Block* block, ushort& situations)
+Point ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 {
 
 	Board* b = new Board;
@@ -241,24 +252,20 @@ Coordinate ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 	options.push_back(*block);
 	optionStatus.push_back(0);
 	ushort bestSituation = situations;
-	size_t maxFullRows, fullRows, oneToGo;
-	size_t maxOneToGo = oneToGo = fullRows = maxFullRows = 0;
-	Coordinate bestPos, lowestPos;
-	Coordinate oneToGoPos = lowestPos = bestPos = block->pos;
-	bool flag = false;
-	for (short i = 0; i < situations; ++i)
+	size_t maxFullRows, fullRows;
+	fullRows = maxFullRows = 0;
+	Point bestPos, lowestPos;
+	lowestPos = bestPos = block->pos;
+	for (ushort i = 0; i < situations; ++i)
 	{
 		size_t limit = setLimit(temp);
 		for (size_t j = 1; j < limit && b->moveRight(temp); ++j)
 		{
 			temp->pos >>= 1;
-			fullRows = getPositionData(b, temp, oneToGo);
-			checkFillRows(*temp, bestPos, fullRows, maxFullRows, bestSituation, i);
+			fullRows = getPositionData(b, temp);
+			checkFillRows(*temp, bestPos, fullRows, maxFullRows, i,bestSituation);
 			if (!maxFullRows)
-			{
-				checkOneToGo(b, *temp, lowestPos, oneToGoPos, oneToGo, maxOneToGo, bestSituation, i, flag);
-			     checkLowest(options, optionStatus, *temp, lowestPos, i);
-			}
+				checkLowest(options, optionStatus, *temp, lowestPos, i);
 			b->deleteBlock(*temp);
 			temp->pos.setY(b->pos.getY());
 		}
@@ -266,19 +273,18 @@ Coordinate ComputerPlayer::findBestPosition(Block* block, ushort& situations)
 		temp->clockwiseRotate();
 	}
 
-	if (!maxFullRows && !flag)
-		bestSituation = preferNotInterfere(b, options, optionStatus, bestPos);
-	else if (flag)
-		bestPos = oneToGoPos;
-     situations = bestSituation;
-
+	if (!maxFullRows)
+		bestPos = checkOneToGo(b, *temp, options, optionStatus, bestSituation, lowestPos);
+	if (bestPos == Point{ -1,-1 })
+		bestPos = preferNotInterfere(b, options, optionStatus, bestSituation, lowestPos);
+	situations = bestSituation;
 	cleanAndDeleteCalculation(b, temp);
 	return bestPos;
 }
 
-Coordinate ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
+Point ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
 {
-	Coordinate bestPos = temp->pos;
+	Point bestPos = temp->pos;
 	size_t explosionCounter;
 	size_t max = explosionCounter = 0;
 
@@ -295,10 +301,9 @@ Coordinate ComputerPlayer::findBestBombPosition(Board* b, Block* temp)const
 	return bestPos;
 }
 
-size_t ComputerPlayer::getPositionData(Board* b, Block* temp, size_t& oneToGo) const
+size_t ComputerPlayer::getPositionData(Board* b, Block* temp) const
 {
 	temp->cleanPrint();
-	oneToGo = b->oneToGoRowsCounter();
 	b->DropBlock(*temp);
 	b->freezeBlock(*temp);
 	return b->checkBoard(false);
@@ -312,7 +317,7 @@ void ComputerPlayer::cleanAndDeleteCalculation(Board* b, Block* temp)const
 	delete b;
 }
 
-Coordinate ComputerPlayer::getMaxDamagedPosition(size_t& max, const size_t& current, const Coordinate& bestPos, const Coordinate& tempPos)const
+Point ComputerPlayer::getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const
 {
 	if (max > current)
 		return bestPos;
@@ -332,34 +337,34 @@ size_t ComputerPlayer::setLimit(const Block* block)const
 	return limit;
 }
 
-const short& ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Coordinate& bestPos) const
+Point ComputerPlayer::preferNotInterfere(Board* b, vector<Block>& options,
+	vector<ushort>& optionStatus, ushort& bestSituation, Point& lowestPos) const
 {
-	bestPos = options.back().pos;
-	int i = options.size() - 1;
-	while (i >= 0)
+	Point& best = lowestPos;
+	size_t i = 0;
+	ushort s = bestSituation;
+	bool flag = false;
+	for (Block& block : options)
 	{
-		if (b->notDisturbing(options[i]) && options[i].pos.getY() >= bestPos.getY() - 4)
+		if ((lowestPos.getY() - 2 <= block.pos.getY()) &&
+			b->notDisturbing(block))
 		{
-			bestPos = options[i].pos;
-			return optionStatus[i];
+			flag = true;
+			best = block.pos;
+			s = optionStatus[i];
 		}
-		--i;
+		++i;
 	}
-	Block temp = options.back();
-	for (size_t i = 0; i < options.size(); ++i)
+	if(flag)
 	{
-		if (options[i].pos.compareY(bestPos) == 0 && options[i].getLowestRow() >= temp.getLowestRow())
-		{
-			bestPos = options[i].pos;
-			return optionStatus[i];
-		}
+		bestSituation = s;
+		return best;
 	}
-	bestPos = options[options.size() - 1].pos;
-	return optionStatus[optionStatus.size() - 1];
+	return lowestPos;
 }
 
-void ComputerPlayer::checkFillRows(const Block& temp, Coordinate& bestPos, size_t& fullRows, size_t& maxFullRows,
-	ushort& bestSituation, const ushort& situation)
+void ComputerPlayer::checkFillRows(const Block& temp, Point& bestPos, size_t& fullRows, size_t& maxFullRows,
+	const ushort& situation, ushort& bestSituation)
 {
 	if (fullRows > maxFullRows)
 	{
@@ -373,35 +378,52 @@ void ComputerPlayer::checkFillRows(const Block& temp, Coordinate& bestPos, size_
 		bestPos = temp.pos;
 		bestSituation = situation;
 	}
-
 }
 
-void ComputerPlayer::checkOneToGo(Board* b, const Block& temp, const Coordinate& lowestPos, Coordinate& oneToGoPos, size_t& oneToGo,
-	size_t& maxOneToGo, ushort& bestSituation, const ushort& situation, bool& flag)
+Point ComputerPlayer::checkOneToGo(Board* b, const Block& temp, vector<Block>& options,
+	vector<ushort>& optionStatus, ushort& bestSituation, Point& lowestPos)const
 {
-
-	const size_t after = b->oneToGoRowsCounter();
-	if (oneToGo < after && maxOneToGo < after && b->notDisturbing(temp))
+	const size_t before = b->oneToGoRowsCounter();
+	size_t max = before;
+	Point best = lowestPos;
+	bool flag = false;
+	ushort situation = bestSituation;
+	for (int i = options.size() - 1; i >= 0; --i)
 	{
-		maxOneToGo = after;
-		oneToGoPos = temp.pos;
-		bestSituation = situation;
-		flag = true;
+		if (lowestPos.getY() - 2 <= options[i].pos.getY())
+		{
+			b->freezeBlock(options[i]);
+			size_t current = b->oneToGoRowsCounter();
+			if (max < current)
+			{
+				flag = true;
+				max = current;
+				best = options[i].pos;
+				situation = optionStatus[i];
+			}
+			b->deleteBlock(options[i]);
+		}
 	}
+	if (flag)
+	{
+		bestSituation = situation;
+		return best;
+	}
+	bestSituation = optionStatus.back();
+	return { -1,-1 };
 }
 
 void ComputerPlayer::checkLowest(vector<Block>& options, vector<ushort>& optionStatus, const Block& temp,
-	Coordinate& lowestPos, const ushort& situation)
+	Point& lowestPos, const ushort& situation)
 {
-	if (lowestPos.compareY(temp.pos) > 0)
+	if (lowestPos.compareY(temp.pos) > 0)	
 	{
 		lowestPos = temp.pos;
 		options.push_back(temp);
 		optionStatus.push_back(situation);
 	}
-	if (lowestPos.compareY(temp.pos) == 0 && options.back().getLowestRow()<temp.getLowestRow())
+	if (options.back().pos.getY() + options.back().getLowestRow() < temp.pos.getY() + temp.getLowestRow())
 	{
-		lowestPos = temp.pos;
 		options.push_back(temp);
 		optionStatus.push_back(situation);
 	}

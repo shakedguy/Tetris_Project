@@ -34,28 +34,31 @@ std::ostream& operator<<(std::ostream& out, const Player* _player) {
 
 // Sets the map of keys indicators
 void Player::setKeysIndication() {
-	
-	for (auto i = 0; i < keyIndicators.size(); ++i) {
 
-		keyIndicators[i].resizeBoundaries(INDIVATORS_WIDTH, INDIVATORS_LENGTH);
-
-		if (i < keyIndicators.size() - 2)
-			keyIndicators[i].setBoardPos({ boardPos.getX() + 4, boardPos.getY() + Board::LENGTH + (i * INDIVATORS_LENGTH) });
-		else if (i == keyIndicators.size() - 2)
-			keyIndicators[i].setBoardPos({
-			keyIndicators[1].pos.getX() - static_cast<int>(keyIndicators[1].width), keyIndicators[1].pos.getY() });
-		else if (i == keyIndicators.size() - 1)
-			keyIndicators[i].setBoardPos({
-		     static_cast<int>(keyIndicators[1].width) + keyIndicators[1].pos.getX(), keyIndicators[1].pos.getY() });
-		keyIndicators[i].initialEmptyCells();
-		keyIndicators[i].setAllBoundaries();
+	size_t count = 0;
+	for (Board& i : keyIndicators)
+	{
+		i.resizeBoundaries(INDIVATORS_WIDTH, INDIVATORS_LENGTH);
+		if (count < keyIndicators.size() - 2)
+			i.setPos({ boardPos.getX() + 4,
+				boardPos.getY() + Board::LENGTH + (count * INDIVATORS_LENGTH) });
+		else if (count == keyIndicators.size() - 2)
+			i.setPos({ keyIndicators[1].pos.getX() - keyIndicators[1].width,
+				keyIndicators[1].pos.getY() });
+		else if (count == keyIndicators.size() - 1)
+			i.setPos({ keyIndicators[1].width + keyIndicators[1].pos.getX(),
+				keyIndicators[1].pos.getY() });
+		i.initialEmptyCells();
+		i.setAllBoundaries();
+		i.setColor(RED);
+		++count;
 	}
 }
 
 void Player::drawKeysIndication() const {
 
 	for (const Board& indicator : keyIndicators)
-		cout << indicator;
+		indicator.drawBoard(WHITE);
 }
 
 void Player::clearGame() {
@@ -90,7 +93,7 @@ void Player::printScore() const {
 	if (Player::colorsMode)
 		setTextColor(LIGHTCYAN);
 
-	Coordinate pos;
+	Point pos;
 	if (playerNum == 1)
 		pos = {LEFT_SCORE,SCORES_Y};
 	else
@@ -112,8 +115,8 @@ void Player::showIndicateHit(const ushort& dir) {
 	drawKeysIndication();
 	if(dir!=DEFAULT)
 	{
-	     if (Player::colorsMode)
-	          keyIndicators[dir].drawBoard(RED);
+		if (Player::colorsMode)
+			cout << keyIndicators[dir];
 	     else {
 	          keyIndicators[dir].fillAllBoard('#');
 	          cout << keyIndicators[dir];
@@ -133,7 +136,7 @@ void Player::getNewBlock() {
 	{
 		block = new Block();
 		*block = box.blocks[0];
-		const Coordinate temp = box.blocks[0].pos;
+		const Point temp = box.blocks[0].pos;
 		box.blocks[0] = box.blocks[1];
 		box.blocks[0].pos = temp;
 		box.blocks[1].createNewBlock();
@@ -161,7 +164,8 @@ void Player::move() {
 		     board.freezeBlock(*block);
 
           getNewBlock();
-		cout << board << box;
+		cout << box;
+		board.drawEmptyCells();
 	}
 	board.drawFillCells();
 	board.drawBoundaries();
@@ -256,7 +260,8 @@ bool Player::drop() {
 	return false;
 }
 
-void Player::changeColorsMode() {
+void Player::changeColorsMode()
+{
 	
 	if (Player::colorsMode)
 		Player::colorsMode = false;
@@ -265,7 +270,8 @@ void Player::changeColorsMode() {
 }
 
 // Check if game speed needs to be increased
-bool Player::checkSpeed(const size_t& accNum)const {
+bool Player::checkSpeed(const size_t& accNum)const
+{
 
 	if (board.numOfFillCells() > accNum * CELLS_FOR_ACCELERATION || score > accNum * SCORE_FOR_ACCELERATION)
 		return true;

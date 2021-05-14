@@ -2,13 +2,20 @@
 
 #include "Game.h"
 
-Board::Board(const Coordinate& _pos, uint _len, uint _width) : pos(_pos), length(_len), width(_width) {
+Board::Board(const Point& _pos, const size_t& _len, const size_t& _width, const Color& _color) :
+	pos(_pos), length(_len), width(_width), color(_color) {
 	allocateSize();
 	initialEmptyCells();
 }
 
 bool Board::colorsMode = false;
 
+
+std::ostream& operator<<(std::ostream& out, const Board& board)
+{
+	(Board::colorsMode) ? board.drawBoard(board.color) : board.drawBoard(WHITE);
+	return out;
+}
 void Board::changeColorsMode() {
 
 	if (Board::colorsMode)
@@ -21,8 +28,8 @@ Point Board::getPointByPosition(const Point& pos)const
 {
 	for (size_t i = 0; i < width; ++i)
 		for (size_t j = 0; j < length; ++j)
-			if (board[i][j] == pos)
-				return board[i][j];
+			if (board[i][j].getPoint() == pos)
+				return board[i][j].getPoint();
 	return { -1,-1 };
 }
 
@@ -30,7 +37,7 @@ void Board::getIndexByPosition(const Point& pos, size_t& x, size_t& y) const
 {
 	for (size_t i = 0; i < width; ++i)
 	     for (size_t j = 0; j < length; ++j)
-			if (board[i][j] == pos) { x = i; y = j; }
+			if (board[i][j].getPoint() == pos) { x = i; y = j; }
 }
 
 size_t Board::numOfFillCells()const
@@ -43,7 +50,7 @@ size_t Board::numOfFillCells()const
 	return counter;
 }
 
-void Board::setBoardPos(const Coordinate& newPos)
+void Board::setPos(const Point& newPos)
 {
 	pos = newPos;
 	for (size_t i = 0; i < width; ++i)
@@ -115,11 +122,38 @@ void Board::drawEmptyCells() const
 void Board::drawBoundaries()const
 {
 
-	for (size_t i = 0; i < width; i++) 
-		for (size_t j = 0; j < length; j++) 
-			if (!i || i == width - 1 || j == length - 1) 
+	for (size_t i = 0; i < width; i++)
+	{
+		for (size_t j = 0; j < length; j++)
+		{
+			if ((isBoundary(i, j) && board[i][j].shape != EMPTY_CELL)
+				|| board[i][j].shape == FLOOR)
 				cout << board[i][j];
+		}
+	}
 }
+
+// drowing only the boundaries of the boards
+void Board::drawBoundaries(const Color& _color)const
+{
+
+	for (size_t i = 0; i < width; i++)
+	{
+		for (size_t j = 0; j < length; j++)
+		{
+			if (isBoundary(i,j) && board[i][j].shape != EMPTY_CELL)
+				board[i][j].draw(_color);
+			else if(board[i][j].shape == FLOOR)
+				board[i][j].draw(_color);
+		}
+	}
+}
+
+inline bool Board::isBoundary(const size_t& x, const size_t& y) const
+{
+	return !x || x == width - 1 || !y || y == length - 1;
+}
+
 
 void Board::cleanBoard() {
 
@@ -209,9 +243,10 @@ void Board::freezeBlock(const Block& block)
 		for (int j = 0; j < block.figure[i].size(); j++) {
 			if (block.figure[i][j])
 			{
-				int x, y;
-				board[x = block.pos.getX() + i - pos.getX()][y = block.pos.getY() + j - pos.getY()].shape = Block::SHAPE_AFTER_FREEZE;
+				const int x = block.pos.getX() + i - pos.getX();
+				const int y = block.pos.getY() + j - pos.getY();
 				board[x][y].color = block.color;
+				board[x][y].shape = Block::SHAPE_AFTER_FREEZE;
 			}
 		}
 	}
@@ -295,7 +330,7 @@ bool Board::isWellConnected(const size_t& x, const size_t& y)
 	return false;
 }
 
-void Board::resizeBoundaries(const int& x, const int& y) {
+void Board::resizeBoundaries(const size_t& x, const size_t& y) {
 
 	int tempW = width, tempL = length;
 	width = x;
@@ -540,9 +575,9 @@ bool Board::notDisturbing(const Block& block)const
 	return true;
 }
 
-vector<Coordinate> Board::getEmptyCellsInRow(const size_t& row)const
+vector<Point> Board::getEmptyCellsInRow(const size_t& row)const
 {
-	vector<Coordinate> empty;
+	vector<Point> empty;
 	for (size_t i = width - 2; i > 0; --i)
 		if (board[i][row].shape == EMPTY_CELL)
 			empty.push_back(board[i][row]);
@@ -551,15 +586,15 @@ vector<Coordinate> Board::getEmptyCellsInRow(const size_t& row)const
 
 bool Board::isBlocksAccess(const Block& block, const size_t& row)const
 {
-	vector<Coordinate> empty = getEmptyCellsInRow(row);
+	vector<Point> empty = getEmptyCellsInRow(row);
 	for (size_t i = 0; i < Block::COLUMNS; ++i)
 	{
 	     for (size_t j = 0; j < Block::ROWS; ++j)
 	     {
 	          if(block.figure[i][j])
 	          {
-				const Coordinate& temp = getPointByPosition({ block.pos.x + i,block.pos.y + j });
-				for (Coordinate& p : empty)
+				const Point& temp = getPointByPosition({ block.pos.x + i,block.pos.y + j });
+				for (Point& p : empty)
 					if ((!temp.compareX(p)) && temp.compareY(p) > 0)
 						return true;
 	          }      

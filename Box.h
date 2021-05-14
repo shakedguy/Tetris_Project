@@ -23,12 +23,12 @@ private:
 	void drawBox() const;
 public:
 	Box() : Box({0, 0}) {}
-	Box(const Coordinate& _pos);
+	Box(const Point& _pos);
 	~Box() = default;
 	friend std::ostream& operator<<(std::ostream& out, const Box& _box) { _box.drawBox(); return out; }
 	Box& operator=(const Box& _box);
 	void clearBox();
-	void setBoxPos(const Coordinate& _pos) { pos = _pos; setBoardPos(_pos);  setBlocks(); }
+	void setPos(const Point& _pos)override { Board::setPos(_pos);  setBlocks(); }
 };
 
 #endif

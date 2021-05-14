@@ -11,7 +11,6 @@ humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y},PLAYER_ON
 	computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
 				ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
 {
-	gameSpeed = GAME_SPEED;
 	setGameButtons();
 }
 
@@ -23,20 +22,30 @@ Game::~Game()
 
 void Game::setGameButtons() {
 
-	const Coordinate& temp = {SPEED_X,SPEED_Y};
+	const Point& temp = {SPEED_X,SPEED_Y};
 	int y = 0;
 	for (int i = 0; i < buttons.size(); ++i) {
 
 		buttons[i].resizeBoundaries(GAME_BUTTON_WIDTH, GAME_BUTTON_LENGTH);
-		buttons[i].setBoardPos({ temp.getX(), temp.getY() + (buttons[i].getLength() * i) + y++ });
+		buttons[i].setPos({ temp.getX(), temp.getY() + (buttons[i].getLength() * i) + y++ });
 		buttons[i].initialEmptyCells();
 		buttons[i].setAllBoundaries();
+		buttons[i].setColor(RED);
 	}
 }
 
 /* initialization the static class variables */
 bool Game::speedMode = false;
 bool Game::colorsMode = false;
+size_t Game::gameSpeed = GAME_SPEED;
+size_t Game::accNum = 1;
+
+void Game::acceleration()
+{
+	(Game::gameSpeed -= ACCELERATION >= MAX_SPEED) ? Game::gameSpeed -= ACCELERATION : MAX_SPEED;
+	++accNum;
+}
+
 
 
 void Game::changeColorsMode() {
@@ -50,6 +59,15 @@ void Game::changeColorsMode() {
 	Block::changeColorsMode();
 }
 
+void Game::clearGame()
+{
+	players[0]->clearGame();
+	players[1]->clearGame();
+	if (Game::speedMode)
+		Game::changeSpeedMode();
+}
+
+
 /* initialization new game and printing players boards */
 void Game::init(const string& option) {
 
@@ -59,23 +77,22 @@ void Game::init(const string& option) {
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
-
 }
 
 bool Game::initializePlayers(const string& option)
 {
 
-	if (!option.compare(Menu::humanVShuman))
+	if (!option.compare(Menu::HUMAN_VS_HUMAN))
 	{
 		players[0] = &humanPlayers[0];
 		players[1] = &humanPlayers[1];
 	}
-	else if (!option.compare(Menu::humanVScomputer))
+	else if (!option.compare(Menu::HUMAN_VS_COMPUTER))
 	{
 		players[0] = &humanPlayers[0];
 		players[1] = &computerPlayers[1];
 	}
-	else if (!option.compare(Menu::computerVScomputer))
+	else if (!option.compare(Menu::COMPUTER_VS_COMPUTER))
 	{
 		players[0] = &computerPlayers[0];
 		players[1] = &computerPlayers[1];
@@ -89,18 +106,14 @@ bool Game::initializePlayers(const string& option)
 /* drawing the modes buttons */
 void Game::drawButtons() {
 
-	if (Game::colorsMode)
-		setTextColor(RED);
 	for (const Board& button : buttons)
-		cout << button;
-	if (Game::colorsMode)
-		setTextColor(WHITE);
+			cout << button;
 	printButtonsInfo();
 }
 
 void Game::printButtonsInfo() {
 
-	const Coordinate& temp = buttons[0].getPos();
+	const Point& temp = buttons[0].getPos();
 	gotoxy(temp.getX() + 2, temp.getY() + 1);
 	cout << "Speed";
 	gotoxy(temp.getX() + 2, temp.getY() + 2);
@@ -108,7 +121,7 @@ void Game::printButtonsInfo() {
 	gotoxy(temp.getX() + 2, temp.getY() + 3);
 	cout << "press *";
 	gotoxy(temp.getX() + 4, temp.getY() + 5);
-	if (speedMode) {
+	if (Game::speedMode) {
 		cout << "ON ";
 	}
 	else
@@ -144,8 +157,9 @@ void Game::run() {
 		move();
 		printScores();
 		
-		Sleep(gameSpeed);
-		if (speedMode)
+		//Sleep(Game::gameSpeed);
+		Sleep(5);
+		if (Game::speedMode)
 			checkSpeedStatus();
 		temp2 = temp;
 		temp = key;
@@ -176,14 +190,17 @@ void Game::directions(const uchar& key) {
 /* Checks if the received character belongs to one of the mode's buttons */
 void Game::checkGameModes(const uchar& key) {
 
-	if (key == SPEED_MODE) {
+	if (key == SPEED_MODE || key - '0' == Menu::COLOR_MODE) {
 
-		changeSpeedMode();
-		returnLastSpeed();
+		if(key == SPEED_MODE)
+		{
+			changeSpeedMode();
+			returnLastSpeed();
+		}
+		else
+			changeColorsMode();
+		drawButtons();
 	}
-	else if (key - '0' == Menu::COLOR_MODE)
-		changeColorsMode();
-	drawButtons();
 }
 
 /* The function is responsible for receiving input from the players and preventing multiple keystrokes,
@@ -224,7 +241,7 @@ bool Game::isSomeoneLose() {
 
 		size_t s1, s2;
 		if ((s1 = players[0]->getScore()) == (s2 = players[1]->getScore()))
-			winningMassage(TIE_GAME_CODE);
+			winningMassage(-1);
 		else if (s1 > s2)
 			winningMassage(0);
 		else
@@ -247,17 +264,17 @@ bool Game::isSomeoneLose() {
 	return false;
 }
 
-void Game::winningMassage(const ushort& flag) const {
+void Game::winningMassage(const int& winner) const {
 
-	const Coordinate temp = { Game::WINNING_MASSAGE_X,Game::WINNING_MASSAGE_Y };
+	const Point temp = { Game::WINNING_MASSAGE_X,Game::WINNING_MASSAGE_Y };
 	gotoxy(temp.getX(), temp.getY());
-	if (flag == TIE_GAME_CODE)
-		cout << "\t\t\t\tTie game";
+	if (winner < 0)
+		cout << "\t\t     Tie game";
 	else {
-		cout << players[flag]->getName() << " won with - " << players[flag]->getScore();
+		cout << players[winner]->getName() << " won with - " << players[winner]->getScore();
 		cout << " point! Congratulations!!!";
 	}
-	gotoxy(temp.getX() + 7, temp.getY() + 1);
+	gotoxy(temp.getX()+3, temp.getY() + 4);
 	cout << "Press any key to return to the menuPages";
 	_getch();
 }
@@ -270,17 +287,20 @@ void Game::changeSpeedMode() {
 		Game::speedMode = true;
 }
 
-void Game::returnLastSpeed() {
+void Game::returnLastSpeed()
+{
 
-	if(Game::speedMode)
-		Game::gameSpeed -= (accNum - 1) * ACCELERATION;// If the player changed more than one time during the game,
+	if (Game::speedMode && Game::accNum > 1)
+		Game::gameSpeed -= (Game::accNum - 1) * ACCELERATION;// If the player changed more than one time during the game,
 	else                                          //the speed will come back to the highest mode they got so far
 		Game::gameSpeed = GAME_SPEED;
 }
 
-void Game::checkSpeedStatus() {
+void Game::checkSpeedStatus()
+{
 
-	if ((players[0]->checkSpeed(accNum) || players[1]->checkSpeed(accNum)) && gameSpeed > 20)
+	if ((players[0]->checkSpeed(Game::accNum) || players[1]->checkSpeed(Game::accNum))
+		&& gameSpeed >= MAX_SPEED)
 		acceleration();
 }
 

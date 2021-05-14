@@ -18,35 +18,41 @@ class ComputerPlayer : public Player
 
 private:
      void calculateBestPos();
-     Coordinate noRotateBlock();
-     Coordinate oneRotateBlock();
-     Coordinate threeRotateBlock();
-     void checkLevel(Coordinate& bestPos)const;
-     void levelGood(Coordinate& bestPos)const;
-     void levelNovice(Coordinate& bestPos)const;
-     Coordinate bomb();
+     Point noRotateBlock();
+     Point oneRotateBlock();
+     Point threeRotateBlock();
+     void moveRight();
+     void moveLeft();
+     void clockwiseRotate();
+     void counterClockwiseRotate();
+     void calculateRotates(const ushort& shape);
+     void checkLevel(Point& bestPos)const;
+     void levelGood(Point& bestPos)const;
+     void levelNovice(Point& bestPos)const;
+     Point bomb();
      void makeRotateMove();
      bool checkLastDirections(const ushort& dir);
      void insertCurrentDirection();
      void cleanAndDeleteCalculation(Board* b, Block* temp)const;
-     Coordinate findBestBombPosition(Board* b, Block* temp)const;
-     Coordinate findBestPosition(Block* block, ushort& situations);
-     size_t getPositionData(Board* b, Block* temp, size_t& oneToGo)const;
-     Coordinate getMaxDamagedPosition(size_t& max, const size_t& current, const Coordinate& bestPos, const Coordinate& tempPos)const;
+     Point findBestBombPosition(Board* b, Block* temp)const;
+     Point findBestPosition(Block* block, ushort& situations);
+     size_t getPositionData(Board* b, Block* temp)const;
+     Point getMaxDamagedPosition(size_t& max, const size_t& current, const Point& bestPos, const Point& tempPos)const;
      size_t setLimit(const Block* block)const;
-     const short& preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus, Coordinate& bestPos)const;
-     void checkFillRows(const Block& temp, Coordinate& bestPos, size_t& fullRows, size_t& maxFullRows,
-          ushort& bestSituation, const ushort& situation);
-     void checkOneToGo(Board* b, const Block& temp,
-          const Coordinate& lowestPos, Coordinate& oneToGoPos, size_t& oneToGo, size_t& maxOneToGo,
-          ushort& bestSituation, const ushort& situation, bool& flag);
-     void checkLowest(vector<Block>& options, vector<ushort>& optionStatus, const Block& temp, Coordinate& lowestPos,
+     Point preferNotInterfere(Board* b, vector<Block>& options, vector<ushort>& optionStatus,
+         ushort& bestSituation, Point& lowestPos)const;
+     void checkFillRows(const Block& temp, Point& bestPos, size_t& fullRows, size_t& maxFullRows,
+         const ushort& situation, ushort& bestSituation);
+     Point checkOneToGo(Board* b, const Block& temp, vector<Block>& options, vector<ushort>& optionStatus,
+         ushort& bestSituation, Point& lowestPos)const;
+          
+     void checkLowest(vector<Block>& options, vector<ushort>& optionStatus, const Block& temp, Point& lowestPos,
           const ushort& situation);
 
 
 public:
      ComputerPlayer() : ComputerPlayer(0, { 0, 0 }, { 0, 0 }) {}
-     ComputerPlayer(const ushort& _playerNum, const Coordinate& _boardPos, const Coordinate& _boxPos);
+     ComputerPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos);
      ComputerPlayer(const ComputerPlayer& _ComputerPlayer) { *this = _ComputerPlayer; }
      ComputerPlayer& operator=(const ComputerPlayer& _player);
      ComputerPlayer* operator->() override { return this; }
@@ -55,7 +61,7 @@ public:
      void setDirection(const uchar& key)override;
      void setName()override { return; }
      void setPlayerKeys(const string& arrowKeys)override { return; }
-     void initializeCalculate()override { steps = 0; clockwise = CounterClockwise = 0; }
+     void initializeCalculate()override { steps = clockwise = CounterClockwise = 0; }
      static void setLevel(const ushort& _level) { level = _level; }
 };
 
