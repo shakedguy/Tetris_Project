@@ -55,7 +55,6 @@ private:
 	bool isBlocksAccess(const Block& block, const size_t& row)const;
 	size_t countEmptyCells(const size_t& row)const;
 	vector<Point> getEmptyCellsInRow(const size_t& row)const;
-	bool isThereAccess(const size_t& x, const size_t& y);
 	size_t oneToGoRowsCounter()const;
 	inline bool isBoundary(const size_t& x, const size_t& y)const;
 		
@@ -63,19 +62,23 @@ protected:
 		void drawBoard() const;
 
 public:
-	void setSeparators(uint const& row);
+
 	Board() : Board({ 0, 0 }, LENGTH, WIDTH) {}
-	Board(const Point& _pos) : Board(_pos, LENGTH, WIDTH) {}
-	Board(uint _len, uint _width) : Board({ 0, 0 }, _len, _width) {}
+	Board(const Point& _pos) : Board(Point{_pos}, LENGTH, WIDTH) {}
+	Board(uint _len, uint _width) : Board(Point{ 0, 0 }, _len, _width) {}
 	Board(const Point& _pos, const size_t& _len, const size_t& _width, const Color& _color = WHITE);
+	virtual void setPos(const Point& newPos);
+	const Point& getPos()const { return pos; }
+	Point getPointByPosition(const Point& pos)const;
+	void getIndexByPosition(const Point& pos, size_t& x, size_t& y)const;
+	const Point& getHighestPoint()const;
 	virtual ~Board() = default;
-	static void changeColorsMode();
 	friend std::ostream& operator<<(std::ostream& out, const Board& board);
 	Board& operator*() { return *this; }
 	Board* operator->() { return this; }
 	Board& operator=(const Board& _board);
+	void setSeparators(uint const& row);
 	void setColor(const Color& _color) { color = _color; }
-	const Point& getPos()const { return pos; }
 	const size_t& getLength() const { return length; }
 	const size_t& getWidth() const { return width; }
 	void allocateSize();
@@ -95,12 +98,11 @@ public:
 	bool rotateCheck(Block* block, const ushort& dir)const;
 	void drawBoundaries()const;
 	void drawBoundaries(const Color& _color)const;
-	virtual void setPos(const Point& newPos);
-	Point getPointByPosition(const Point& pos)const;
-	void getIndexByPosition(const Point& pos, size_t& x, size_t& y)const;
 	void drawBoard(const Color& _color)const;
 	size_t numOfFillCells()const;
 	void cleanArea(size_t startX, size_t endX, size_t startY, size_t endY);
+	static void changeColorsMode();
+	virtual void clearScreen();
 };
 
 #endif

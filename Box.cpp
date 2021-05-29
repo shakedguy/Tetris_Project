@@ -1,8 +1,8 @@
 ﻿#include "Box.h"
 
-Box::Box(const Point& _pos) {
 
-
+Box::Box(const Point& _pos) : Board(_pos)
+{
 	setPos(_pos);
 	resizeBoundaries(LENGTH, WIDTH);
 	initialEmptyCells();
@@ -26,7 +26,7 @@ void Box::setBlocks() {
 	
 	ushort y = 1;
 	for (Block& block : blocks) {
-		block.pos = {(pos.getX() + 2), (pos.getY() + y)};
+		block.pos = /*Point< size_t, size_t>*/{ 2 + pos.getX(), pos.getY() + y};
 		y += 4;
 	}
 }
@@ -45,3 +45,13 @@ void Box::clearBox()
 	for (Block& i : blocks)
 		i.createNewBlock();
 }
+
+void Box::clearScreen()
+{
+	Board::clearScreen();
+	for (Block& block : blocks)
+		block.cleanPrint();
+}
+
+
+

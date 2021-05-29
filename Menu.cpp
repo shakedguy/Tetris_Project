@@ -1,7 +1,7 @@
 ﻿#include "Game.h"
 
-Game::Menu::Menu(const Point& _pos) : pos(_pos), menuPages{ pos,pos,pos } {
-
+Game::Menu::Menu(const Point& _pos) : pos(_pos), menuPages{ pos,pos,pos }
+{
 	for (Board& page : menuPages)
 	{
 		page.resizeBoundaries(MENU_BOARD_WIDTH, MENU_BOARD_LENGTH);
@@ -73,10 +73,10 @@ void Game::Menu::paintBoxes(const ushort& pageNumber) const {
 	{
 		for (size_t j = 1; j < menuPages[pageNumber].length - 1; ++j)
 		{
-			
 			if (j % 4 != 0) 
 			{
-				gotoxy(menuPages[pageNumber].pos.getX() + i, menuPages[pageNumber].pos.getY() + j);
+				gotoxy(menuPages[pageNumber].pos.getX() + i,
+					menuPages[pageNumber].pos.getY() + j);
 				pickColor(j);
 				cout << static_cast<uchar>(Block::SHAPE_AFTER_FREEZE);
 			}
@@ -126,7 +126,7 @@ void Game::Menu::printMainMenuOptions() const {
 	}
 	gotoxy(x + INSTRUCTIONS, y + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
 	cout << "For keys and instructions press - " << INSTRUCTIONS_AND_KEYS << endl;
-	gotoxy(x + EXIT, y + ((MENU_BLOCK_LENGTH - 1) * (temp++)) + TEXT_Y);
+	gotoxy(x + EXIT, y + (MENU_BLOCK_LENGTH - 1) * temp++ + TEXT_Y);
 	cout << "For exit press - " << EXIT_GAME << endl;
 
 }
@@ -188,10 +188,10 @@ void Game::Menu::setMenuBlock() {
 	for (int i = 0; i < blocks.size(); ++i) {
 		if (i < (blocks.size() / 2))
 			blocks[i].pos = { menuPages[0].pos.getX() + LEFT_BLOCKS_DISTANCE,
-			menuPages[0].pos.getY() + (i * VERTICAL_BLOCKS_DISTANCE) + MENU_BLOCK_LENGTH / 2 };
+				VERTICAL_BLOCKS_DISTANCE * i + menuPages[0].pos.getY() + MENU_BLOCK_LENGTH / 2 };
 		else
 			blocks[i].pos = { menuPages[0].pos.getX() + RIGHT_BLOCKS_DISTANCE,
-			menuPages[0].pos.getY() + ((i - 4) * VERTICAL_BLOCKS_DISTANCE) + MENU_BLOCK_LENGTH / 2 };
+				VERTICAL_BLOCKS_DISTANCE * (i - 4) + menuPages[0].pos.getY() + MENU_BLOCK_LENGTH / 2 };
 	}
 }
 
@@ -209,11 +209,8 @@ void Game::Menu::mainMenuPage(Game& game)const
 		newGamePage(game);
 		break;
 	case RESUME_GAME:
-		if (Menu::resumeGame) {
-			clrscr();
-			game.resetCurrentBlocksPos();
-			game.run();
-		}
+		if (Menu::resumeGame)
+			game.resumeGame();
 		else {
 		     inputErrorMassage();
 		     mainMenuPage(game);

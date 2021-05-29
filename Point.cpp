@@ -11,6 +11,7 @@ void Point::draw(const uchar& ch)const
 	cout << ch << endl;
 }
 
+
 void Point::draw(const uchar& ch, const Color& _color) const
 {
 	setTextColor(_color);
@@ -25,6 +26,18 @@ int Point::compareX(const Point& _point)const
 	return (this->x < _point.x) ? 1 : -1;
 }
 
+Point& Point::operator=(const Point& _point)
+{
+	if (this != &_point)
+	{
+		x = _point.x;
+		y = _point.y;
+	}
+	return *this;
+}
+
+
+
 int Point::compareY(const Point& _point)const
 {
 	if (this->y == _point.y)
@@ -32,21 +45,19 @@ int Point::compareY(const Point& _point)const
 	return (this->y < _point.y) ? 1 : -1;
 }
 
-Cell::Cell(const int& _x, const int& _y, const uchar& _shape, const Color& _color) :
-	shape(_shape), color(_color) {}
-
 void Cell::assign(const Cell& _cell)
 {
 	Point::assign({ _cell.getX(),_cell.getY() });
-	shape = _cell.shape; color = _cell.color;
+	shape = _cell.shape;
+	color = _cell.color;
 }
-
 
 bool Cell::operator==(const Cell& cell) const
 {
-	return (Point{ x,y } == Point{ cell.x,cell.y } &&
+	return (Point{x,y} == Point{ cell.x, cell.y }&&
 		shape == cell.shape && color == cell.color) ? true : false;
 }
+
 
 
 Cell& Cell::operator=(const Cell& _cell) {
@@ -55,8 +66,10 @@ Cell& Cell::operator=(const Cell& _cell) {
 	return *this;
 }
 
-void Cell::move(const int& direction) {
+template<class T>
+void Point::shift(const T& direction) {
 
+	static_cast<int>(direction);
 	switch (direction) {
 	case UP: // UP
 		--y;
@@ -82,6 +95,7 @@ void Cell::draw() const
 {
 	Point::draw(shape,color);
 }
+
 
 void Cell::draw(const Color& _color) const
 {

@@ -7,17 +7,11 @@
 ***************************************/
 
 #include "Game.h"
+#include "Files_Handler.h"
 
 
-int main() {
-
-	hideCursor();
+int main(int argc, char* argv[])
+{
 	Game game;
-	game.startGame();
-	//array<int, 3> arr = { 1,2,3 };
-	//array<int, 3>arr1 = {};
-	//arr1 = arr;
-	//for (const int& i : arr1)
-	//	cout << i << " ";
-
+	game.startGame(argc, argv);
 }

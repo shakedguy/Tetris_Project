@@ -1,36 +1,26 @@
 #include "HumanPlayer.h"
 
-HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos, const string& arrowKeys)
+HumanPlayer::HumanPlayer(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos,
+	const string& arrowKeys) : Player(_playerNum, _boardPos, _boxPos)
 {
-
-	Player::playerNum = _playerNum;
-	Player::setBoardPos(_boardPos);
-	Player::setBoxPos(_boxPos);
-	box.setAllBoundaries();
-
-	Player::direction = DEFAULT;
-	score = 0;
-	if (playerNum == 1) {
-		block->pos = { LEFT_BLOCK, BLOCKS_Y };
-		name = "Player 1";
-	}
-	else {
-		block->pos = { RIGHT_BLOCK, BLOCKS_Y };
-		name = "Player 2";
-	}
 	setPlayerKeys(arrowKeys);
-	Player::setGameBoundaries();
-	Player::setKeysIndication();
 }
+
+HumanPlayer::HumanPlayer(const HumanPlayer& _player) :
+	Player(_player.playerNum, _player.boardPos, _player.boxPos), keys(_player.keys) {}
+
+
+void HumanPlayer::assign(const HumanPlayer& _player)
+{
+	Player::operator=(_player);
+	keys = _player.keys;
+}
+
 
 HumanPlayer& HumanPlayer::operator=(const HumanPlayer& _player)
 {
-
 	if (this != &_player)
-	{
-		Player::operator=(_player);
-		keys = _player.keys;
-	}
+		assign(_player);
 	return *this;
 }
 
@@ -59,9 +49,9 @@ sint HumanPlayer::getDirection(const uchar& key) {
 	return -1;
 }
 
-void HumanPlayer::setDirection(const uchar& key)
+void HumanPlayer::setDirection(const uchar& key, const size_t& cycle)
 {
-	short dir = DEFAULT; // initialization the direction to the DEFAULT step
+	short dir; // initialization the direction to the DEFAULT step
 	if ((dir = getDirection(key)) != -1)
 		direction = dir;
 	else
@@ -75,3 +65,6 @@ void HumanPlayer::setName() {
 	cin >> name;
 	clrscr();
 }
+
+
+

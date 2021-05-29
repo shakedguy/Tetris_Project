@@ -8,29 +8,33 @@
 #include "Point.h"
 
 class Block
-{		 	/*	       #
+{
+protected:
+		 	/*	       #
 	                   #
                        #   #      #    ##    ##   #    ## 
-                       #   ###  ###    ##   ##	###    ##		*/
-	enum TetrisParts { I,   L,   J,    O,   S,    T,    Z };
+                       #   ###  ###    ##   ##	###    ##	bomb	*/
+	enum TetrisParts { I,   L,   J,    O,   S,    T,    Z,  B };
 	
 	static constexpr size_t COLUMNS = 4, ROWS = 4;
 
 	static bool colorsMode;
-	ushort shapeNum;
 	Color color;
 	friend class Player;
 	friend class HumanPlayer;
 	friend class ComputerPlayer;
+	friend class FilePlayer;
 	friend class Box;
 	friend class Board;
 	friend class Game;
 
 protected:
+	
 	static constexpr uchar SHAPE = 178, SHAPE_AFTER_FREEZE = 219;
 	Point pos;
 	uchar shape;
-	array<array<ushort, COLUMNS>, ROWS> figure;
+	ushort shapeNum;
+	array<array<ushort, ROWS>, COLUMNS > figure = {};
 
 private:
 	void assign(const Block& _block);
@@ -51,8 +55,10 @@ private:
 	void arrangeMatrix();
 
 public:
-	Block() : Block({0, 0}) {}
+
+	Block() : Block(Point{0, 0}) {}
 	Block(const Point& _pos);
+	Block(const Point& _pos, const ushort& _shapeNum);
 	Block(const Block& _block) { *this = _block; }
 	Block& operator=(const Block& b);
 	virtual ~Block() = default;
@@ -63,17 +69,17 @@ public:
 	void drawBlock() const;
 	const uchar& getShape() const { return shape; }
 	void cleanBlock();
-	virtual void setFigure();
+	void setFigure();
 	void cleanPrint() const;
 	void clockwiseRotate();
 	void counterClockwiseRotate();
 	void moveLeft();
 	void moveRight();
 	void moveDown();
-	bool isCleanMatrix();
 	static void changeColorsMode();
 	bool isColEmpty(const ushort& col)const;
 	size_t getLowestRow()const;
+	void setBlockFromFile(const ushort& _shapeNum);
 };
 
 class Bomb : public Block
@@ -84,12 +90,16 @@ class Bomb : public Block
 	friend class Board;
 
 public:
-	Bomb(const uchar& _shape = BOMB) : Bomb( { 0,0 }, _shape) {}
-	Bomb(const Point& _pos) :Bomb({ 0,0 }, BOMB) {}
+	Bomb(const uchar& _shape = BOMB) : Bomb({ 0,0 }, _shape) { shapeNum = Block::B; }
+	Bomb(const Point& _pos) :Bomb({ _pos }, BOMB) {}
 	Bomb(const Point& _pos, const uchar& _shape);
 	~Bomb()override = default;
-	Bomb& operator=(const Bomb& _bomb) { if (this != &_bomb) { Block::operator=(_bomb); return *this; } }
-	void setFigure()override { figure[0][0] = shape; }
+	Bomb& operator=(const Bomb& _bomb)
+	{
+		if (this != &_bomb)
+			Block::operator=(_bomb);
+		return *this;
+	}
 };
 
 #endif

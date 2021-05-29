@@ -1,5 +1,6 @@
 ﻿#include "Block.h"
 
+
 Block::Block(const Point& _pos) : pos(_pos), shape(SHAPE) {
 
 	std::random_device rnd;
@@ -7,17 +8,34 @@ Block::Block(const Point& _pos) : pos(_pos), shape(SHAPE) {
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
-	//shapeNum = O;
 	cleanBlock();
 	setFigure();
 }
+
+Block::Block(const Point& _pos, const ushort& _shapeNum) : pos(_pos), shape(SHAPE), shapeNum(_shapeNum) {
+
+	std::random_device rnd;
+	const std::uniform_int_distribution<> colorRange(1, 14);
+	color = static_cast<Color>(colorRange(rnd));
+	cleanBlock();
+	setFigure();
+}
+
+void Block::setBlockFromFile(const ushort& _shapeNum)
+{
+	shapeNum = _shapeNum;
+	color = WHITE;
+	cleanBlock();
+	setFigure();
+}
+
 
 Bomb::Bomb(const Point& _pos, const uchar& _shape)
 {
 	pos = _pos;
 	shape = _shape;
 	cleanBlock();
-	figure[0][0] = 1;
+	++figure[0][0];
 }
 
 bool Block::colorsMode = false;
@@ -51,7 +69,6 @@ void Block::createNewBlock() {
 	const std::uniform_int_distribution<> colorRange(1, 14);
 	shapeNum = (shapeRange(rnd));
 	color = static_cast<Color>(colorRange(rnd));
-	//shapeNum = O;
 	setFigure();
 }
 
@@ -214,9 +231,8 @@ void Block::cleanPrint() const {
 }
 
 // This function rotates the block clockwise - transpose the matrix and than reverses the order of the columns
-void Block::clockwiseRotate() {
-	if (shapeNum == O)
-		return;
+void Block::clockwiseRotate()
+{
 	transpose_Matrix();
 	reverseColumns();
 	arrangeMatrix();
@@ -224,29 +240,30 @@ void Block::clockwiseRotate() {
 
 // this function rotates the block counter clockwise - transpose the matrix and than reverses the order of the rows
 void Block::counterClockwiseRotate() {
-	if (shapeNum == O)
-		return;
+
 	transpose_Matrix();
 	reverseRows();
 	arrangeMatrix();
 }
 
 // This fucntion tranpose the matrix (swaps the collumn and the rows)
-void Block::transpose_Matrix() {
+void Block::transpose_Matrix()
+{
 	for (size_t i = 0; i < figure.size(); i++)
 		for (size_t j = i + 1; j < figure[i].size(); j++)
 			std::swap(figure[i][j], figure[j][i]);
 }
 
 // Function reverse row order in a matrix
-void Block::reverseRows() {
-	
-	for (size_t i = 0; i < figure.size(); i++) {
+void Block::reverseRows()
+{
+	for(array<ushort,Block::ROWS>& col:figure )
+	{
 		size_t start = 0;
-		size_t end = figure[i].size() - 1;
+		size_t end = col.size() - 1;
 
 		while (start < end) {
-			std::swap(figure[i][start], figure[i][end]);
+			std::swap(col[start], col[end]);
 			start++;
 			end--;
 		}
@@ -254,7 +271,8 @@ void Block::reverseRows() {
 }
 
 // Function Reverses the order of the columns in the matrix
-void Block::reverseColumns() {
+void Block::reverseColumns()
+{
 	for (size_t i = 0; i < figure.size(); i++) {
 		size_t start = 0;
 		size_t end = figure[i].size() - 1;
@@ -268,21 +286,20 @@ void Block::reverseColumns() {
 	}
 }
 
-void Block::drawBlock() const {
+void Block::drawBlock() const
+{
 	if (Block::colorsMode)
 		setTextColor(color);
 
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 4; ++j) {
+	for (int i = 0; i < Block::COLUMNS; ++i) {
+		for (int j = 0; j < Block::ROWS; ++j) {
 
-			if (figure[i][j]) {
-
+			if (figure[i][j]) 
+			{
 				gotoxy(pos.getX() + i, pos.getY() + j);
-				//cout << figure[i][j];
 				cout << shape;
 			}
-			else
-				gotoxy(0, 0);
+
 		}
 	}
 	if (Block::colorsMode)
@@ -290,40 +307,35 @@ void Block::drawBlock() const {
 }
 
 // Raise the y componente in the position data member of the block
-void Block::moveDown() {
+void Block::moveDown()
+{
 	cleanPrint();
 	pos++;
 	cout << *this;
 }
 
 // Reduction the x componente in the position data member of the block
-void Block::moveLeft() {
+void Block::moveLeft()
+{
 	cleanPrint();
 	pos <<= 1;
 	cout << *this;
 }
 
 // Raise the x componente in the position data member of the block
-void Block::moveRight() {
+void Block::moveRight()
+{
 	cleanPrint();
 	pos >>= 1;
 	cout << *this;
 }
 
-void Block::changeColorsMode() {
+void Block::changeColorsMode()
+{
 	if (Block::colorsMode)
 		Block::colorsMode = false;
 	else
 		Block::colorsMode = true;
-}
-
-bool Block::isCleanMatrix()
-{
-	for (size_t i = 0; i < figure.size(); ++i)
-		for (size_t j = 0; j < figure[i].size(); ++j)
-			if (figure[i][j])
-				return false;
-	return true;
 }
 
 bool Block::isColEmpty(const ushort& col)const

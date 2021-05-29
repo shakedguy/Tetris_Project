@@ -3,21 +3,55 @@
 ***************************************/
 #include "Game.h"
 
-
-
-Game::Game() : menu({ Game::Menu::MENU_X,Game::Menu::MENU_Y }),
-humanPlayers{ HumanPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y},PLAYER_ONE_KEYS},
-			HumanPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y},PLAYER_TWO_KEYS} },
-	computerPlayers{ ComputerPlayer{1, {LEFT_BOARD,BOARDS_Y}, {LEFT_BOX,BOXES_Y}},
-				ComputerPlayer{2, {RIGHT_BOARD,BOARDS_Y}, {RIGHT_BOX,BOXES_Y}} }
+Game::Game() : menu({ Game::Menu::MENU_X,Game::Menu::MENU_Y })
 {
 	setGameButtons();
 }
 
 Game::~Game() 
-{	
+{
+	for (Player* player : players)
+		delete player;
+
 	gotoxy(Game::WINNING_MASSAGE_X, Game::WINNING_MASSAGE_Y);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
+}
+
+void Game::startGame(int argc, char* argv[])noexcept(false)
+{
+	clrscr();
+	hideCursor();
+	if (argc > 1)
+	{
+		try
+		{
+			openGameMode(argc, argv);
+		}
+		catch (CommandLineException& ex)
+		{
+			ex.errorMessage();
+			throw;
+		}
+	}
+	if (Game::gameMode == LOAD || Game::gameMode == SILENT)
+		init("");
+	else
+		menu.mainMenuPage(*this);
+}
+
+void Game::openGameMode(int argc, char* argv[])noexcept(false)
+{
+	if (!strcmp(argv[1], SAVE_MODE))
+		changeGameMode(Game::SAVE);
+	else if (!strcmp(argv[1], Game::LOAD_MODE))
+	{
+		if (argc == 2)
+			changeGameMode(Game::LOAD);
+		else if (!strcmp(argv[2], Game::SILENT_MODE))
+			changeGameMode(Game::SILENT);
+	}
+	else
+		throw CommandLineException();
 }
 
 void Game::setGameButtons() {
@@ -27,7 +61,7 @@ void Game::setGameButtons() {
 	for (int i = 0; i < buttons.size(); ++i) {
 
 		buttons[i].resizeBoundaries(GAME_BUTTON_WIDTH, GAME_BUTTON_LENGTH);
-		buttons[i].setPos({ temp.getX(), temp.getY() + (buttons[i].getLength() * i) + y++ });
+		buttons[i].setPos(Point{ temp.getX(), y++ + (temp.getY() + buttons[i].getLength() * i)});
 		buttons[i].initialEmptyCells();
 		buttons[i].setAllBoundaries();
 		buttons[i].setColor(RED);
@@ -35,6 +69,7 @@ void Game::setGameButtons() {
 }
 
 /* initialization the static class variables */
+ushort Game::gameMode = 0;
 bool Game::speedMode = false;
 bool Game::colorsMode = false;
 size_t Game::gameSpeed = GAME_SPEED;
@@ -67,48 +102,132 @@ void Game::clearGame()
 		Game::changeSpeedMode();
 }
 
+void Game::resumeGame()
+{
+	clrscr();
+	resetCurrentBlocksPos();
+	drawButtons();
+	cout << players[0] << players[1];
+	run();
+}
+
+
 
 /* initialization new game and printing players boards */
-void Game::init(const string& option) {
-
-	if (!initializePlayers(option))
-		return;
-	gameNumber++;
+void Game::init(const string& option)noexcept(false)
+{
+	try
+	{
+		initializePlayers(option);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		e.what();
+		throw;
+	}
+	++gameNumber;
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
 }
 
-bool Game::initializePlayers(const string& option)
+void Game::initializePlayers(const string& option)noexcept(false)
 {
-
-	if (!option.compare(Menu::HUMAN_VS_HUMAN))
+	try
 	{
-		players[0] = &humanPlayers[0];
-		players[1] = &humanPlayers[1];
+		if (Game::gameMode == Game::LOAD || Game::gameMode == Game::SILENT)
+			allocateFilePlayers();
+		if (!option.compare(Menu::HUMAN_VS_HUMAN))
+			allocateHumanPlayers();
+		if (!option.compare(Menu::HUMAN_VS_COMPUTER))
+			allocateHuman_VS_Computer();
+		if (!option.compare(Menu::COMPUTER_VS_COMPUTER))
+			allocateComputerPlayers();
 	}
-	else if (!option.compare(Menu::HUMAN_VS_COMPUTER))
+	catch (const std::bad_alloc& e)
 	{
-		players[0] = &humanPlayers[0];
-		players[1] = &computerPlayers[1];
+		e.what();
+		throw;
 	}
-	else if (!option.compare(Menu::COMPUTER_VS_COMPUTER))
-	{
-		players[0] = &computerPlayers[0];
-		players[1] = &computerPlayers[1];
-	}
-	else
-		return false;
-	return true;
 }
 
+void Game::allocateComputerPlayers()noexcept(false)
+{
+	try
+	{
+		players[0] = new ComputerPlayer(1, { LEFT_BOARD,BOARDS_Y },
+		{ LEFT_BOX,BOXES_Y });
+		
+		players[1] = new ComputerPlayer(2, { RIGHT_BOARD,BOARDS_Y },
+			{ RIGHT_BOX,BOXES_Y });
+	}
+	catch (const std::bad_alloc& e)
+	{
+		e.what();
+		throw;
+	}
+}
+
+void Game::allocateFilePlayers()noexcept(false)
+{
+	try
+	{
+		players[0] = new FilePlayer({ 1, { LEFT_BOARD,BOARDS_Y },
+											{ LEFT_BOX,BOXES_Y } });
+		
+		players[1] = new FilePlayer({ 2, { RIGHT_BOARD,BOARDS_Y },
+											{ RIGHT_BOX,BOXES_Y } });
+	}
+	catch (const std::bad_alloc& e)
+	{
+		e.what();
+		throw;
+	}
+}
+
+void Game::allocateHumanPlayers()noexcept(false)
+{
+	try
+	{
+		players[0] = new HumanPlayer({ 1, { LEFT_BOARD,BOARDS_Y },
+	{ LEFT_BOX,BOXES_Y }, PLAYER_ONE_KEYS });
+		
+		players[1] = new HumanPlayer({ 2, { RIGHT_BOARD,BOARDS_Y },
+			{ RIGHT_BOX,BOXES_Y }, PLAYER_TWO_KEYS });
+	}
+	catch (const std::bad_alloc& e)
+	{
+		e.what();
+		throw;
+	}	
+}
+
+void Game::allocateHuman_VS_Computer()noexcept(false)
+{
+	try
+	{
+		players[0] = new HumanPlayer(1, { LEFT_BOARD,BOARDS_Y },
+		{ LEFT_BOX,BOXES_Y }, PLAYER_ONE_KEYS);
+		
+		players[1] = new ComputerPlayer(2, { RIGHT_BOARD,BOARDS_Y },
+			{ RIGHT_BOX,BOXES_Y });
+	}
+	catch (const std::bad_alloc& e)
+	{
+		e.what();
+		throw;
+	}
+}
 
 /* drawing the modes buttons */
-void Game::drawButtons() {
-
-	for (const Board& button : buttons)
+void Game::drawButtons()
+{
+	if (Game::gameMode != Game::LOAD && Game::gameMode != Game::SILENT)
+	{
+		for (const Board& button : buttons)
 			cout << button;
-	printButtonsInfo();
+		printButtonsInfo();
+	}
 }
 
 void Game::printButtonsInfo() {
@@ -145,47 +264,133 @@ void Game::printButtonsInfo() {
  * receiving the input from the keyboard, decoding it and sending
  * it to the functions that perform the required actions */
 void Game::run() {
-
+	
 	uchar key, temp, temp2; // use 2 to temps to prevent excessive steps (not DEFUALT steps) in one turn
 	key = temp = temp2 = DEFAULT;
 	
 	do {
-		key = avoidMultipleHits();
-		directions(key);
+		if ((Game::gameMode != Game::LOAD) && (Game::gameMode != Game::SILENT))
+		{
+			key = avoidMultipleHits();
+			directions(key);
+			avoidMultipleMoves(key, temp, temp2);
+		}
+		else
+			directions(key);
 		checkGameModes(key);
-		avoidMultipleMoves(key, temp, temp2);
-		move();
 		printScores();
+		try { move(); }
+		catch (...) { break; }
 		
-		//Sleep(Game::gameSpeed);
-		Sleep(5);
+		if (Game::gameMode != Game::SILENT)
+			Sleep(/*Game::gameSpeed*/10);
 		if (Game::speedMode)
 			checkSpeedStatus();
 		temp2 = temp;
 		temp = key;
+		++cycle;
 		resetIndicators();
-	}
-	while (key != ESC && (!players[0]->isLost()) && (!players[1]->isLost()));
-	if (isSomeoneLose())
-		clrscr();
-	menu.updateMenuBoard();
-	menu.mainMenuPage(*this);
-	clrscr();
+	} while (!endGame(key));
+	continuePlaying();
 }
+
+void Game::continuePlaying()
+{
+	if (Game::gameMode != LOAD && Game::gameMode != SILENT)
+	{
+		if (isSomeoneLose())
+			clrscr();
+		
+		menu.updateMenuBoard();
+		menu.mainMenuPage(*this);
+	}
+	if(Game::gameMode==Game::SAVE && !endGame(NULL))
+		result.printResult(players[0]->getPlayerNum(), cycle, players[0]->getHighestPointInBoard());
+}
+
+
+bool Game::endGame(const uchar& key) const
+{
+	if (players[0]->isLost() || players[1]->isLost())
+		return true;
+	if (key == ESC || players[0]->getDirection() == ESC || players[1]->getDirection() == ESC)
+		return true;
+	return false;
+}
+
+
+void Game::move()
+{
+	for (Player* player : players)
+	{
+		try { player->move(cycle); }
+		catch (EndOfFileEx& ex)
+		{
+			if (checkResult(player->getPlayerNum(), player->getHighestPointInBoard()))
+			{
+				if (!player->isLost())
+					ex.pausedGame(true);
+				else
+					ex.checkResult(true);
+			}
+			else
+			{
+				if (!player->isLost())
+					ex.pausedGame(false);
+				else
+					ex.checkResult(false);
+			}
+			break;
+		}
+	}
+}
+
 
 void Game::resetIndicators()
 {
-	players[0]->showIndicateHit(DEFAULT);
-	players[1]->showIndicateHit(DEFAULT);
+	for (Player* player : players)
+		player->showIndicateHit(DEFAULT);
 }
 
 
 /* Checks if the received character belongs to one of the player's buttons */
-void Game::directions(const uchar& key) {
-
-	players[0]->setDirection(key);
-	players[1]->setDirection(key);
+void Game::directions(uchar& key)
+{
+	for (Player* player : players)
+	{
+		try { player->setDirection(key, cycle); }
+		catch (EndOfFileEx& ex)
+		{
+			if (checkResult(player->getPlayerNum(), player->getHighestPointInBoard()))
+			{
+				if (!player->isLost())
+					ex.pausedGame(true);
+				else
+					ex.checkResult(true);
+			}
+			else
+			{
+				if (!player->isLost())
+					ex.pausedGame(false);
+				else
+					ex.checkResult(false);
+			}
+			break;
+		}
+	}
 }
+
+bool Game::checkResult(const ushort& playerNum, const Point& highestPoint)
+{
+	size_t fileCycle;
+	short filePlayerNum;
+	Point filePoint;
+	result.readResult(filePlayerNum, fileCycle, filePoint);
+	if (fileCycle == cycle && filePlayerNum == playerNum && filePoint == highestPoint)
+		return true;
+	return false;
+}
+
 
 /* Checks if the received character belongs to one of the mode's buttons */
 void Game::checkGameModes(const uchar& key) {
@@ -206,7 +411,9 @@ void Game::checkGameModes(const uchar& key) {
 /* The function is responsible for receiving input from the players and preventing multiple keystrokes,
  * returns the last character received */
 uchar Game::avoidMultipleHits()const {
-	
+
+	if (Game::gameMode == LOAD || Game::gameMode == SILENT)
+		return DEFAULT;
 	_flushall();
 	uchar key = DEFAULT;
 	if (_kbhit()) {
@@ -222,50 +429,67 @@ uchar Game::avoidMultipleHits()const {
 
 /* The function prevents the players from performing more than 2 non-default steps */
 void Game::avoidMultipleMoves(uchar& key, const uchar& temp, const uchar& temp2) {
-	
+
+	if (Game::gameMode == Game::LOAD || Game::gameMode == Game::SILENT)
+		return;
 	if (temp == key && temp2 == key) {
 		sint dir;
-		if (typeid(*players[0]) == typeid(HumanPlayer) && (dir = players[0]->getDirection(key) != -1) && dir != DEFAULT/*!players[0]->isDown(key)*/)
-			players[0]->setDirection(DEFAULT);
-		else if (typeid(*players[1]) == typeid(HumanPlayer) && (dir = players[1]->getDirection(key) != -1) && dir != DEFAULT/*!players[1]->isDown(key)*/)
-			players[1]->setDirection(DEFAULT);
+		if (typeid(HumanPlayer) == typeid(*players[0]) &&
+			((dir = players[0]->getDirection(key) != -1)) && dir != DEFAULT)
+			players[0]->changeDirection(DEFAULT);
+		else if (typeid(*players[1]) == typeid(HumanPlayer) &&
+			(dir = players[1]->getDirection(key) != -1) && dir != DEFAULT)
+			players[1]->changeDirection(DEFAULT);
 		key = DEFAULT;
 	}
 }
 
 /* if both players "lose" at the same time, the score determines and if the scores are equal, its a time gime */
-bool Game::isSomeoneLose() {
+bool Game::isSomeoneLose()
+{
 	clrscr();
 	bool p1 = players[0]->isLost(), p2 = players[1]->isLost();
-	if (p1 && p2) {
-
-		size_t s1, s2;
-		if ((s1 = players[0]->getScore()) == (s2 = players[1]->getScore()))
-			winningMassage(-1);
-		else if (s1 > s2)
-			winningMassage(0);
-		else
-			winningMassage(1);
-		Game::Menu::possibleResumeGame(false);
-		return true;
-	}
-	if (p1) {
-
-		winningMassage(1);
-		Game::Menu::possibleResumeGame(false);
-		return true;
-	}
-	if (p2) {
-		winningMassage(static_cast<ushort>(0));
-		Game::Menu::possibleResumeGame(false);
-		return true;
-	}
+	if (p1 && p2)
+		return tieGame();
+	if (p1)
+		return playerTowWon();
+	if (p2)
+		return playerOneWon();
      Game::Menu::possibleResumeGame(true);
 	return false;
 }
 
-void Game::winningMassage(const int& winner) const {
+bool Game::tieGame()
+{
+	const size_t& score1 = players[0]->getScore(), score2 = players[1]->getScore();
+	if (score1 == score2)
+		winningMassage(-1);
+	else if (score1 > score2)
+		winningMassage(0);
+	else
+		winningMassage(1);
+	Game::Menu::possibleResumeGame(false);
+	return true;
+}
 
+bool Game::playerOneWon()
+{
+	winningMassage(static_cast<ushort>(0));
+	Game::Menu::possibleResumeGame(false);
+	const Point pos = players[0]->getHighestPointInBoard();
+	return true;
+}
+
+bool Game::playerTowWon()
+{
+	winningMassage(1);
+	Game::Menu::possibleResumeGame(false);
+	const Point pos = players[1]->getHighestPointInBoard();
+	return true;
+}
+
+void Game::winningMassage(const int& winner)
+{
 	const Point temp = { Game::WINNING_MASSAGE_X,Game::WINNING_MASSAGE_Y };
 	gotoxy(temp.getX(), temp.getY());
 	if (winner < 0)
@@ -274,6 +498,10 @@ void Game::winningMassage(const int& winner) const {
 		cout << players[winner]->getName() << " won with - " << players[winner]->getScore();
 		cout << " point! Congratulations!!!";
 	}
+	if (winner >= 0)
+		result.printResult(players[winner]->getPlayerNum(), cycle, players[winner]->getHighestPointInBoard());
+	else
+		result.printResult(-1, cycle, players[0]->getHighestPointInBoard());
 	gotoxy(temp.getX()+3, temp.getY() + 4);
 	cout << "Press any key to return to the menuPages";
 	_getch();
@@ -306,13 +534,14 @@ void Game::checkSpeedStatus()
 
 void Game::resetCurrentBlocksPos()
 {
-	players[0]->setCurrentBlockPos({ Player::LEFT_BLOCK,Player::BLOCKS_Y });
-	players[1]->setCurrentBlockPos({ Player::RIGHT_BLOCK,Player::BLOCKS_Y });
+	for (const Player* player : players)
+		player->resetCurrentBlocksPos();
 }
 
 void Game::setNames()
 {
-	humanPlayers[0].setName();
-	humanPlayers[1].setName();
+	for (Player* player : players)
+		if (typeid(*player) == typeid(HumanPlayer))
+			player->setName();
 }
 

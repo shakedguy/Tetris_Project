@@ -9,7 +9,9 @@
 #include "Player.h"
 #include "HumanPlayer.h"
 #include "Computer_Player.h"
-
+#include "MyException.h"
+#include "Files_Handler.h"
+#include "FilePlayer.h"
 
 
 class Game
@@ -65,7 +67,6 @@ class Game
 		void newGamePage(Game& game)const;
 		void levelsPage(Game& game, const string& option)const;
 
-
 	public:
 		Menu() : Menu({ 0, 0 }) {}
 		Menu(const Point& _pos);
@@ -81,59 +82,77 @@ class Game
      /********************************** End of Menu class *****************************************/
 
 	static constexpr size_t NUM_OF_PLAYERS = 2, NUM_OF_BUTTONS = 2, HITS_LIMIT = 10,
-		LEFT_BOARD = 30, RIGHT_BOARD = 50, BOARDS_Y = 0, LEFT_BOX = 18, RIGHT_BOX = 68, BOXES_Y = 11,
+		LEFT_BOARD = 30, RIGHT_BOARD = 50, BOARDS_Y = 1, LEFT_BOX = 18, RIGHT_BOX = 68, BOXES_Y = 11,
 		WINNING_MASSAGE_X = 20, WINNING_MASSAGE_Y = 5, SPEED_X = 0, SPEED_Y = 0, GAME_BUTTON_LENGTH = 5,
 		TIE_GAME = 8, MAX_SPEED = 15;
-	static constexpr char PLAYER_ONE_KEYS[] = "wsxad"; // Const of game characters for player 1
-	static constexpr char PLAYER_TWO_KEYS[] = "ikmjl";// Const of game characters for player 2
+	static constexpr char PLAYER_ONE_KEYS[] = "wsxad", PLAYER_TWO_KEYS[] = "ikmjl";
+	static constexpr char SAVE_MODE[] = "-save", LOAD_MODE[] = "-load", SILENT_MODE[] = "-silent";
 	static constexpr size_t GAME_SPEED = 60, ACCELERATION = 10;
 	
-	enum Constants {
-		 GAME_BUTTON_WIDTH = 11, TIE_GAME_CODE = 2
-	};
+	
+	enum Constants { GAME_BUTTON_WIDTH = 11, TIE_GAME_CODE = 2 };
+	enum Game_Modes { SIMPLE, SAVE, LOAD, SILENT };
+	enum File_Types { BLOCKS_FILES, MOVES_FILES, RESULT_FILE, NUM_OF_FILE_TYPES };
 
-		static bool colorsMode;
-		static bool speedMode;
-		static size_t gameSpeed;
-		static size_t accNum;
-		array<Board, NUM_OF_BUTTONS> buttons;
+	static ushort gameMode;
+	static bool colorsMode;
+	static bool speedMode;
+	static size_t gameSpeed;
+	static size_t accNum;
+	array<Board, NUM_OF_BUTTONS> buttons;
 		
 		Menu menu;
 		array<Player*, NUM_OF_PLAYERS>players;
-		array<HumanPlayer, NUM_OF_PLAYERS>humanPlayers;
-		array<ComputerPlayer, NUM_OF_PLAYERS>computerPlayers;
 		ushort gameNumber = 0;
+		size_t cycle = 0;
+		Result_File result;
+	
+		
 	
 
 
 private:
 		uchar avoidMultipleHits()const;
-		void move() { players[0]->move(); players[1]->move(); }
+		void move(); 
 		void printScores() const { players[0]->printScore(); players[1]->printScore(); }
 		void clearGame();
 		bool isSomeoneLose();
+		bool tieGame();
+		bool playerOneWon();
+		bool playerTowWon();
 		void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
 		void setNames();
 		static void changeColorsMode();
-		void winningMassage(const int& winner) const;
+		void winningMassage(const int& winner);
 		void checkSpeedStatus();
 		void setGameButtons();
 		void printButtonsInfo();
 		void checkGameModes(const uchar& key);
-		void directions(const uchar& key);
-		static void returnLastSpeed();/* { Game::gameSpeed = Game::GAME_SPEED; }*/
+		void directions(uchar& key);
+		static void returnLastSpeed();
 		void resetCurrentBlocksPos();
 		void resetIndicators();
-		bool initializePlayers(const string& option);
+		void initializePlayers(const string& option) noexcept(false);
+		void openGameMode(int argc, char* argv[])noexcept(false);
+		static void changeGameMode(const ushort& mode) { Game::gameMode = mode; Player::changeGameMode(mode); }
+		bool endGame(const uchar& key)const;
+		void continuePlaying();
+		bool checkResult(const ushort& playerNum, const Point& highestPoint);
+		void allocateHumanPlayers() noexcept(false);
+		void allocateComputerPlayers() noexcept(false);
+		void allocateFilePlayers() noexcept(false);
+		void allocateHuman_VS_Computer() noexcept(false);
 
 public:
+
 	Game();
-	~Game(); 
+	~Game();
 	static void changeSpeedMode();
+	void resumeGame();
 	void drawButtons();
 	static inline void acceleration();
-	void startGame() { menu.mainMenuPage(*this); }
-	void init(const string& option);
+	void startGame(int argc, char* argv[])noexcept(false);
+	void init(const string& option)noexcept(false);
 	void run();
 };
 

@@ -15,6 +15,10 @@
 #include <vector>
 #include <map>
 #include <array>
+#include <list>
+#include <fstream>
+#include <string>
+
 #include "Colors.h"
 #include <time.h>
 
@@ -25,7 +29,8 @@ using std::array;
 using std::vector;
 using std::string;
 using std::map;
-
+using std::list;
+using std::pair;
 
 #define EMPTY_CELL ' '// Define the character of the empty cell in the board
 

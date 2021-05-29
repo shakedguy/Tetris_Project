@@ -2,6 +2,7 @@
 
 #include "Game.h"
 
+
 Board::Board(const Point& _pos, const size_t& _len, const size_t& _width, const Color& _color) :
 	pos(_pos), length(_len), width(_width), color(_color) {
 	allocateSize();
@@ -33,6 +34,7 @@ Point Board::getPointByPosition(const Point& pos)const
 	return { -1,-1 };
 }
 
+
 void Board::getIndexByPosition(const Point& pos, size_t& x, size_t& y) const
 {
 	for (size_t i = 0; i < width; ++i)
@@ -59,11 +61,11 @@ void Board::setPos(const Point& newPos)
 }
 
 
-void Board::drawBoard() const {
-
+void Board::drawBoard() const
+{
 	for (size_t i = 0; i < width; ++i)
 		for (size_t j = 0; j < length; ++j)
-			(Board::colorsMode) ? board[i][j].draw() : board[i][j].draw(WHITE);
+			(Board::colorsMode) ? board[i][j].draw(color) : board[i][j].draw(WHITE);
 }
 
 void Board::drawBoard(const Color& color) const
@@ -83,6 +85,14 @@ void Board::cleanArea(size_t startX, size_t endX, size_t startY, size_t endY)
 		for (size_t j = startY; j <= endY; ++j)
 			board[i][j].setShape(EMPTY_CELL);
 }
+
+void Board::clearScreen()
+{
+	for (size_t i = 0; i < board.size(); ++i)
+		for (size_t j = 0; j < board[i].size(); ++j)
+			board[i][j].setShape(EMPTY_CELL);
+}
+
 
 void Board::assign(const Board& _board)
 {
@@ -151,7 +161,7 @@ void Board::drawBoundaries(const Color& _color)const
 
 inline bool Board::isBoundary(const size_t& x, const size_t& y) const
 {
-	return !x || x == width - 1 || !y || y == length - 1;
+	return (!x || x == width - 1 || !y || y == length - 1);
 }
 
 
@@ -299,7 +309,8 @@ void Board::dropFloatingBricks(const size_t& startX, const size_t& endX, const s
 	{
 		for (size_t j = startX; j <= endX; ++j)
 		{
-			if (board[j][i].shape != EMPTY_CELL && board[j][i + 1].shape == EMPTY_CELL && (!isWellConnected(j, i)))
+			if (board[j][i].shape != EMPTY_CELL && board[j][i + 1].shape == EMPTY_CELL &&
+				(!isWellConnected(j, i)))
 			{
 				size_t n = i + 1, counter = 0;
 
@@ -404,7 +415,7 @@ bool Board::moveDown(const Block* block)const {
 	for (int i = 0; i < block->figure.size(); i++) {
 		for (int j = 0; j < block->figure[i].size(); j++) {
 			if (block->figure[i][j] &&
-				(board[block->pos.getX() + i - pos.getX()][block->pos.getY() + j + 1 - pos.getY()].shape != ' '))
+				(board[i + block->pos.getX() - pos.getX()][block->pos.getY() + j + 1 - pos.getY()].shape != ' '))
 				return false;
 		}
 	}
@@ -554,15 +565,6 @@ size_t Board::getTopRow()const
 	return 0;
 }
 
-bool Board::isThereAccess(const size_t& x, const size_t& y)
-{
-	for (size_t i = y - 1; i > 0; --i)
-		if (board[x][i].shape != EMPTY_CELL)
-			return false;
-	return true;
-}
-
-
 bool Board::notDisturbing(const Block& block)const
 {
 	size_t row = getTopRow();
@@ -593,7 +595,8 @@ bool Board::isBlocksAccess(const Block& block, const size_t& row)const
 	     {
 	          if(block.figure[i][j])
 	          {
-				const Point& temp = getPointByPosition({ block.pos.x + i,block.pos.y + j });
+				const Point& temp =
+					getPointByPosition(Point{ block.pos.x + i,block.pos.y + j });
 				for (Point& p : empty)
 					if ((!temp.compareX(p)) && temp.compareY(p) > 0)
 						return true;
@@ -613,4 +616,13 @@ size_t Board::oneToGoRowsCounter() const
 		if (countEmptyCells(i) == 1)
 			++counter;
 	return counter;
+}
+
+const Point& Board::getHighestPoint() const
+{
+	const size_t& topRow = getTopRow();
+	for (size_t i = 1; i < board.size() - 1; ++i)
+		if (board[i][topRow].shape != EMPTY_CELL)
+			return { board[i][topRow].getX(), board[i][topRow].getY()};
+	return { -1,-1 };
 }
