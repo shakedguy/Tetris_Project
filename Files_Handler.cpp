@@ -1,6 +1,5 @@
 #include "Files_Handler.h"
-
-
+#include <string.h>
 
 Blocks_Files::Blocks_Files(const ushort& playerNum, const char& mode)
 {
@@ -68,10 +67,13 @@ Blocks_Files::~Blocks_Files()
 
 void Blocks_Files::print()
 {
-	openFilesToWrite();
-	for (ushort& i : blocks)
-		file.write(reinterpret_cast<char*>(&i), alignof(ushort));
-	file.close();
+	if (!blocks.empty())
+	{
+		openFilesToWrite();
+		for (ushort& i : blocks)
+			file.write(reinterpret_cast<char*>(&i), alignof(ushort));
+		file.close();
+	}
 }
 
 
@@ -83,13 +85,16 @@ Moves_Files::~Moves_Files()
 
 void Moves_Files::print()
 {
-	openFilesToWrite();
-	for (pair<size_t, ushort>& i : moves)
+	if(!moves.empty())
 	{
-		file.write(reinterpret_cast<char*>(&i.first), alignof(size_t));
-		file.write(reinterpret_cast<char*>(&i.second), alignof(ushort));
+		openFilesToWrite();
+		for (pair<size_t, ushort>& i : moves)
+		{
+			file.write(reinterpret_cast<char*>(&i.first), alignof(size_t));
+			file.write(reinterpret_cast<char*>(&i.second), alignof(ushort));
+		}
+		file.close();
 	}
-	file.close();
 }
 
 Result_File::~Result_File()
@@ -129,45 +134,13 @@ void Files_Handler::openFilesToRead()
 			file.close();
 			openToRead(file, path1);
 		}
+
 	}
 	if (!file.is_open())
 		throw OpenFileException();
+
 }
-//
-//void Moves_Files::openFilesToRead()
-//{
-//	openToRead(file, path1);
-//	if (!file.is_open() || file.eof())
-//	{
-//		file.close();
-//		openToRead(file, path2);
-//		if (!file.is_open() || file.eof())
-//		{
-//			file.close();
-//			openToRead(file, path3);
-//		}
-//	}
-//	if (!file.is_open())
-//		throw OpenFileException();
-//}
-//
-//void Result_File::openFilesToRead()
-//{
-//	openToRead(file, path1);
-//	if (!file.is_open() || file.eof())
-//	{
-//		file.close();
-//		openToRead(file, path2);
-//		if (!file.is_open() || file.eof())
-//		{
-//			file.close();
-//			openToRead(file, path3);
-//		}
-//	}
-//	if (!file.is_open())
-//		throw OpenFileException();
-//}
-//
+
 void Files_Handler::copyFile(const string& data, const string& des)const
 {
 	fstream fin;
@@ -202,17 +175,19 @@ void Files_Handler::pushFiles()
 	copyFile(path1, path2);
 }
 
-void Result_File::printResult(const short& playerNum, const size_t& cycle, const Point& highestPoint)
+void Result_File::printOnePlayerResult(const short& playerNum, const size_t& cycle,
+	const Point& highestPoint)
 {
 	openFilesToWrite();
+	const int x = highestPoint.getX(), y = highestPoint.getY();
 	file.write(reinterpret_cast<const char*>(&playerNum), alignof(short));
 	file.write(reinterpret_cast<const char*>(&cycle), alignof(size_t));
-	file.write(reinterpret_cast<const char*>(&highestPoint.getX()), alignof(int));
-	file.write(reinterpret_cast<const char*>(&highestPoint.getY()), alignof(int));
+	file.write(reinterpret_cast<const char*>(&x), alignof(int));
+	file.write(reinterpret_cast<const char*>(&y), alignof(int));
 	file.close();
 }
 
-void Result_File::readResult(short& playerNum, size_t& cycle, Point& highestPoint)
+void Result_File::readOnePlayerResult(short& playerNum, size_t& cycle, Point& highestPoint)
 {
 	openFilesToRead();
 	int x, y;
@@ -223,6 +198,43 @@ void Result_File::readResult(short& playerNum, size_t& cycle, Point& highestPoin
 	highestPoint.setXY(x, y);
 	file.close();
 }
+
+void Result_File::readTowPlayersResult(short& result, size_t& cycle, Point& first,
+	Point& second)
+{
+	if (!file.is_open())
+		openFilesToRead();
+	int x, y;
+	file.read(reinterpret_cast<char*>(&result), alignof(short));
+	file.read(reinterpret_cast<char*>(&cycle), alignof(size_t));
+	file.read(reinterpret_cast<char*>(&x), alignof(int));
+	file.read(reinterpret_cast<char*>(&y), alignof(int));
+	first.setXY(x, y);
+	int k, z;
+	file.read(reinterpret_cast<char*>(&k), alignof(int));
+	file.read(reinterpret_cast<char*>(&z), alignof(int));
+	second.setXY(k, z);
+	//cout << "(" << x << "," << y << ")    (" << k << "," << z << ")";
+	//file.close();
+	//cout << "good";
+}
+
+void Result_File::printTowPlayerResult(const short& result, const size_t& cycle,
+	const Point& first, const Point& second)
+{
+	openFilesToWrite();
+	int x = first.getX(), y = first.getY();
+	file.write(reinterpret_cast<const char*>(&result), alignof(short));
+	file.write(reinterpret_cast<const char*>(&cycle), alignof(size_t));
+	file.write(reinterpret_cast<const char*>(&x), alignof(int));
+	file.write(reinterpret_cast<const char*>(&y), alignof(int));
+	int k = second.getX();
+	int z = second.getY();
+	file.write(reinterpret_cast<const char*>(&k), alignof(int));
+	file.write(reinterpret_cast<const char*>(&z), alignof(int));
+	file.close();
+}
+
 
 
 void Blocks_Files::readData()
@@ -289,11 +301,11 @@ void Moves_Files::readData()
 //
 ////void Blocks_Files::getBlocks(fstream& file, list<ushort>& blocks)
 ////{
-////	ushort x;
+////	ushort getX;
 ////	while (!file.eof())
 ////	{
-////		file.read(reinterpret_cast<char*>(&x), alignof(ushort));
-////		blocks.push_back(x);
+////		file.read(reinterpret_cast<char*>(&getX), alignof(ushort));
+////		blocks.push_back(getX);
 ////	}
 ////	file.close();
 ////}
@@ -308,13 +320,13 @@ void Moves_Files::readData()
 //
 ////void Moves_Files::getMoves(fstream& file, list<pair<size_t, ushort>>& moves)
 ////{
-////	size_t x;
+////	size_t getX;
 ////	ushort y;
 ////	while(!file.eof())
 ////	{
-////		file.read(reinterpret_cast<char*>(&x), alignof(size_t));
+////		file.read(reinterpret_cast<char*>(&getX), alignof(size_t));
 ////		file.read(reinterpret_cast<char*>(&y), alignof(ushort));
-////		moves.push_back({ x,y });
+////		moves.push_back({ getX,y });
 ////	}
 ////	file.close();
 ////}

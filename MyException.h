@@ -10,6 +10,36 @@ protected:
 	static constexpr char OPEN_FILE_ERROR[] = "Open file Error";
 	static constexpr char GOOD_TEST[] = "Successful test";
 	static constexpr char BAD_TEST[] = "Open file Error";
+
+public:
+	void pausedGame(bool flag)
+	{
+		clrscr();
+		gotoxy(EXCEPTION_MASSAGE_X, EXCEPTION_MASSAGE_Y);
+		cout << " The game paused without a winner...";
+		gotoxy(EXCEPTION_MASSAGE_X + 1, EXCEPTION_MASSAGE_Y + 2);
+		if (flag)
+			cout << MyException::GOOD_TEST;
+		else
+			cout << MyException::BAD_TEST;
+		gotoxy(EXCEPTION_MASSAGE_X - 1, EXCEPTION_MASSAGE_Y + 4);
+		cout << "Press any key to return to the end Test";
+		_getch();
+		clrscr();
+	}
+	static void endGame(bool flag)
+	{
+		clrscr();
+		gotoxy(EXCEPTION_MASSAGE_X, EXCEPTION_MASSAGE_Y);
+		if (flag)
+			cout << MyException::GOOD_TEST;
+		else
+			cout << MyException::BAD_TEST;
+		gotoxy(EXCEPTION_MASSAGE_X - 2, EXCEPTION_MASSAGE_Y + 2);
+		cout << "Press any key to return to the end Test";
+		_getch();
+		clrscr();
+	}
 };
 
 
@@ -35,7 +65,7 @@ public:
 };
 
 
-class EndOfFileEx :public MyException
+class BlocksFileEndEx :public MyException
 {
 
 public:
@@ -45,9 +75,6 @@ public:
 		gotoxy(EXCEPTION_MASSAGE_X, EXCEPTION_MASSAGE_Y);
 		cout << " The game paused without a winner...";
 		gotoxy(EXCEPTION_MASSAGE_X + 1, EXCEPTION_MASSAGE_Y + 2);
-		short playerNumFile;
-		size_t fileCycle;
-		Point filePoint;
 		if (flag)
 			cout << MyException::GOOD_TEST;
 		else
@@ -57,13 +84,10 @@ public:
 		_getch();
 		clrscr();
 	}
-	static void checkResult(bool flag)
+	static void endGame(bool flag)
 	{
 		clrscr();
 		gotoxy(EXCEPTION_MASSAGE_X, EXCEPTION_MASSAGE_Y);
-		short playerNumFile;
-		size_t fileCycle;
-		Point filePoint;
 		if (flag)
 			cout << MyException::GOOD_TEST;
 		else
@@ -74,3 +98,13 @@ public:
 		clrscr();
 	}
 };
+
+class MovesFileEndEx :public MyException
+{
+
+public:
+
+};
+
+
+

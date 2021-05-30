@@ -29,10 +29,7 @@ int Point::compareX(const Point& _point)const
 Point& Point::operator=(const Point& _point)
 {
 	if (this != &_point)
-	{
-		x = _point.x;
-		y = _point.y;
-	}
+		assign(_point);
 	return *this;
 }
 
@@ -54,11 +51,9 @@ void Cell::assign(const Cell& _cell)
 
 bool Cell::operator==(const Cell& cell) const
 {
-	return (Point{x,y} == Point{ cell.x, cell.y }&&
-		shape == cell.shape && color == cell.color) ? true : false;
+	return (Point::operator==({ cell.x,cell.y }) && shape == cell.shape &&
+		color == cell.color) ? true : false;
 }
-
-
 
 Cell& Cell::operator=(const Cell& _cell) {
 	if (&_cell != this)
@@ -101,6 +96,8 @@ void Cell::draw(const Color& _color) const
 {
 	Point::draw(shape, _color);
 }
+
+
 
 
 

@@ -54,7 +54,6 @@ private:
 	bool left(const size_t& cycle);
 	bool right(const size_t& cycle);
 	bool down(const size_t& cycle);
-	void printDataToFile()const;
 	void initFiles();
 	void allocateToWrite()noexcept(false);
 	void allocateToRead()noexcept(false);
@@ -66,7 +65,6 @@ protected:
 	virtual void getNewBlock();
 	void setGameBoundaries();
 	void setKeysIndication();
-	void saveDirection(Files_Handler* file, const size_t& cycle);
 
 public:
 	Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos);
@@ -77,7 +75,7 @@ public:
 	virtual Player* operator->() { return this; }
 	friend std::ostream& operator<<(std::ostream& out, const Player* _player);
 	void printScore() const;
-	bool move(const size_t& cycle);
+	void move(const size_t& cycle);
 	bool isLost();
 	void setCurrentBlockPos(const Point& pos)const { block->pos = pos; }
 	void clearGame();
@@ -92,7 +90,7 @@ public:
 	const ushort& getPlayerNum()const { return playerNum; }
 	const ushort& getCurrentBlockNum()const { return block->shapeNum; }
 	void resetCurrentBlocksPos()const;
-	const Point& getHighestPointInBoard()const { return board.getHighestPoint(); }
+	Point getHighestPointInBoard()const { return board.getHighestPoint(); }
 	static void changeGameMode(const ushort& mode) { Player::gameMode = mode; }
 	void changeDirection(const ushort& dir) { direction = dir; }
 	virtual string type()const { return "Player"; }
@@ -101,6 +99,8 @@ public:
 	virtual void initializeCalculate() = 0;
 	virtual void setPlayerKeys(const string& arrowKeys) = 0;
 	virtual sint getDirection(const uchar& key) = 0;
+	bool isEndOfFiles()const;
+	void printDataToFile()const;
 
 	
 };

@@ -8,10 +8,11 @@ using std::fstream;
 class Files_Handler
 {
 protected:
-	
+
 	static constexpr char GAME_1_FOLDER[] = "game1";
 	static constexpr char GAME_2_FOLDER[] = "game2";
 	static constexpr char GAME_3_FOLDER[] = "game3";
+	static string selectedPath;
 	string path1, path2, path3;
 	fstream file;
 
@@ -31,7 +32,8 @@ public:
 	virtual void print() = 0;
 	virtual void readData() = 0;
 	virtual short getData(const size_t& cycle) = 0;
-	virtual void clearGame() = 0;
+	virtual void clearGame() { std::remove(path1.c_str()); }
+	virtual bool isEmpty()const = 0;
 };
 
 class Blocks_Files : virtual public Files_Handler
@@ -55,7 +57,8 @@ public:
 		{ blocks.push_back(blockNum); }
 	void readData()override;
 	short getData(const size_t& cycle)override;
-	void clearGame()override { blocks.clear(); }
+	void clearGame()override { blocks.clear(); Files_Handler::clearGame(); }
+	bool isEmpty()const override { return blocks.empty(); }
 	//Blocks_Files& operator*() { return *this; }
 	//Blocks_Files* operator->() { return this; }
 	//void getBlocks(const ushort& playerNum, list<ushort>& blocks);
@@ -85,7 +88,8 @@ public:
 		{ moves.push_back({ cycle,dir }); }
 	void readData()override;
 	short getData(const size_t& cycle)override;
-	void clearGame()override { moves.clear(); }
+	void clearGame()override { moves.clear(); Files_Handler::clearGame(); }
+	bool isEmpty()const override { return moves.empty(); }
 	//Moves_Files& operator*() { return *this; }
 	//Moves_Files* operator->() { return this; }
 	////void getMoves(const ushort& playerNum, list<pair<size_t, ushort>>& moves);
@@ -101,12 +105,17 @@ public:
 	~Result_File();
 	void print()override {}
 	//void openFilesToRead()override;
-	void printResult(const short& playerNum, const size_t& cycle, const Point& highestPoint);
+	void printOnePlayerResult(const short& playerNum, const size_t& cycle, const Point& highestPoint);
 	void saveData(const ushort& blockNum, const size_t& cycle, const ushort& dir)override { return; }
-	void readResult(short& playerNum, size_t& cycle, Point& highestPoint);
+	void readOnePlayerResult(short& playerNum, size_t& cycle, Point& highestPoint);
+	void readTowPlayersResult(short& result, size_t& cycle, Point& first,
+		Point& second);
+	void printTowPlayerResult(const short& result, const size_t& cycle,
+		const Point& first,const Point& second);
 	void readData()override {}
 	short getData(const size_t& cycle)override { return 0; }
-	void clearGame()override {}
+	void clearGame()override { Files_Handler::clearGame(); }
+	bool isEmpty()const override { return true; }
 
 };
 

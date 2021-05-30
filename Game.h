@@ -83,16 +83,16 @@ class Game
 
 	static constexpr size_t NUM_OF_PLAYERS = 2, NUM_OF_BUTTONS = 2, HITS_LIMIT = 10,
 		LEFT_BOARD = 30, RIGHT_BOARD = 50, BOARDS_Y = 1, LEFT_BOX = 18, RIGHT_BOX = 68, BOXES_Y = 11,
-		WINNING_MASSAGE_X = 20, WINNING_MASSAGE_Y = 5, SPEED_X = 0, SPEED_Y = 0, GAME_BUTTON_LENGTH = 5,
-		TIE_GAME = 8, MAX_SPEED = 15;
+		WINNING_MASSAGE_X = 20, WINNING_MASSAGE_Y = 5, SPEED_X = 0, SPEED_Y = 0,
+		GAME_BUTTON_LENGTH = 5, MAX_SPEED = 15;
 	static constexpr char PLAYER_ONE_KEYS[] = "wsxad", PLAYER_TWO_KEYS[] = "ikmjl";
 	static constexpr char SAVE_MODE[] = "-save", LOAD_MODE[] = "-load", SILENT_MODE[] = "-silent";
 	static constexpr size_t GAME_SPEED = 60, ACCELERATION = 10;
 	
 	
-	enum Constants { GAME_BUTTON_WIDTH = 11, TIE_GAME_CODE = 2 };
+	enum Constants { GAME_BUTTON_WIDTH = 11, TIE_GAME = 0, INCOMPLETED = -1 };
 	enum Game_Modes { SIMPLE, SAVE, LOAD, SILENT };
-	enum File_Types { BLOCKS_FILES, MOVES_FILES, RESULT_FILE, NUM_OF_FILE_TYPES };
+	enum class File_Types { BLOCKS_FILES, MOVES_FILES, RESULT_FILE, NUM_OF_FILE_TYPES };
 
 	static ushort gameMode;
 	static bool colorsMode;
@@ -113,13 +113,17 @@ class Game
 
 private:
 		uchar avoidMultipleHits()const;
-		void move(); 
+		void move();
+		void enableUserInput(uchar& key, uchar& prev, uchar& prevPrev);
 		void printScores() const { players[0]->printScore(); players[1]->printScore(); }
 		void clearGame();
 		bool isSomeoneLose();
 		bool tieGame();
 		bool playerOneWon();
 		bool playerTowWon();
+		bool paused();
+		void saveNoWinnerGame(const short& gameResult);
+		void saveGame(const short& winner);
 		void avoidMultipleMoves(uchar& key, const uchar& temp1, const uchar& temp2);
 		void setNames();
 		static void changeColorsMode();
@@ -135,13 +139,16 @@ private:
 		void initializePlayers(const string& option) noexcept(false);
 		void openGameMode(int argc, char* argv[])noexcept(false);
 		static void changeGameMode(const ushort& mode) { Game::gameMode = mode; Player::changeGameMode(mode); }
-		bool endGame(const uchar& key)const;
+		bool endGame(const uchar& key);
 		void continuePlaying();
-		bool checkResult(const ushort& playerNum, const Point& highestPoint);
+		bool completedGameResultCheck(const ushort& playerNum, const Point& highestPoint);
+		bool inCompletedGameResultcheck(const ushort& gameResult);
 		void allocateHumanPlayers() noexcept(false);
 		void allocateComputerPlayers() noexcept(false);
 		void allocateFilePlayers() noexcept(false);
 		void allocateHuman_VS_Computer() noexcept(false);
+		void isEndOfFiles()const;
+		void deletePlayers() { delete players[0]; delete players[1]; }
 
 public:
 

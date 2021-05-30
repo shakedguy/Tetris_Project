@@ -3,7 +3,7 @@
 ***************************************/
 #include "Game.h"
 
-Game::Game() : menu({ Game::Menu::MENU_X,Game::Menu::MENU_Y })
+Game::Game() : menu({ Menu::objectsPositions::MENU_X,Menu::objectsPositions::MENU_Y })
 {
 	setGameButtons();
 }
@@ -11,7 +11,7 @@ Game::Game() : menu({ Game::Menu::MENU_X,Game::Menu::MENU_Y })
 Game::~Game() 
 {
 	for (Player* player : players)
-		delete player;
+			delete player;
 
 	gotoxy(Game::WINNING_MASSAGE_X, Game::WINNING_MASSAGE_Y);
 	cout << "Hope you enjoyed :), see you next time!" << endl << endl << endl << endl;
@@ -33,7 +33,7 @@ void Game::startGame(int argc, char* argv[])noexcept(false)
 			throw;
 		}
 	}
-	if (Game::gameMode == LOAD || Game::gameMode == SILENT)
+	if (Game::gameMode == Game_Modes::LOAD || Game::gameMode == Game_Modes::SILENT)
 		init("");
 	else
 		menu.mainMenuPage(*this);
@@ -42,13 +42,13 @@ void Game::startGame(int argc, char* argv[])noexcept(false)
 void Game::openGameMode(int argc, char* argv[])noexcept(false)
 {
 	if (!strcmp(argv[1], SAVE_MODE))
-		changeGameMode(Game::SAVE);
+		changeGameMode(Game_Modes::SAVE);
 	else if (!strcmp(argv[1], Game::LOAD_MODE))
 	{
 		if (argc == 2)
-			changeGameMode(Game::LOAD);
+			changeGameMode(Game_Modes::LOAD);
 		else if (!strcmp(argv[2], Game::SILENT_MODE))
-			changeGameMode(Game::SILENT);
+			changeGameMode(Game_Modes::SILENT);
 	}
 	else
 		throw CommandLineException();
@@ -96,10 +96,11 @@ void Game::changeColorsMode() {
 
 void Game::clearGame()
 {
-	players[0]->clearGame();
-	players[1]->clearGame();
+	for(Player* player:players)
+		player->clearGame();
 	if (Game::speedMode)
 		Game::changeSpeedMode();
+	result.clearGame();
 }
 
 void Game::resumeGame()
@@ -116,6 +117,9 @@ void Game::resumeGame()
 /* initialization new game and printing players boards */
 void Game::init(const string& option)noexcept(false)
 {
+	if (gameNumber)
+		deletePlayers();
+	++gameNumber;
 	try
 	{
 		initializePlayers(option);
@@ -125,7 +129,6 @@ void Game::init(const string& option)noexcept(false)
 		e.what();
 		throw;
 	}
-	++gameNumber;
 	cout << players[0] << players[1];
 	drawButtons();
 	run();
@@ -135,7 +138,7 @@ void Game::initializePlayers(const string& option)noexcept(false)
 {
 	try
 	{
-		if (Game::gameMode == Game::LOAD || Game::gameMode == Game::SILENT)
+		if (Game::gameMode == Game_Modes::LOAD || Game::gameMode == Game_Modes::SILENT)
 			allocateFilePlayers();
 		if (!option.compare(Menu::HUMAN_VS_HUMAN))
 			allocateHumanPlayers();
@@ -222,7 +225,7 @@ void Game::allocateHuman_VS_Computer()noexcept(false)
 /* drawing the modes buttons */
 void Game::drawButtons()
 {
-	if (Game::gameMode != Game::LOAD && Game::gameMode != Game::SILENT)
+	if (Game::gameMode != Game_Modes::LOAD && Game::gameMode != Game_Modes::SILENT)
 	{
 		for (const Board& button : buttons)
 			cout << button;
@@ -264,84 +267,89 @@ void Game::printButtonsInfo() {
  * receiving the input from the keyboard, decoding it and sending
  * it to the functions that perform the required actions */
 void Game::run() {
-	
-	uchar key, temp, temp2; // use 2 to temps to prevent excessive steps (not DEFUALT steps) in one turn
-	key = temp = temp2 = DEFAULT;
+
+	uchar prev, prevPrev; // use 2 to temps to prevent excessive steps (not DEFUALT steps) in one turn
+	uchar key = prev = prevPrev = DEFAULT;
 	
 	do {
-		if ((Game::gameMode != Game::LOAD) && (Game::gameMode != Game::SILENT))
-		{
-			key = avoidMultipleHits();
-			directions(key);
-			avoidMultipleMoves(key, temp, temp2);
-		}
-		else
-			directions(key);
+		
+		if ((Game::gameMode != Game_Modes::LOAD) && (Game::gameMode != Game_Modes::SILENT))
+			enableUserInput(key, prev, prevPrev);
+		directions(key);
 		checkGameModes(key);
 		printScores();
 		try { move(); }
-		catch (...) { break; }
+		catch (...) { key = ESC; }
 		
 		if (Game::gameMode != Game::SILENT)
 			Sleep(/*Game::gameSpeed*/10);
 		if (Game::speedMode)
 			checkSpeedStatus();
-		temp2 = temp;
-		temp = key;
+
 		++cycle;
 		resetIndicators();
 	} while (!endGame(key));
 	continuePlaying();
 }
 
+void Game::enableUserInput(uchar& key, uchar& prev, uchar& prevPrev)
+{
+	key = avoidMultipleHits();
+	avoidMultipleMoves(key, prev, prevPrev);
+	prevPrev = prev;
+	prev = key;
+}
+
+
 void Game::continuePlaying()
 {
-	if (Game::gameMode != LOAD && Game::gameMode != SILENT)
+
+	if (Game::gameMode != Game_Modes::LOAD && Game::gameMode != Game_Modes::SILENT)
 	{
-		if (isSomeoneLose())
-			clrscr();
-		
+		clrscr();
 		menu.updateMenuBoard();
 		menu.mainMenuPage(*this);
 	}
-	if(Game::gameMode==Game::SAVE && !endGame(NULL))
-		result.printResult(players[0]->getPlayerNum(), cycle, players[0]->getHighestPointInBoard());
+	else if (inCompletedGameResultcheck(Constants::INCOMPLETED))
+	{
+		gotoxy(WINNING_MASSAGE_X, WINNING_MASSAGE_Y);
+		cout << "Successful test";
+		gotoxy(WINNING_MASSAGE_X, WINNING_MASSAGE_Y+1);
+		cout << "Press any key to return to the end Test";
+		_getch();
+		clrscr();
+	}		
 }
 
 
-bool Game::endGame(const uchar& key) const
+bool Game::endGame(const uchar& key)
 {
-	if (players[0]->isLost() || players[1]->isLost())
+	if (isSomeoneLose())
 		return true;
-	if (key == ESC || players[0]->getDirection() == ESC || players[1]->getDirection() == ESC)
-		return true;
+	if (key == ESC)
+		return paused();
 	return false;
 }
-
 
 void Game::move()
 {
 	for (Player* player : players)
 	{
 		try { player->move(cycle); }
-		catch (EndOfFileEx& ex)
+		
+		catch (BlocksFileEndEx &ex)
 		{
-			if (checkResult(player->getPlayerNum(), player->getHighestPointInBoard()))
-			{
-				if (!player->isLost())
-					ex.pausedGame(true);
-				else
-					ex.checkResult(true);
-			}
+			if (inCompletedGameResultcheck(Constants::INCOMPLETED))
+				ex.pausedGame(true);
 			else
-			{
-				if (!player->isLost())
-					ex.pausedGame(false);
-				else
-					ex.checkResult(false);
-			}
-			break;
+				ex.pausedGame(false);
+			throw;
 		}
+		catch (MovesFileEndEx& ex)
+		{
+			player->changeDirection(DEFAULT);
+		}
+		catch (...) {}
 	}
 }
 
@@ -359,37 +367,44 @@ void Game::directions(uchar& key)
 	for (Player* player : players)
 	{
 		try { player->setDirection(key, cycle); }
-		catch (EndOfFileEx& ex)
+		catch (MovesFileEndEx& ex)
 		{
-			if (checkResult(player->getPlayerNum(), player->getHighestPointInBoard()))
-			{
-				if (!player->isLost())
-					ex.pausedGame(true);
-				else
-					ex.checkResult(true);
-			}
-			else
-			{
-				if (!player->isLost())
-					ex.pausedGame(false);
-				else
-					ex.checkResult(false);
-			}
-			break;
+			player->changeDirection(DEFAULT);
 		}
 	}
 }
 
-bool Game::checkResult(const ushort& playerNum, const Point& highestPoint)
+void Game::isEndOfFiles()const
+{
+	if (players[0]->isEndOfFiles() && players[1]->isEndOfFiles())
+		throw MyException();
+}
+
+
+bool Game::completedGameResultCheck(const ushort& playerNum, const Point& highestPoint)
 {
 	size_t fileCycle;
 	short filePlayerNum;
 	Point filePoint;
-	result.readResult(filePlayerNum, fileCycle, filePoint);
+	result.readOnePlayerResult(filePlayerNum, fileCycle, filePoint);
 	if (fileCycle == cycle && filePlayerNum == playerNum && filePoint == highestPoint)
 		return true;
 	return false;
 }
+
+bool Game::inCompletedGameResultcheck(const ushort& gameResult)
+{
+	short fileResult;
+	size_t fileCycle;
+	Point first, second;
+	result.readTowPlayersResult(fileResult, fileCycle, first, second);
+	if (fileResult == gameResult && fileCycle == cycle && 
+		first == players[0]->getHighestPointInBoard() &&
+		second == players[1]->getHighestPointInBoard())
+		return true;
+	return false;
+}
+
 
 
 /* Checks if the received character belongs to one of the mode's buttons */
@@ -412,7 +427,7 @@ void Game::checkGameModes(const uchar& key) {
  * returns the last character received */
 uchar Game::avoidMultipleHits()const {
 
-	if (Game::gameMode == LOAD || Game::gameMode == SILENT)
+	if (Game::gameMode == Game_Modes::LOAD || Game::gameMode == Game_Modes::SILENT)
 		return DEFAULT;
 	_flushall();
 	uchar key = DEFAULT;
@@ -430,7 +445,7 @@ uchar Game::avoidMultipleHits()const {
 /* The function prevents the players from performing more than 2 non-default steps */
 void Game::avoidMultipleMoves(uchar& key, const uchar& temp, const uchar& temp2) {
 
-	if (Game::gameMode == Game::LOAD || Game::gameMode == Game::SILENT)
+	if (Game::gameMode == Game_Modes::LOAD || Game::gameMode == Game_Modes::SILENT)
 		return;
 	if (temp == key && temp2 == key) {
 		sint dir;
@@ -447,7 +462,6 @@ void Game::avoidMultipleMoves(uchar& key, const uchar& temp, const uchar& temp2)
 /* if both players "lose" at the same time, the score determines and if the scores are equal, its a time gime */
 bool Game::isSomeoneLose()
 {
-	clrscr();
 	bool p1 = players[0]->isLost(), p2 = players[1]->isLost();
 	if (p1 && p2)
 		return tieGame();
@@ -459,49 +473,84 @@ bool Game::isSomeoneLose()
 	return false;
 }
 
+bool Game::paused()
+{
+	if (Game::gameMode == Game_Modes::SAVE)
+	{ 
+		result.printTowPlayerResult(Constants::INCOMPLETED, cycle,
+		players[0]->getHighestPointInBoard(), players[1]->getHighestPointInBoard());
+		for (Player* player : players)
+			player->printDataToFile();
+	}
+	return true;
+}
+
+
 bool Game::tieGame()
 {
+	if (Game::gameMode == Game_Modes::SAVE)
+		saveNoWinnerGame(Constants::TIE_GAME);
 	const size_t& score1 = players[0]->getScore(), score2 = players[1]->getScore();
 	if (score1 == score2)
-		winningMassage(-1);
+		winningMassage(Constants::TIE_GAME);
 	else if (score1 > score2)
-		winningMassage(0);
+		winningMassage(players[0]->getPlayerNum());
 	else
-		winningMassage(1);
+		winningMassage(players[1]->getPlayerNum());
 	Game::Menu::possibleResumeGame(false);
 	return true;
 }
 
+void Game::saveNoWinnerGame(const short& gameResult)
+{
+	result.printTowPlayerResult(gameResult, cycle,
+		players[0]->getHighestPointInBoard(), players[1]->getHighestPointInBoard());
+	for (Player* player : players)
+		player->printDataToFile();
+}
+
+void Game::saveGame(const short& winner)
+{
+	result.printOnePlayerResult(winner, cycle,
+		players[winner - 1]->getHighestPointInBoard());
+	for (Player* player : players)
+		player->printDataToFile();
+}
+
+
+
 bool Game::playerOneWon()
 {
-	winningMassage(static_cast<ushort>(0));
+	if (Game::gameMode == Game_Modes::SAVE)
+		saveGame(players[0]->getPlayerNum());
+	winningMassage(players[0]->getPlayerNum());
 	Game::Menu::possibleResumeGame(false);
-	const Point pos = players[0]->getHighestPointInBoard();
 	return true;
 }
 
 bool Game::playerTowWon()
 {
-	winningMassage(1);
+	if (Game::gameMode == Game_Modes::SAVE)
+		saveGame(players[1]->getPlayerNum());
+	winningMassage(players[1]->getPlayerNum());
 	Game::Menu::possibleResumeGame(false);
-	const Point pos = players[1]->getHighestPointInBoard();
 	return true;
 }
 
 void Game::winningMassage(const int& winner)
 {
+	clrscr();
 	const Point temp = { Game::WINNING_MASSAGE_X,Game::WINNING_MASSAGE_Y };
 	gotoxy(temp.getX(), temp.getY());
-	if (winner < 0)
+	if (winner == Constants::TIE_GAME)
+	{
 		cout << "\t\t     Tie game";
+		result.printOnePlayerResult(Constants::TIE_GAME, cycle, players[0]->getHighestPointInBoard());
+	}
 	else {
-		cout << players[winner]->getName() << " won with - " << players[winner]->getScore();
+		cout << players[winner-1]->getName() << " won with - " << players[winner-1]->getScore();
 		cout << " point! Congratulations!!!";
 	}
-	if (winner >= 0)
-		result.printResult(players[winner]->getPlayerNum(), cycle, players[winner]->getHighestPointInBoard());
-	else
-		result.printResult(-1, cycle, players[0]->getHighestPointInBoard());
 	gotoxy(temp.getX()+3, temp.getY() + 4);
 	cout << "Press any key to return to the menuPages";
 	_getch();

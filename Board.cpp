@@ -618,7 +618,7 @@ size_t Board::oneToGoRowsCounter() const
 	return counter;
 }
 
-const Point& Board::getHighestPoint() const
+Point Board::getHighestPoint() const
 {
 	const size_t& topRow = getTopRow();
 	for (size_t i = 1; i < board.size() - 1; ++i)
@@ -626,3 +626,13 @@ const Point& Board::getHighestPoint() const
 			return { board[i][topRow].getX(), board[i][topRow].getY()};
 	return { -1,-1 };
 }
+
+bool Board::isEmpty()const
+{
+	for(size_t i=1;i<board.size()-1;++i)
+		for (size_t j = 1; j < board[i].size(); ++j)
+			if (board[i][j].shape != EMPTY_CELL)
+				return false;
+	return true;
+}
+

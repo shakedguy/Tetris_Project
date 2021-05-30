@@ -73,9 +73,6 @@ Player::Player(const Player& _player) :
 
 Player::~Player()
 {
-	if (Player::gameMode == Player::SAVE)
-		printDataToFile();
-	
 	delete block;
 	delete blocksFile;
 	delete movesFile;
@@ -171,7 +168,7 @@ void Player::clearGame() {
 		block->pos = {RIGHT_BLOCK,BLOCKS_Y};
 	
 	if (Player::gameMode == SAVE)
-		clearFilesContent();
+		clearFilesContent();	
 }
 
 void Player::clearFilesContent()
@@ -270,25 +267,25 @@ void Player::getNewBlock() {
 /* Player shift function, if the step faild and the direction is DEFAULT,
  * "freeze" the block and insert it to the board's blocks and brings a new block to the playing field,
  * update the score and the returns the direction to DEFAULT */
-bool Player::move(const size_t& cycle) {
+void Player::move(const size_t& cycle) {
 
-	bool isMoving = true;
 	if (!makeTheMove(cycle) && direction == DEFAULT) {
 
 		if (typeid(*block) == typeid(Bomb))
 			board.explosion(*block);
 		else
 			board.freezeBlock(*block);
+		
 		try { getNewBlock(); }
-		catch (EndOfFileEx& ex) { throw ex; }
+		catch (...) { throw; }
+		
 		cout << box;
 		board.drawEmptyCells();
-		isMoving = false;
+
 	}
 	board.drawFillCells();
 	board.drawBoundaries();
 	score += ((pow(board.checkBoard(true), 2)) * POINTS_FOR_FULL_ROW);
-	return isMoving;
 }
 
 
@@ -403,5 +400,13 @@ bool Player::checkSpeed(const size_t& accNum)const
 		return true;
 	return false;
 }
+
+bool Player::isEndOfFiles() const
+{
+	if (blocksFile->isEmpty() && movesFile->isEmpty())
+		return true;
+	return false;
+}
+
 
 

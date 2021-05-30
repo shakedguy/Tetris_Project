@@ -71,7 +71,7 @@ public:
 	const Point& getPos()const { return pos; }
 	Point getPointByPosition(const Point& pos)const;
 	void getIndexByPosition(const Point& pos, size_t& x, size_t& y)const;
-	const Point& getHighestPoint()const;
+	Point getHighestPoint()const;
 	virtual ~Board() = default;
 	friend std::ostream& operator<<(std::ostream& out, const Board& board);
 	Board& operator*() { return *this; }
@@ -103,6 +103,7 @@ public:
 	void cleanArea(size_t startX, size_t endX, size_t startY, size_t endY);
 	static void changeColorsMode();
 	virtual void clearScreen();
+	bool isEmpty()const;
 };
 
 #endif
