@@ -67,6 +67,7 @@ class Game
 		void newGamePage(Game& game)const;
 		void levelsPage(Game& game, const string& option)const;
 
+
 	public:
 		Menu() : Menu({ 0, 0 }) {}
 		Menu(const Point& _pos);
@@ -106,10 +107,6 @@ class Game
 		ushort gameNumber = 0;
 		size_t cycle = 0;
 		Result_File result;
-	
-		
-	
-
 
 private:
 		uchar avoidMultipleHits()const;
@@ -141,14 +138,17 @@ private:
 		static void changeGameMode(const ushort& mode) { Game::gameMode = mode; Player::changeGameMode(mode); }
 		bool endGame(const uchar& key);
 		void continuePlaying();
-		bool completedGameResultCheck(const ushort& playerNum, const Point& highestPoint);
-		bool inCompletedGameResultcheck(const ushort& gameResult);
+		bool onePlayerResult(const short& winner);
+		bool towPlayersResult(const short& gameResult);
 		void allocateHumanPlayers() noexcept(false);
 		void allocateComputerPlayers() noexcept(false);
 		void allocateFilePlayers() noexcept(false);
 		void allocateHuman_VS_Computer() noexcept(false);
 		void isEndOfFiles()const;
 		void deletePlayers() { delete players[0]; delete players[1]; }
+		void testResult();
+		short getWinner();
+		void testResultMessage(bool flag)const;
 
 public:
 

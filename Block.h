@@ -17,7 +17,7 @@ protected:
 	enum TetrisParts { I,   L,   J,    O,   S,    T,    Z,  B };
 	
 	static constexpr size_t COLUMNS = 4, ROWS = 4;
-
+	static bool silent;
 	static bool colorsMode;
 	Color color;
 	friend class Player;
@@ -33,7 +33,7 @@ protected:
 	static constexpr uchar SHAPE = 178, SHAPE_AFTER_FREEZE = 219;
 	Point pos;
 	uchar shape;
-	ushort shapeNum;
+	short shapeNum;
 	array<array<ushort, ROWS>, COLUMNS > figure = {};
 
 private:
@@ -58,7 +58,8 @@ public:
 
 	Block() : Block(Point{0, 0}) {}
 	Block(const Point& _pos);
-	Block(const Point& _pos, const ushort& _shapeNum);
+	Block(const short& _shapeNum) : Block(Point{ 0, 0 }, _shapeNum) {}
+	Block(const Point& _pos, const short& _shapeNum);
 	Block(const Block& _block) { *this = _block; }
 	Block& operator=(const Block& b);
 	virtual ~Block() = default;
@@ -80,6 +81,7 @@ public:
 	bool isColEmpty(const ushort& col)const;
 	size_t getLowestRow()const;
 	void setBlockFromFile(const ushort& _shapeNum);
+	static void changeSilentMode(bool flag) { Block::silent = flag; }
 };
 
 class Bomb : public Block

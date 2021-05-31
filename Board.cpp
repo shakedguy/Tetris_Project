@@ -17,8 +17,8 @@ std::ostream& operator<<(std::ostream& out, const Board& board)
 	(Board::colorsMode) ? board.drawBoard(board.color) : board.drawBoard(WHITE);
 	return out;
 }
-void Board::changeColorsMode() {
-
+void Board::changeColorsMode()
+{
 	if (Board::colorsMode)
 		Board::colorsMode = false;
 	else
@@ -70,20 +70,22 @@ void Board::drawBoard() const
 
 void Board::drawBoard(const Color& color) const
 {
-	for (int i = 0; i < width; i++)
-		for (int j = 0; j < length; j++)
+	for (size_t i = 0; i < width; ++i)
+		for (size_t j = 0; j < length; ++j)
 			board[i][j].draw(color);
 }
 
-void Board::cleanArea(size_t startX, size_t endX, size_t startY, size_t endY)
+void Board::cleanArea(int startX, int endX, int startY, int endY)
 {
 	if (startX > endX || startY > endY)
 		return;
 	endX = (endX < width) ? endX : width - 1;
-	endX = (endY < length) ? endX : length - 1;
+	endY = (endY < length) ? endY : length - 1;
+	startX = (startX >= 0) ? startX : 0;
+	startY = (startY >= 0) ? startY : 0;
 	for (size_t i = startX; i <= endX; ++i)
 		for (size_t j = startY; j <= endY; ++j)
-			board[i][j].setShape(EMPTY_CELL);
+			board[i][j].shape = EMPTY_CELL;
 }
 
 void Board::clearScreen()
@@ -138,7 +140,7 @@ void Board::drawBoundaries()const
 		{
 			if ((isBoundary(i, j) && board[i][j].shape != EMPTY_CELL)
 				|| board[i][j].shape == FLOOR)
-				cout << board[i][j];
+				(Board::colorsMode) ? board[i][j].draw() : board[i][j].draw(WHITE);
 		}
 	}
 }
@@ -249,8 +251,8 @@ void Board::setSeparators(uint const& row) {
 void Board::freezeBlock(const Block& block)
 {
 
-	for (int i = 0; i < block.figure.size(); i++) {
-		for (int j = 0; j < block.figure[i].size(); j++) {
+	for (int i = 0; i < block.figure.size(); ++i) {
+		for (int j = 0; j < block.figure[i].size(); ++j) {
 			if (block.figure[i][j])
 			{
 				const int x = block.pos.getX() + i - pos.getX();
@@ -275,25 +277,25 @@ void Board::deleteBlock(const Block& block)
 void Board::explosion(const Block& block)
 {
 	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
-	size_t startX = (x - Bomb::EXPLOSION_RANGE > 0) ? x - Bomb::EXPLOSION_RANGE : 1;
-	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
-	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
-	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
-	size_t counter = 0;
+	const int radius = static_cast<int>(Bomb::EXPLOSION_RANGE);
+	int startX = (x - radius > 0) ? x - radius : 1;
+	int startY = (y - radius > 0) ? y - radius : 1;
+	int endX = (x + radius < width - 1) ? x + radius : width - 2;
+	int endY = (y + radius < length - 1) ? y + radius : length - 2;
 
-	for (size_t i = startX; i <= endX; ++i)
-		for (size_t j = startY; j <= endY; ++j)
-			board[i][j].shape = EMPTY_CELL;
+	cleanArea(startX, endX, startY, endY);
+	drawEmptyCells();
 	dropFloatingBricks(1, width-1, endY, 1, endY - startY);
 }
 
 size_t Board::damageCounter(const Block& block)const
 {
 	int x = block.pos.getX() - pos.getX(), y = block.pos.getY() - pos.getY();
-	size_t startX = (x - Bomb::EXPLOSION_RANGE > 0) ? x - Bomb::EXPLOSION_RANGE : 1;
-	size_t startY = (y - Bomb::EXPLOSION_RANGE > 0) ? y - Bomb::EXPLOSION_RANGE : 1;
-	size_t endX = (x + Bomb::EXPLOSION_RANGE < width - 1) ? x + Bomb::EXPLOSION_RANGE : width - 2;
-	size_t endY = (y + Bomb::EXPLOSION_RANGE < length - 1) ? y + Bomb::EXPLOSION_RANGE : length - 2;
+	const int radius = static_cast<int>(Bomb::EXPLOSION_RANGE);
+	int startX = (x - radius > 0) ? x - radius : 1;
+	int startY = (y - radius > 0) ? y - radius : 1;
+	int endX = (x + radius < width - 1) ? x + radius : width - 2;
+	int endY = (y + radius < length - 1) ? y + radius : length - 2;;
 	size_t counter = 0;
 
 	for (size_t i = startX; i <= endX; ++i)

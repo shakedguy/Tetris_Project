@@ -77,7 +77,7 @@ private:
 public:
 	Cell() : Point(0, 0), shape(EMPTY_CELL), color(WHITE) {}
 	template<class T, class G>
-	Cell::Cell(const T& _x, const G& _y, const uchar& _shape = EMPTY_CELL,
+	Cell(const T& _x, const G& _y, const uchar& _shape = EMPTY_CELL,
 		const Color& _color = WHITE) : Point(_x, _y), shape(_shape), color(_color) {}
 	Cell(const Cell& _cell) { assign(_cell); }
 	~Cell()override = default;

@@ -9,7 +9,7 @@ protected:
 	static constexpr char INVALID_COMMAND_LINE_ARGUMENT[] = "Invalid command line argument";
 	static constexpr char OPEN_FILE_ERROR[] = "Open file Error";
 	static constexpr char GOOD_TEST[] = "Successful test";
-	static constexpr char BAD_TEST[] = "Open file Error";
+	static constexpr char BAD_TEST[] = "Failed test";
 
 public:
 	void pausedGame(bool flag)

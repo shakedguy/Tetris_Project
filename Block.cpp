@@ -12,7 +12,7 @@ Block::Block(const Point& _pos) : pos(_pos), shape(SHAPE) {
 	setFigure();
 }
 
-Block::Block(const Point& _pos, const ushort& _shapeNum) : pos(_pos), shape(SHAPE), shapeNum(_shapeNum) {
+Block::Block(const Point& _pos, const short& _shapeNum) : pos(_pos), shape(SHAPE), shapeNum(_shapeNum) {
 
 	std::random_device rnd;
 	const std::uniform_int_distribution<> colorRange(1, 14);
@@ -20,6 +20,8 @@ Block::Block(const Point& _pos, const ushort& _shapeNum) : pos(_pos), shape(SHAP
 	cleanBlock();
 	setFigure();
 }
+
+bool Block::silent = false;
 
 void Block::setBlockFromFile(const ushort& _shapeNum)
 {
@@ -311,7 +313,8 @@ void Block::moveDown()
 {
 	cleanPrint();
 	pos++;
-	cout << *this;
+	if (!silent)
+		cout << *this;
 }
 
 // Reduction the x componente in the position data member of the block
@@ -319,7 +322,8 @@ void Block::moveLeft()
 {
 	cleanPrint();
 	pos <<= 1;
-	cout << *this;
+	if (!silent)
+		cout << *this;
 }
 
 // Raise the x componente in the position data member of the block
@@ -327,7 +331,8 @@ void Block::moveRight()
 {
 	cleanPrint();
 	pos >>= 1;
-	cout << *this;
+	if (!silent)
+		cout << *this;
 }
 
 void Block::changeColorsMode()

@@ -4,39 +4,67 @@
 
 
 
-Player::Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos) :
+Player::Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos,
+	const size_t& cycle) :
 	playerNum(_playerNum), direction(DEFAULT), boardPos(_boardPos),
 	boxPos(_boxPos), board(boardPos), box(boxPos)
 {
 	if (playerNum == 1)
 	{
 		name = "Player 1";
-		try { block = new Block({ LEFT_BLOCK, BLOCKS_Y }); }
-		catch (const std::bad_alloc& e) { e.what(); throw MyException(); }
+		
+		if (Player::gameMode != Player::LOAD && Player::gameMode != Player::SILENT) {
+			try { block = new Block({ LEFT_BLOCK, BLOCKS_Y }); }
+			catch (const std::bad_alloc& e) { e.what(); throw MyException(); }
+		}
+
 	}
 	else
 	{
 		name = "Player 2";
-		try { block = new Block({ RIGHT_BLOCK, BLOCKS_Y }); }
-		catch (const std::bad_alloc& e) { e.what(); throw MyException(); }
-	}
+		if (Player::gameMode != Player::LOAD && Player::gameMode != Player::SILENT) {
 
+			try { block = new Block({ RIGHT_BLOCK, BLOCKS_Y }); }
+			catch (const std::bad_alloc& e) { e.what(); throw MyException(); }
+		}
+
+	}
 	setGameBoundaries();
 	setKeysIndication();
 
 	if (Player::gameMode != Player::SIMPLE)
-		initFiles();
+		initFiles(cycle);
 }
 
-void Player::initFiles()
+void Player::changeGameMode(const ushort& mode) 
+{
+	Player::gameMode = mode;
+	if (mode == Game_Modes::SILENT)
+		Block::changeSilentMode(true);
+}
+
+void Player::initFiles(const size_t& cycle)
 {
 	if (Player::gameMode != Player::SAVE)
 		allocateToRead();
 	else
 	{
 		allocateToWrite();
-		blocksFile->saveData(block->shapeNum, NULL, NULL);
+		saveBornDateToFile(cycle);
 	}
+}
+
+void Player::saveBornDateToFile(const size_t& cycle)
+{
+	saveBlockToFile(*block);
+	for (const Block& b : box.blocks)
+		saveBlockToFile(b);
+}
+
+
+void Player::saveBlockToFile(const Block& b)
+{
+	blocksFile->saveData(b.shapeNum, NULL, NULL);
 }
 
 void Player::allocateToWrite() noexcept(false)
@@ -239,7 +267,7 @@ void Player::showIndicateHit(const ushort& dir) {
 // get new block to the second
 void Player::getNewBlock() {
 
-	delete block;
+
 	std::random_device bombChances;
 	const std::uniform_int_distribution<> rnd(0, 19);
 	if (rnd(bombChances))
@@ -261,7 +289,7 @@ void Player::getNewBlock() {
 	else
 		block->pos = { RIGHT_BLOCK,BLOCKS_Y };
 	if (Player::gameMode == Player::SAVE)
-		blocksFile->saveData(block->shapeNum, NULL, NULL);
+		blocksFile->saveData(box.blocks[1].shapeNum, NULL, NULL);
 }
 
 /* Player shift function, if the step faild and the direction is DEFAULT,
@@ -275,24 +303,33 @@ void Player::move(const size_t& cycle) {
 			board.explosion(*block);
 		else
 			board.freezeBlock(*block);
-		
+		delete block;
+
 		try { getNewBlock(); }
 		catch (...) { throw; }
-		
-		cout << box;
-		board.drawEmptyCells();
+		if (Player::gameMode != Game_Modes::SILENT)
+		{
+			cout << box;
+			board.drawEmptyCells();
+		}
+
 
 	}
-	board.drawFillCells();
-	board.drawBoundaries();
+	if (Player::gameMode != Game_Modes::SILENT)
+	{
+		board.drawFillCells();
+		board.drawBoundaries();
+	}
 	score += ((pow(board.checkBoard(true), 2)) * POINTS_FOR_FULL_ROW);
+	direction = DEFAULT;
 }
 
 
 /* Check the current direction and send to the step execution function,
  * returns if the step succeeded or failed */
 bool Player::makeTheMove(const size_t& cycle) {
-	
+
+
 	switch (direction) {
 	case COUNTER_CLOCKWISE:
 		return counterClockwise(cycle);
@@ -316,11 +353,13 @@ bool Player::clockwise(const size_t& cycle)
 		return makeTheMove(cycle);
 	if (board.rotateCheck(block, CLOCKWISE))
 	{
-		movesFile->saveData(NULL, cycle, CLOCKWISE);
+		if (Player::gameMode == Game_Modes::SAVE)
+			movesFile->saveData(NULL, cycle, CLOCKWISE);
 		block->clockwiseRotate();
 		return true;
 	}
-	return makeTheMove(cycle);
+	//if (Player::gameMode != Player::LOAD && Player::gameMode != Player::SILENT)
+	return down(cycle);
 }
 
 bool Player::counterClockwise(const size_t& cycle)
@@ -330,63 +369,73 @@ bool Player::counterClockwise(const size_t& cycle)
 		return makeTheMove(cycle);
 	if (board.rotateCheck(block, COUNTER_CLOCKWISE))
 	{
-		movesFile->saveData(NULL, cycle, COUNTER_CLOCKWISE);
+		if (Player::gameMode == Game_Modes::SAVE)
+			movesFile->saveData(NULL, cycle, COUNTER_CLOCKWISE);
 		block->counterClockwiseRotate();
 		return true;
 	}
-	return makeTheMove(cycle);
+	//if (Player::gameMode != Player::LOAD && Player::gameMode != Player::SILENT)
+		return down(cycle);
 }
 
 bool Player::down(const size_t& cycle)
 {
 	if (board.moveDown(block))
 	{
-		movesFile->saveData(NULL, cycle, DEFAULT);
 		block->moveDown();
 		return true;
 	}
+	direction = DEFAULT;
 	return false;
+	//if (Player::gameMode == Game_Modes::SAVE)
+	//	movesFile->saveData(NULL, cycle, STOP);
+
 }
 
 bool Player::left(const size_t& cycle)
 {
 	if (board.moveLeft(block))
 	{
-		movesFile->saveData(NULL, cycle, MOVE_LEFT);
+		if (Player::gameMode == Game_Modes::SAVE)
+			movesFile->saveData(NULL, cycle, MOVE_LEFT);
 		block->moveLeft();
 		return true;
 	}
 	direction = DEFAULT;
-	return makeTheMove(cycle);
+	return down(cycle);
+	//if (Player::gameMode != Player::LOAD && Player::gameMode != Player::SILENT)
+
 }
 
 bool Player::right(const size_t& cycle)
 {
 	if (board.moveRight(block))
 	{
-		movesFile->saveData(NULL, cycle, MOVE_RIGHT);
+		if (Player::gameMode == Game_Modes::SAVE)
+			movesFile->saveData(NULL, cycle, MOVE_RIGHT);
 		block->moveRight();
 		return true;
 	}
 	direction = DEFAULT;
-	return makeTheMove(cycle);
+	return down(cycle);
+	//if (Player::gameMode != Player::LOAD && Player::gameMode != Player::SILENT)
+
 }
 
 // Loop of moving the block down until it comes across another block or the board border
 bool Player::drop(const size_t& cycle) {
 
-	while (board.moveDown(block))
-	{
+	if (board.moveDown(block) && Player::gameMode == Game_Modes::SAVE)
 		movesFile->saveData(NULL, cycle, DROP);
+	while (board.moveDown(block))
 		block->moveDown();
-	}
+
 	direction = DEFAULT;
 	return false;
 }
 
 void Player::changeColorsMode()
 {
-	
 	if (Player::colorsMode)
 		Player::colorsMode = false;
 	else
@@ -401,12 +450,6 @@ bool Player::checkSpeed(const size_t& accNum)const
 	return false;
 }
 
-bool Player::isEndOfFiles() const
-{
-	if (blocksFile->isEmpty() && movesFile->isEmpty())
-		return true;
-	return false;
-}
 
 
 

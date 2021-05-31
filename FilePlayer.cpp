@@ -2,36 +2,30 @@
 
 
 FilePlayer::FilePlayer(const ushort& _playerNum, const Point& _boardPos,
-	const Point& _boxPos, const size_t& cycle) : Player(_playerNum, _boardPos, _boxPos),
-	blocksFile(playerNum,Files_Handler::read),movesFile(playerNum, Files_Handler::read)
+	const Point& _boxPos, const size_t& cycle) : Player(_playerNum, _boardPos, _boxPos, cycle)
 {
 	name = (playerNum == 1) ? "Test 1" : "Test 2";
-	block->cleanPrint();
-	block->cleanBlock();
-	short temp = blocksFile.getData(cycle);
-	if (temp == -1)
-		throw BlocksFileEndEx();
-	block->shapeNum = temp;
-	
-	block->setFigure();
-	for (Block& i : box.blocks)
-	{
-		i.cleanPrint();
-		i.cleanBlock();
-		i.shapeNum = blocksFile.getData(cycle);
-		i.setFigure();
-	}
+	initBornData(cycle);
 }
+
+void FilePlayer::initBornData(const size_t& cycle)
+{
+	getNewBlock();
+	if (playerNum == 1)
+		block->pos = { LEFT_BLOCK, BLOCKS_Y };
+	else 
+		block->pos = { RIGHT_BLOCK, BLOCKS_Y };
+
+}
+
 
 void FilePlayer::setDirection(const uchar& key, const size_t& cycle)
 {
-	const short temp = movesFile.getData(cycle);
-	if (temp < 0)
-	{
-		direction = DEFAULT;
-		throw MovesFileEndEx();
-	}
-	direction = temp;
+	short temp = movesFile->getData(cycle);
+	if (temp == -1) 
+		direction = DEFAULT;	
+	else
+		direction = temp;
 }
 
 FilePlayer::FilePlayer(const FilePlayer& _player, const size_t& cycle) :
@@ -41,31 +35,37 @@ FilePlayer::FilePlayer(const FilePlayer& _player, const size_t& cycle) :
 
 void FilePlayer::getNewBlock()
 {
-	delete block;
-	try { block = new Block(box.blocks[0]); }
-	catch (const std::bad_alloc& e) { e.what(); throw; }
-	const Point temp = box.blocks[0].pos;
-	box.blocks[0] = box.blocks[1];
-	box.blocks[0].pos = temp;
-	getFromFile(box.blocks[1]);
-	try { getFromFile(box.blocks[1]); }
-	catch (...) { throw; }
-	
+	short temp = blocksFile->getFirst();
+	if (temp < 0)
+		throw BlocksFileEndEx();
+		
+	if (temp != Block::TetrisParts::B)
+	{
+		try { block = new Block; }
+		catch (const std::bad_alloc& e) { e.what(); throw; }
+		getFromFile(*block);
+	}
+	else
+	{
+		try { block = new Bomb; }
+		catch (const std::bad_alloc& e) { e.what(); throw; }
+		short x = blocksFile->getData(NULL);
+	}
 	if (playerNum == 1)
 		block->pos = { LEFT_BLOCK,BLOCKS_Y };
 	else
 		block->pos = { RIGHT_BLOCK,BLOCKS_Y };
 }
 
-void FilePlayer::getFromFile(Block& block)
+void FilePlayer::getFromFile(Block& b)
 {
-	short temp = blocksFile.getData(NULL);
+	b.cleanPrint();
+	b.cleanBlock();
+	short temp = blocksFile->getData(NULL);
 	if (temp < 0)
 		throw BlocksFileEndEx();
-	block.cleanPrint();
-	block.cleanBlock();
-	block.shapeNum = temp;
-	block.setFigure();
+	b.shapeNum = temp;
+	b.setFigure();
 }
 
 

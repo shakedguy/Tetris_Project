@@ -13,9 +13,9 @@
 class Player
 {
 
-	Files_Handler* blocksFile = nullptr, * movesFile = nullptr;
+	
 protected:
-
+	Files_Handler* blocksFile = nullptr, * movesFile = nullptr;
 	enum Game_Modes { SIMPLE, SAVE, LOAD, SILENT };
 	enum objectsPositions
 	{
@@ -35,13 +35,14 @@ protected:
 	static bool colorsMode;
 	string name;
 	ushort playerNum;
-	ushort direction;
+	short direction;
 	array<Board, NUM_OF_KEYS> keyIndicators;
 	Point boardPos, boxPos;
 	Board board;
 	Box box;
 	Block* block;
 	size_t score = 0;
+
 
 	//friend class Game;
 
@@ -54,10 +55,12 @@ private:
 	bool left(const size_t& cycle);
 	bool right(const size_t& cycle);
 	bool down(const size_t& cycle);
-	void initFiles();
+	void initFiles(const size_t& cycle);
 	void allocateToWrite()noexcept(false);
 	void allocateToRead()noexcept(false);
 	void clearFilesContent();
+	void saveBlockToFile(const Block& b);
+	void saveBornDateToFile(const size_t& cycle);
 	
 
 
@@ -67,7 +70,8 @@ protected:
 	void setKeysIndication();
 
 public:
-	Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos);
+	Player(const ushort& _playerNum, const Point& _boardPos, const Point& _boxPos, 
+		const size_t& cycle = 0);
 	Player(const Player& _player);
 	virtual ~Player();
 	virtual Player& operator=(const Player& _player);
@@ -91,7 +95,7 @@ public:
 	const ushort& getCurrentBlockNum()const { return block->shapeNum; }
 	void resetCurrentBlocksPos()const;
 	Point getHighestPointInBoard()const { return board.getHighestPoint(); }
-	static void changeGameMode(const ushort& mode) { Player::gameMode = mode; }
+	static void changeGameMode(const ushort& mode);
 	void changeDirection(const ushort& dir) { direction = dir; }
 	virtual string type()const { return "Player"; }
 	virtual void setDirection(const uchar& key, const size_t& cycle) = 0;
@@ -99,7 +103,8 @@ public:
 	virtual void initializeCalculate() = 0;
 	virtual void setPlayerKeys(const string& arrowKeys) = 0;
 	virtual sint getDirection(const uchar& key) = 0;
-	bool isEndOfFiles()const;
+	bool isEndOfFiles()const { return blocksFile->isEmpty(); }
+	bool isMovesEndOfFiles()const { return movesFile->isEmpty(); }
 	void printDataToFile()const;
 
 	

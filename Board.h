@@ -29,6 +29,7 @@ protected:
 	friend class Player;
 	friend class HumanPlayer;
 	friend class ComputerPlayer;
+	friend class FilePlayer;
 	friend class Game;
 	friend class Menu;
 
@@ -100,7 +101,7 @@ public:
 	void drawBoundaries(const Color& _color)const;
 	void drawBoard(const Color& _color)const;
 	size_t numOfFillCells()const;
-	void cleanArea(size_t startX, size_t endX, size_t startY, size_t endY);
+	void cleanArea(int startX, int endX, int startY, int endY);
 	static void changeColorsMode();
 	virtual void clearScreen();
 	bool isEmpty()const;

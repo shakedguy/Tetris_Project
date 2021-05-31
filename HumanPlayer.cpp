@@ -60,6 +60,7 @@ void HumanPlayer::setDirection(const uchar& key, const size_t& cycle)
 
 void HumanPlayer::setName() {
 
+	clrscr();
 	gotoxy(Player::NAME_MASSAGE_X, Player::NAME_MASSAGE_Y);
 	cout << "Please enter player " << playerNum << " name:  ";
 	cin >> name;

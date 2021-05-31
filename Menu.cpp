@@ -52,6 +52,7 @@ void Game::Menu::updateMenuBoard()
 
 void Game::Menu::drawPage(const ushort& pageNumber) const {
 
+	clrscr();
 	cout << menuPages[pageNumber];
 	if (Game::colorsMode)
 		paintBoxes(pageNumber);
@@ -203,9 +204,6 @@ void Game::Menu::mainMenuPage(Game& game)const
 	drawPage(MAIN_MENU_PAGE);
 	switch (getOption()) {
 	case NEW_GAME:
-		clrscr();
-		if (game.gameNumber)
-			game.clearGame();
 		newGamePage(game);
 		break;
 	case RESUME_GAME:
@@ -217,7 +215,6 @@ void Game::Menu::mainMenuPage(Game& game)const
 		}
 		break;
 	case SET_NAMES:
-		clrscr();
 		game.setNames();
 		mainMenuPage(game);
 		break;
@@ -230,7 +227,6 @@ void Game::Menu::mainMenuPage(Game& game)const
 		mainMenuPage(game);
 		break;
 	case EXIT_GAME:
-		clrscr();
 		break;
 
 	default:
@@ -246,15 +242,12 @@ void Game::Menu::newGamePage(Game& game)const
      switch (getOption())
      {
 	case H_VS_H:
-		clrscr();
 		game.init(Menu::HUMAN_VS_HUMAN);
 		break;
 	case H_VS_C:
-		clrscr();
 		levelsPage(game, Menu::HUMAN_VS_COMPUTER);
 		break;
 	case C_VS_C:
-		clrscr();
 		levelsPage(game, Menu::COMPUTER_VS_COMPUTER);
 		break;
 	case COLOR_MODE:
@@ -262,7 +255,6 @@ void Game::Menu::newGamePage(Game& game)const
 		newGamePage(game);
 		break;
 	case EXIT_GAME:
-		clrscr();
 		mainMenuPage(game);
 		break;
 
